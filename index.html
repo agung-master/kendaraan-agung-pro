@@ -16,7 +16,6 @@
   <style>
     :root { --brand:#1a73e8; --brand-dark:#1557b0; --bg:#f1f3f4; --card-radius:14px; }
     body { background: var(--bg); font-family: 'Segoe UI', system-ui, sans-serif; font-size: 14px; color:#202124; transition: background 0.3s, color 0.3s; display: flex; flex-direction: column; min-height: 100vh; overflow-x: hidden; }
-
     [data-bs-theme="dark"] body { background: #121212; color: #e0e0e0; }
     [data-bs-theme="dark"] .panel, [data-bs-theme="dark"] .stat-card, [data-bs-theme="dark"] .filter-bar, [data-bs-theme="dark"] .app-footer, [data-bs-theme="dark"] .card, [data-bs-theme="dark"] .dropdown-menu { background: #1e1e1e; color: #e0e0e0; box-shadow: 0 1px 3px rgba(255,255,255,.05); border-color: #333; }
     [data-bs-theme="dark"] .table { color: #e0e0e0; border-color: #333; }
@@ -30,79 +29,30 @@
     [data-bs-theme="dark"] .list-group-item { background: #1e1e1e; color: #e0e0e0; border-color: #333; }
     [data-bs-theme="dark"] .dropdown-item:hover { background: #333; }
     [data-bs-theme="dark"] .modal-content { background: #1e1e1e; color: #e0e0e0; }
-
     .text-purple { color: #9c27b0 !important; }
-
-    @keyframes shim { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
-    #statCards:empty::before { content:''; display:block; width:100%; height:130px; border-radius:14px; background:linear-gradient(90deg,var(--bs-secondary-bg) 25%,var(--bs-tertiary-bg) 50%,var(--bs-secondary-bg) 75%); background-size:200% 100%; animation:shim 1.4s infinite; }
-    .app-header h1 { color:#fff; }
-    .tbl-search { max-width:320px; margin:0 0 .6rem auto; }
-    #bnav, #bmore { display:none; }
-    @media (max-width: 767.98px) {
-      .nav-tabs { display:none !important; }
-      body { padding-bottom: calc(72px + env(safe-area-inset-bottom, 0px)) !important; }
-      .table-responsive table, .table-responsive tbody, .table-responsive tr, .table-responsive td { display:block; width:100%; }
-      .table-responsive thead { display:none; }
-      .table-responsive tr { background:var(--bs-body-bg); border:1px solid var(--bs-border-color); border-radius:12px; margin-bottom:10px; padding:6px 12px; box-shadow:0 1px 4px rgba(0,0,0,.05); }
-      .table-responsive td { display:flex !important; justify-content:space-between; gap:12px; border:0 !important; padding:5px 0 !important; font-size:.88rem; text-align:right; }
-      .table-responsive td::before { content:attr(data-label); font-weight:600; color:var(--bs-secondary-color); text-align:left; flex:0 0 40%; }
-      .table-responsive td[colspan] { display:block !important; text-align:center; } .table-responsive td[colspan]::before { content:none; }
-      .table-responsive td:last-child:not([data-label]) { justify-content:flex-end; }
-      /* Isi sel dibungkus satu blok agar rata kanan & rapi (tidak terpecah ke tengah) */
-      .table-responsive td .cell-v { text-align:right; min-width:0; }
-      .table-responsive td .cell-v > div { white-space:nowrap; }
-      .table-responsive td .cell-v .reminder-title { white-space:normal; }
-      /* Baris Aksi: tombol edit & hapus berdampingan rapi di kanan, tanpa label */
-      .table-responsive td.cell-aksi { justify-content:flex-end !important; padding-top:10px !important; margin-top:4px; border-top:1px solid var(--bs-border-color) !important; }
-      .table-responsive td.cell-aksi::before { content:none; }
-      .table-responsive td.cell-aksi .cell-act { display:flex; justify-content:flex-end; gap:8px; width:100%; }
-      .tbl-search { max-width:100%; }
-      #bnav { display:flex; position:fixed; left:0; right:0; bottom:0; z-index:1040; background:var(--bs-body-bg); border-top:1px solid var(--bs-border-color); padding:6px 4px calc(6px + env(safe-area-inset-bottom, 0px)); box-shadow:0 -4px 16px rgba(0,0,0,.08); }
-      #bnav button { flex:1; border:0; background:none; color:var(--bs-secondary-color); font-size:.68rem; display:flex; flex-direction:column; align-items:center; gap:2px; padding:4px 0; }
-      #bnav button i { font-size:1.15rem; }
-      #bnav button.on { color:#1a73e8; font-weight:700; }
-      #bnav .fabbtn { flex:0 0 54px !important; width:54px; height:54px; margin:-22px 8px; transform:translateY(-14px); border-radius:50%; color:#fff !important; background:linear-gradient(135deg,#1a73e8,#0d47a1); box-shadow:0 6px 16px rgba(26,115,232,.45); align-items:center; justify-content:center; padding:0 !important; border:3px solid var(--bs-body-bg) !important; }
-      #bnav .fabbtn i { font-size:1.3rem; }
-      #bmore.open { display:block; position:fixed; right:10px; bottom:calc(76px + env(safe-area-inset-bottom, 0px)); z-index:1060; background:var(--bs-body-bg); border:1px solid var(--bs-border-color); border-radius:14px; box-shadow:0 8px 24px rgba(0,0,0,.18); min-width:190px; overflow:hidden; }
-      #bmore button { display:block; width:100%; text-align:left; border:0; background:none; color:var(--bs-body-color); padding:12px 16px; }
-      #bmore button:active { background:var(--bs-secondary-bg); }
-    }
-    body.viewer #bnav .fabbtn, body.viewer .icon-btn, body.viewer [onclick^="show"][onclick*="Modal"] { display:none !important; }
     .svc-row { display:flex; justify-content:space-between; align-items:center; padding:8px 0; border-bottom:1px solid var(--bs-border-color); font-size:.9rem; }
     #topLoader { position: fixed; top: 0; left: 0; height: 3px; width: 0; z-index: 20000; background: linear-gradient(90deg,#34a853,#1a73e8); opacity: 0; transition: opacity .2s; pointer-events: none; }
     #topLoader.active { opacity: 1; width: 85%; transition: width 8s cubic-bezier(.1,.7,.2,1), opacity .2s; }
-    #loginView { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(135deg, #1a73e8 0%, #0d47a1 100%); z-index: 10000; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 15px; }
+    #loginView { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(135deg, #1a73e8 0%, #0d47a1 100%); z-index: 10000; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 15px; overflow-y:auto; }
     .login-card { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); border-radius: 20px; padding: 30px; width: 100%; max-width: 400px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); color: #202124; }
     .login-card h2 { font-weight: 700; color: var(--brand); text-align: center; margin-bottom: 20px; }
-
     .input-group-text { background-color: #f8f9fa; border-left: none; cursor: pointer; color: #6c757d; }
     .input-group-text:hover { color: var(--brand); }
     .form-control.pass-input { border-right: none; }
     .form-control.pass-input:focus { border-right: none; box-shadow: none; }
     .input-group:focus-within { box-shadow: 0 0 0 3px rgba(26,115,232,.15); border-radius: 0.375rem; }
-
     #appView { display: none; flex-direction: column; flex-grow: 1; }
     .app-header { background: linear-gradient(135deg,#1a73e8 0%,#0d47a1 100%); color:#fff; padding:12px 0; box-shadow: 0 2px 10px rgba(0,0,0,.15); margin-bottom: 20px; }
-    .app-header h1 { font-size:1.25rem; margin:0; font-weight:700; display:flex; align-items: center; gap:6px; white-space: nowrap; }
-
-    .vehicle-selector {
-      background-color: rgba(255,255,255,.15); border: 1px solid rgba(255,255,255,.3); color: #fff; border-radius: 8px;
-      padding: 6px 30px 6px 12px; font-size: .85rem; width: 100%; max-width: 250px;
-      background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23ffffff' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/%3e%3c/svg%3e");
-      background-repeat: no-repeat; background-position: right 12px center; background-size: 12px;
-      appearance: none; -webkit-appearance: none; text-overflow: ellipsis; white-space: nowrap; overflow: hidden; min-width: 0;
-    }
+    .app-header h1 { font-size:1.25rem; margin:0; font-weight:700; display:flex; align-items: center; gap:6px; white-space: nowrap; color:#fff; }
+    .vehicle-selector { background-color: rgba(255,255,255,.15); border: 1px solid rgba(255,255,255,.3); color: #fff; border-radius: 8px; padding: 6px 30px 6px 12px; font-size: .85rem; width: 100%; max-width: 250px; background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23ffffff' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/%3e%3c/svg%3e"); background-repeat: no-repeat; background-position: right 12px center; background-size: 12px; appearance: none; -webkit-appearance: none; text-overflow: ellipsis; white-space: nowrap; overflow: hidden; min-width: 0; }
     .vehicle-selector:focus { outline: none; box-shadow: 0 0 0 3px rgba(255,255,255,0.2); }
     .vehicle-selector option { color:#202124; }
     .vehicle-selector.single-vehicle { background-image: none !important; padding-right: 12px; }
-
     .header-btn { background: #fff; border: none; border-radius: 8px; height: 34px; display: flex; align-items: center; justify-content: center; padding: 0 12px; font-size: 0.85rem; box-shadow: 0 1px 3px rgba(0,0,0,.1); transition: all 0.2s; color: #5f6368; flex-shrink: 0; }
     .header-btn:hover { background: #f8f9fa; color: var(--brand); transform: translateY(-1px); }
     .header-btn.dropdown-toggle::after { margin-left: 4px; }
-
     .notif-btn { position: relative; width: 34px; padding: 0; }
     .notif-badge { position: absolute; top: -5px; right: -5px; font-size: 0.6rem; padding: 3px 5px; border-radius: 50%; }
-
     .stat-card { background:#fff; border-radius: var(--card-radius); padding:18px; height:100%; box-shadow: 0 1px 3px rgba(0,0,0,.08); border-left: 4px solid var(--brand); transition: transform .15s; position: relative; overflow:hidden; }
     .stat-card:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,.1); }
     .stat-card .label { font-size:.72rem; text-transform:uppercase; letter-spacing:.5px; color:#5f6368; font-weight:600; }
@@ -116,26 +66,21 @@
     .stat-card.purple  { border-left-color:#9c27b0; } .stat-card.purple .icon { color:#9c27b0; }
     .stat-card.carbon  { border-left-color:#4caf50; background: linear-gradient(to right, #e8f5e9, #ffffff); }
     .panel { background:#fff; border-radius: var(--card-radius); padding:20px; box-shadow: 0 1px 3px rgba(0,0,0,.08); }
-
     .ai-insight-box { background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%); border-left: 5px solid #1a73e8; border-radius: 10px; padding: 15px 20px; margin-bottom: 20px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
     .ai-insight-box h6 { color: #0d47a1; font-weight: 700; margin-bottom: 8px; }
     .ai-insight-box p { margin: 0; color: #1565c0; font-size: 0.95rem; font-weight: 500; }
     [data-bs-theme="dark"] .ai-insight-box { background: #1e3a5f; border-left-color: #64b5f6; }
     [data-bs-theme="dark"] .ai-insight-box h6 { color: #90caf9; }
     [data-bs-theme="dark"] .ai-insight-box p { color: #bbdefb; }
-
     .nav-tabs { border-bottom: 2px solid #dadce0; flex-wrap: nowrap; overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
     .nav-tabs::-webkit-scrollbar { display: none; }
     .nav-tabs .nav-link { color:#5f6368; border:none; font-weight:500; padding:12px 18px; border-radius:0; white-space: nowrap; }
     .nav-tabs .nav-link.active { color: var(--brand); border-bottom:3px solid var(--brand); background:transparent; font-weight:600; }
-
     .table thead th { background:#f8f9fa; font-size:.75rem; text-transform:uppercase; color:#5f6368; border-bottom:2px solid #e0e0e0; white-space: nowrap; }
     .filter-bar { background: #fff; border-radius: 10px; padding: 12px 15px; border-left: 4px solid var(--brand); box-shadow: 0 1px 3px rgba(0,0,0,.08); margin-bottom: 1rem; }
     .icon-btn { width:32px; height:32px; padding:0; display:inline-flex; align-items: center; justify-content: center; border-radius:8px; }
-
     .refresh-btn { flex-shrink: 0; display: inline-flex; align-items: center; justify-content: center; gap: 6px; }
     .refresh-btn i.fa-spin { animation-duration: 0.8s; }
-
     .modal-header { background: var(--brand); color:#fff; }
     .modal-header .btn-close { filter: invert(1); }
     .form-control:focus, .form-select:focus { border-color: var(--brand); box-shadow: 0 0 0 3px rgba(26,115,232,.15); }
@@ -145,44 +90,31 @@
     .app-toast.success { border-left-color:#34a853; } .app-toast.error { border-left-color:#ea4335; } .app-toast.info { border-left-color:#1a73e8; }
     @keyframes slideIn { from { transform: translateX(120%); opacity:0; } to { transform:translateX(0); opacity:1; } }
     .chart-container { position: relative; height: 260px; }
-
     #map { height: 500px; border-radius: var(--card-radius); z-index: 1; }
-
     .credit-text { font-size: 0.8rem; color: rgba(255, 255, 255, 0.8); margin-top: 20px; text-align: center; letter-spacing: 0.5px; }
     .credit-text strong { color: #fff; font-weight: 600; }
     .app-footer { margin-top: auto; padding: 20px 0; text-align: center; font-size: 0.8rem; color: #5f6368; border-top: 1px solid #e0e0e0; background: #fff; }
     .app-footer i { color: #ea4335; }
-
-    /* Service Checkbox Styling (Professional Look) */
     .service-checkbox-group { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-    .service-checkbox { 
-      display: flex; align-items: center; gap: 10px; padding: 12px; 
-      border: 1px solid #dadce0; border-radius: 8px; cursor: pointer; 
-      transition: all 0.2s ease; background: #fff;
-    }
+    .service-checkbox { display: flex; align-items: center; gap: 10px; padding: 12px; border: 1px solid #dadce0; border-radius: 8px; cursor: pointer; transition: all 0.2s ease; background: #fff; }
     [data-bs-theme="dark"] .service-checkbox { background: #2c2c2c; border-color: #444; }
     .service-checkbox:hover { background: #f8f9fa; transform: translateY(-1px); }
     [data-bs-theme="dark"] .service-checkbox:hover { background: #333; }
-    
-    .service-checkbox.active { 
-      background-color: rgba(26, 115, 232, 0.05); 
-      border-color: var(--brand); 
-      box-shadow: 0 2px 5px rgba(26,115,232,0.15); 
-    }
+    .service-checkbox.active { background-color: rgba(26, 115, 232, 0.05); border-color: var(--brand); box-shadow: 0 2px 5px rgba(26,115,232,0.15); }
     [data-bs-theme="dark"] .service-checkbox.active { background-color: rgba(26, 115, 232, 0.15); }
-    
     .service-checkbox input[type="checkbox"] { width: 18px; height: 18px; cursor: pointer; accent-color: var(--brand); flex-shrink: 0; }
     .service-checkbox span { font-weight: 500; font-size: 0.9rem; }
     .service-checkbox.active span { font-weight: 700; color: var(--brand); }
-    
     .group-title { font-size: 0.8rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 10px; display: flex; align-items: center; }
-
     .reminder-title { font-weight: 600; color: #202124; display: block; margin-bottom: 4px; }
     .reminder-services { font-size: 0.75rem; color: #5f6368; }
     .badge-soft-danger { background-color: #fce8e6; color: #c5221f; }
     .badge-soft-warning { background-color: #fef7e0; color: #b06000; }
     .badge-soft-success { background-color: #e6f4ea; color: #137333; }
-
+    [data-bs-theme="dark"] .reminder-title { color:#e0e0e0; }
+    [data-bs-theme="dark"] .reminder-services { color:#aaa; }
+    [data-bs-theme="dark"] .stat-card.carbon { background: linear-gradient(to right,#1b3a1f,#1e1e1e); }
+    [data-bs-theme="dark"] .input-group-text { background:#2c2c2c; color:#aaa; }
     @media (max-width: 768px) {
       .container-fluid { padding-left: 10px !important; padding-right: 10px !important; }
       .panel { padding: 15px; border-radius: 10px; }
@@ -190,7 +122,6 @@
       .stat-card .value { font-size: 1.1rem; }
       .stat-card .label { font-size: 0.65rem; }
       .stat-card .icon { font-size: 1.3rem; right: 10px; top: 10px; }
-
       .app-header { padding: 10px 0; }
       .app-header h1 { font-size: 1.1rem; gap: 4px; }
       .vehicle-selector { font-size: 13px; padding: 6px 25px 6px 10px; height: 34px; background-position: right 10px center; }
@@ -198,57 +129,56 @@
       .notif-btn { width: 34px; padding: 0; }
       #navUserName { display: none; }
       .header-btn.dropdown-toggle::after { display: none; }
-
       .filter-bar { padding: 12px; flex-direction: column; align-items: stretch !important; gap: 8px; }
       .filter-bar input, .filter-bar select, .filter-bar button { width: 100% !important; margin-bottom: 0; }
       .filter-bar span.ms-auto { margin-top: 5px; text-align: center; display: block; width: 100%; }
-
       .table td, .table th { padding: 0.6rem 0.5rem; font-size: 0.8rem; }
-
       .modal-body { padding: 15px; }
       .modal-footer { padding: 15px; display: flex; flex-direction: column; gap: 10px; }
       .modal-footer .btn { width: 100%; margin: 0; padding: 10px; }
       .service-checkbox-group { grid-template-columns: 1fr; }
-
       .table td .d-flex { justify-content: flex-end; }
       .icon-btn { width: 36px; height: 36px; margin-left: 4px; }
-
       .chart-container { height: 220px !important; }
       #map { height: 350px; }
-
-      .dropdown-menu[aria-labelledby="notifDropdown"] {
-        position: fixed !important; top: 60px !important; left: 2vw !important; right: 2vw !important;
-        width: 96vw !important; margin: 0 auto;
-      }
-    }
-
-    /* ---- Perbaikan dark mode ---- */
-    [data-bs-theme="dark"] .reminder-title { color:#e0e0e0; }
-    [data-bs-theme="dark"] .reminder-services { color:#aaa; }
-    [data-bs-theme="dark"] .stat-card.carbon { background: linear-gradient(to right,#1b3a1f,#1e1e1e); }
-    [data-bs-theme="dark"] .input-group-text { background:#2c2c2c; color:#aaa; }
-    #loginView { overflow-y:auto; }
-    /* ---- Mobile: navigasi bawah, header 2 baris, target sentuh besar ---- */
-    @media (max-width: 768px) {
-      body { padding-bottom: calc(64px + env(safe-area-inset-bottom)); }
-      .nav-tabs { position:fixed; bottom:0; left:0; right:0; z-index:1030; background:var(--bs-body-bg); border-top:1px solid #dadce0; border-bottom:0; padding-bottom:env(safe-area-inset-bottom); box-shadow:0 -2px 8px rgba(0,0,0,.08); }
-      .nav-tabs .nav-link { display:flex; flex-direction:column; align-items:center; font-size:.68rem; padding:8px 12px; min-width:76px; border-bottom:0 !important; border-top:3px solid transparent; }
-      .nav-tabs .nav-link i { font-size:1.15rem; margin:0 0 2px 0 !important; }
-      .nav-tabs .nav-link.active { border-top-color:var(--brand) !important; }
-      .app-header .vehicle-selector { max-width:none; flex:1 0 100%; order:3; }
-      #toastContainer { left:10px; right:10px; top:10px; }
-      .app-toast { min-width:0; }
-      .icon-btn { width:40px; height:40px; }
+      .dropdown-menu[aria-labelledby="notifDropdown"] { position: fixed !important; top: 60px !important; left: 2vw !important; right: 2vw !important; width: 96vw !important; margin: 0 auto; }
+      body { padding-bottom: calc(72px + env(safe-area-inset-bottom, 0px)) !important; }
+      .nav-tabs { display:none !important; }
+      .table-responsive table, .table-responsive tbody, .table-responsive tr, .table-responsive td { display:block; width:100%; }
+      .table-responsive thead { display:none; }
+      .table-responsive tr { background:var(--bs-body-bg); border:1px solid var(--bs-border-color); border-radius:12px; margin-bottom:10px; padding:6px 12px; box-shadow:0 1px 4px rgba(0,0,0,.05); }
+      .table-responsive td { display:flex !important; justify-content:space-between; gap:12px; border:0 !important; padding:5px 0 !important; font-size:.88rem; text-align:right; }
+      .table-responsive td::before { content:attr(data-label); font-weight:600; color:var(--bs-secondary-color); text-align:left; flex:0 0 40%; }
+      .table-responsive td[colspan] { display:block !important; text-align:center; } .table-responsive td[colspan]::before { content:none; }
+      .table-responsive td .cell-v { text-align:right; min-width:0; }
+      .table-responsive td .cell-v > div { white-space:nowrap; }
+      .table-responsive td .cell-v .reminder-title { white-space:normal; }
+      .table-responsive td.cell-aksi { justify-content:flex-end !important; padding-top:10px !important; margin-top:4px; border-top:1px solid var(--bs-border-color) !important; }
+      .table-responsive td.cell-aksi::before { content:none; }
+      .table-responsive td.cell-aksi .cell-act { display:flex; justify-content:flex-end; gap:8px; width:100%; }
+      .tbl-search { max-width:100%; }
       input, select, textarea { font-size:16px !important; }
       .app-footer { padding-bottom:80px; }
-      #map { height: 60vh; }
     }
+    #bnav, #bmore { display:none; }
+    @media (max-width: 767.98px) {
+      #bnav { display:flex; position:fixed; left:0; right:0; bottom:0; z-index:1040; background:var(--bs-body-bg); border-top:1px solid var(--bs-border-color); padding:6px 4px calc(6px + env(safe-area-inset-bottom, 0px)); box-shadow:0 -4px 16px rgba(0,0,0,.08); }
+      #bnav button { flex:1; border:0; background:none; color:var(--bs-secondary-color); font-size:.68rem; display:flex; flex-direction:column; align-items:center; gap:2px; padding:4px 0; }
+      #bnav button i { font-size:1.15rem; }
+      #bnav button.on { color:#1a73e8; font-weight:700; }
+      #bnav .fabbtn { flex:0 0 54px !important; width:54px; height:54px; margin:-22px 8px; transform:translateY(-14px); border-radius:50%; color:#fff !important; background:linear-gradient(135deg,#1a73e8,#0d47a1); box-shadow:0 6px 16px rgba(26,115,232,.45); align-items:center; justify-content:center; padding:0 !important; border:3px solid var(--bs-body-bg) !important; }
+      #bnav .fabbtn i { font-size:1.3rem; }
+      #bmore.open { display:block; position:fixed; right:10px; bottom:calc(76px + env(safe-area-inset-bottom, 0px)); z-index:1060; background:var(--bs-body-bg); border:1px solid var(--bs-border-color); border-radius:14px; box-shadow:0 8px 24px rgba(0,0,0,.18); min-width:190px; overflow:hidden; }
+      #bmore button { display:block; width:100%; text-align:left; border:0; background:none; color:var(--bs-body-color); padding:12px 16px; }
+      #bmore button:active { background:var(--bs-secondary-bg); }
+    }
+    body.viewer #bnav .fabbtn, body.viewer .icon-btn, body.viewer [onclick^="show"][onclick*="Modal"] { display:none !important; }
+    .tbl-search { max-width:320px; margin:0 0 .6rem auto; }
   </style>
 </head>
 <body>
 <div id="topLoader"></div>
 
-<!-- ================= LOGIN VIEW ================= -->
 <div id="loginView">
   <div class="login-card">
     <div class="text-center mb-4">
@@ -258,14 +188,12 @@
     </div>
     <div class="mb-3">
       <label class="form-label fw-bold">Username</label>
-      <input type="text" id="loginUser" class="form-control" placeholder="Masukkan username" autocomplete="username" autocapitalize="none"
-             onkeydown="if(event.key==='Enter')doLogin()">
+      <input type="text" id="loginUser" class="form-control" placeholder="Masukkan username" autocomplete="username" autocapitalize="none" onkeydown="if(event.key==='Enter')doLogin()">
     </div>
     <div class="mb-4">
       <label class="form-label fw-bold">Password</label>
       <div class="input-group">
-        <input type="password" id="loginPass" class="form-control pass-input" placeholder="Masukkan password" autocomplete="current-password"
-               onkeydown="if(event.key==='Enter')doLogin()">
+        <input type="password" id="loginPass" class="form-control pass-input" placeholder="Masukkan password" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()">
         <span class="input-group-text" id="togglePassword" onclick="togglePasswordVisibility()" title="Lihat Password">
           <i class="fas fa-eye" id="togglePasswordIcon"></i>
         </span>
@@ -281,7 +209,6 @@
   </div>
 </div>
 
-<!-- ================= APP VIEW ================= -->
 <div id="appView">
   <header class="app-header">
     <div class="container-fluid px-2 px-md-4">
@@ -292,12 +219,10 @@
             <span>Enzy_Gempa</span>
           </h1>
         </div>
-
         <div class="d-flex flex-row flex-wrap align-items-center gap-1 gap-sm-2 flex-grow-1 justify-content-end" style="min-width: 0;">
           <select id="vehicleSelector" class="form-select vehicle-selector shadow-sm text-truncate">
             <option value="">Memuat kendaraan…</option>
           </select>
-
           <div class="d-flex align-items-center gap-1 gap-sm-2 flex-shrink-0">
             <div class="dropdown">
               <button class="btn header-btn notif-btn" id="notifDropdown" type="button" data-bs-toggle="dropdown" onclick="markNotifsAsRead()" title="Notifikasi">
@@ -306,11 +231,9 @@
               </button>
               <ul class="dropdown-menu dropdown-menu-end shadow" style="width: 320px; max-height: 400px; overflow-y: auto;" id="notifList"></ul>
             </div>
-
             <button class="btn header-btn" onclick="toggleTheme()" title="Ubah Tema">
               <i class="fas fa-moon" id="themeIcon"></i>
             </button>
-
             <div class="dropdown">
               <button class="btn header-btn dropdown-toggle fw-bold" type="button" data-bs-toggle="dropdown" style="padding: 0 10px;">
                 <i class="fas fa-user-circle"></i> <span id="navUserName" class="d-none d-md-inline ms-1">User</span>
@@ -340,7 +263,6 @@
     </ul>
 
     <div class="tab-content pt-3">
-      <!-- DASHBOARD -->
       <div class="tab-pane fade show active" id="tabDash">
         <div id="dashEmpty" class="text-center py-5 d-none">
           <i class="fas fa-car-side fa-3x text-muted mb-3"></i>
@@ -354,10 +276,12 @@
               <option value="">Semua Waktu</option>
             </select>
             <span class="ms-auto text-muted small" id="dashFilterInfo"></span>
+            <button class="btn btn-sm btn-outline-info" onclick="loadMultiSummary()" title="Ringkasan semua kendaraan"><i class="fas fa-th-large"></i> <span class="d-none d-md-inline">Semua Kendaraan</span></button>
             <button class="btn btn-sm btn-outline-primary refresh-btn" onclick="refreshTab('dash', this)" title="Muat ulang data dashboard">
               <i class="fas fa-sync-alt"></i> <span class="d-none d-md-inline">Refresh</span>
             </button>
           </div>
+          <div id="multiSummary" class="mb-3"></div>
           <div class="ai-insight-box d-none" id="aiInsightBox">
             <h6><i class="fas fa-robot me-2"></i>AI Insight &amp; Tips</h6>
             <p id="aiInsightText"></p>
@@ -382,7 +306,6 @@
                 <div class="chart-container" style="height:200px"><canvas id="chartMonthly"></canvas></div>
               </div>
             </div>
-
             <div class="col-12" id="comparisonSection" style="display:none;">
               <div class="panel">
                 <div class="d-flex justify-content-between align-items-center mb-3">
@@ -394,7 +317,6 @@
                 <div class="chart-container" style="height:300px"><canvas id="chartComparison"></canvas></div>
               </div>
             </div>
-
             <div class="col-12 text-center mt-3" id="btnLoadCompWrapper">
               <button class="btn btn-outline-secondary btn-sm" id="btnShowCompWrapper" onclick="showComparisonSection()">
                 <i class="fas fa-chart-bar me-1"></i> Tampilkan Perbandingan Kendaraan
@@ -404,7 +326,6 @@
         </div>
       </div>
 
-      <!-- PETA SPBU -->
       <div class="tab-pane fade" id="tabMap">
         <div class="panel">
           <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
@@ -417,7 +338,6 @@
         </div>
       </div>
 
-      <!-- PENGINGAT SERVIS -->
       <div class="tab-pane fade" id="tabReminders">
         <div class="panel">
           <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
@@ -443,7 +363,6 @@
         </div>
       </div>
 
-      <!-- FILLUPS -->
       <div class="tab-pane fade" id="tabFillups">
         <div class="panel">
           <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
@@ -476,7 +395,6 @@
         </div>
       </div>
 
-      <!-- EXPENSES -->
       <div class="tab-pane fade" id="tabExpenses">
         <div class="panel">
           <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
@@ -507,7 +425,6 @@
         </div>
       </div>
 
-      <!-- VEHICLES -->
       <div class="tab-pane fade" id="tabVehicles">
         <div class="panel">
           <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
@@ -528,7 +445,6 @@
         </div>
       </div>
 
-      <!-- SETTINGS (FUEL TYPES) -->
       <div class="tab-pane fade" id="tabSettings">
         <div class="panel">
           <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
@@ -546,10 +462,16 @@
               <tbody id="fuelTypeTbody"></tbody>
             </table>
           </div>
+          <hr>
+          <h6 class="mt-3"><i class="fas fa-wallet text-success me-1"></i> Anggaran Bulanan</h6>
+          <div class="row g-2 align-items-end">
+            <div class="col-md-6"><label class="form-label small">Anggaran (Rp per bulan, 0 = nonaktif)</label><input type="number" id="setMonthlyBudget" class="form-control" placeholder="cth: 1500000"></div>
+            <div class="col-md-6"><button class="btn btn-success w-100" onclick="saveMonthlyBudget()"><i class="fas fa-save me-1"></i> Simpan Anggaran</button></div>
+          </div>
+          <div class="small text-muted mt-1">Warning otomatis muncul di dashboard saat pemakaian mencapai 80%.</div>
         </div>
       </div>
 
-      <!-- USERS -->
       <div class="tab-pane fade" id="tabUsers">
         <div class="panel">
           <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
@@ -578,7 +500,6 @@
 </div>
 
 <!-- ================= MODALS ================= -->
-<!-- Modal Profile -->
 <div class="modal fade" id="modalProfile" tabindex="-1">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">
@@ -597,7 +518,6 @@
   </div>
 </div>
 
-<!-- Modal User (Admin) -->
 <div class="modal fade" id="modalUser" tabindex="-1">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">
@@ -618,7 +538,6 @@
   </div>
 </div>
 
-<!-- Modal Fillup -->
 <div class="modal fade" id="modalFillup" tabindex="-1">
   <div class="modal-dialog modal-lg modal-dialog-centered modal-fullscreen-sm-down">
     <div class="modal-content">
@@ -633,9 +552,9 @@
             <label class="form-label">Jenis BBM *</label>
             <select class="form-select" id="fFuelTypeSelect" onchange="onFuelTypeChange()"><option value="">-- Pilih Jenis --</option></select>
           </div>
-          <div class="col-md-6"><label class="form-label">Harga per Liter (Rp) *</label><input type="number" class="form-control" id="fPrice" oninput="autoTotal()"></div>
-          <div class="col-md-6"><label class="form-label">Jumlah BBM (L) *</label><input type="number" step="0.01" class="form-control" id="fAmount" oninput="autoTotal()"></div>
-          <div class="col-md-6"><label class="form-label">Total Biaya (Rp) *</label><input type="number" class="form-control" id="fTotal"></div>
+          <div class="col-md-6"><label class="form-label">Harga per Liter (Rp) *</label><input type="number" class="form-control" id="fPrice" oninput="autoTotalFrom('price')"></div>
+          <div class="col-md-6"><label class="form-label">Jumlah BBM (L) *</label><input type="number" step="0.01" class="form-control" id="fAmount" oninput="autoTotalFrom('amount')"></div>
+          <div class="col-md-6"><label class="form-label">Total Biaya (Rp) *</label><input type="number" class="form-control" id="fTotal" onchange="autoTotalFrom('total')" placeholder="Isi 2 dari 3 field (L, Rp/L, Total)"></div>
           <div class="col-12">
             <label class="form-label">SPBU</label>
             <div class="input-group">
@@ -644,7 +563,6 @@
             </div>
             <input type="hidden" id="fLat"><input type="hidden" id="fLng">
           </div>
-
           <div class="col-12 border-top pt-3 mt-3">
             <label class="form-label fw-bold">Foto Struk BBM</label>
             <div class="d-flex gap-2 mb-2">
@@ -654,12 +572,10 @@
             <input type="file" id="fReceiptCamera" accept="image/*" capture="environment" class="d-none" onchange="handleFileSelect(this, 'fillup')">
             <input type="file" id="fReceiptGallery" accept="image/*" class="d-none" onchange="handleFileSelect(this, 'fillup')">
             <div id="fReceiptPreview" class="small text-success fw-bold mt-1"></div>
-
             <button type="button" class="btn btn-outline-info w-100 mt-2 d-none" id="btnScanOCR" onclick="scanReceipt()">
               <i class="fas fa-magic"></i> Scan Struk (OCR AI) <span id="ocrSpinner" class="spinner-border spinner-border-sm d-none"></span>
             </button>
           </div>
-
           <div class="col-12"><div class="form-check"><input type="checkbox" class="form-check-input" id="fPartial"><label class="form-check-label" for="fPartial">Pengisian sebagian</label></div></div>
           <div class="col-12"><label class="form-label">Catatan</label><textarea class="form-control" id="fNotes" rows="2"></textarea></div>
         </div>
@@ -669,7 +585,6 @@
   </div>
 </div>
 
-<!-- Modal Vehicle -->
 <div class="modal fade" id="modalVehicle" tabindex="-1">
   <div class="modal-dialog modal-lg modal-dialog-centered modal-fullscreen-sm-down">
     <div class="modal-content">
@@ -685,6 +600,9 @@
           <div class="col-md-4"><label class="form-label">Jenis BBM Utama</label><select class="form-select" id="vFuelType"><option value="">-- pilih --</option><option>Pertalite</option><option>Pertamax</option><option>Solar</option><option>Lainnya</option></select></div>
           <div class="col-md-4"><label class="form-label">Kapasitas Tangki (L)</label><input type="number" class="form-control" id="vTank"></div>
           <div class="col-md-12"><label class="form-label">Odometer Awal (km)</label><input type="number" class="form-control" id="vOdo"></div>
+          <div class="col-md-4"><label class="form-label">Harga Beli (Rp)</label><input type="number" class="form-control" id="vPurchasePrice" placeholder="Opsional"></div>
+          <div class="col-md-4"><label class="form-label">Tanggal Beli</label><input type="date" class="form-control" id="vPurchaseDate"></div>
+          <div class="col-md-4"><label class="form-label">Target Konsumsi (km/L)</label><input type="number" step="0.1" class="form-control" id="vTargetKmL" placeholder="Spesifikasi pabrik"></div>
         </div>
       </div>
       <div class="modal-footer"><button class="btn btn-light" data-bs-dismiss="modal">Batal</button><button class="btn btn-primary" id="btnSaveVehicle" onclick="saveVehicle()">Simpan</button></div>
@@ -692,7 +610,6 @@
   </div>
 </div>
 
-<!-- ================= MODAL REMINDER (UPGRADED) ================= -->
 <div class="modal fade" id="modalReminder" tabindex="-1">
   <div class="modal-dialog modal-lg modal-dialog-centered modal-fullscreen-sm-down">
     <div class="modal-content">
@@ -702,98 +619,47 @@
       </div>
       <div class="modal-body">
         <input type="hidden" id="rId">
-
         <div class="mb-4">
           <label class="form-label fw-bold">Kendaraan *</label>
           <select class="form-select border-warning" id="rVehicleId"></select>
         </div>
-
         <div class="row g-4 mb-4">
-          <!-- Grup Perawatan Fisik -->
           <div class="col-md-6">
             <div class="group-title text-primary"><i class="fas fa-wrench me-2"></i>Perawatan Mesin & Fisik</div>
             <div class="d-flex flex-column gap-2" id="serviceCheckboxes">
-              <label class="service-checkbox">
-                <input type="checkbox" value="Ganti Oli Mesin" data-type="odometer" onchange="toggleServiceCheckbox(this)"> 
-                <span>Ganti Oli Mesin</span>
-              </label>
-              <label class="service-checkbox">
-                <input type="checkbox" value="Servis Ringan" data-type="odometer" onchange="toggleServiceCheckbox(this)"> 
-                <span>Servis Ringan</span>
-              </label>
-              <label class="service-checkbox">
-                <input type="checkbox" value="Servis Besar" data-type="odometer" onchange="toggleServiceCheckbox(this)"> 
-                <span>Servis Besar</span>
-              </label>
-              <label class="service-checkbox">
-                <input type="checkbox" value="Tune Up" data-type="odometer" onchange="toggleServiceCheckbox(this)"> 
-                <span>Tune Up</span>
-              </label>
-              <label class="service-checkbox">
-                <input type="checkbox" value="Ganti Oli Gardan" data-type="odometer" onchange="toggleServiceCheckbox(this)"> 
-                <span>Ganti Oli Gardan</span>
-              </label>
-              <label class="service-checkbox">
-                <input type="checkbox" value="Ganti Ban" data-type="odometer" onchange="toggleServiceCheckbox(this)"> 
-                <span>Ganti Ban</span>
-              </label>
-              <label class="service-checkbox">
-                <input type="checkbox" value="Lainnya" id="chkLainnya" data-type="odometer" onchange="toggleServiceCheckbox(this)"> 
-                <span>Lainnya (Jarak/Kustom)</span>
-              </label>
+              <label class="service-checkbox"><input type="checkbox" value="Ganti Oli Mesin" data-type="odometer" onchange="toggleServiceCheckbox(this)"> <span>Ganti Oli Mesin</span></label>
+              <label class="service-checkbox"><input type="checkbox" value="Servis Ringan" data-type="odometer" onchange="toggleServiceCheckbox(this)"> <span>Servis Ringan</span></label>
+              <label class="service-checkbox"><input type="checkbox" value="Servis Besar" data-type="odometer" onchange="toggleServiceCheckbox(this)"> <span>Servis Besar</span></label>
+              <label class="service-checkbox"><input type="checkbox" value="Tune Up" data-type="odometer" onchange="toggleServiceCheckbox(this)"> <span>Tune Up</span></label>
+              <label class="service-checkbox"><input type="checkbox" value="Ganti Oli Gardan" data-type="odometer" onchange="toggleServiceCheckbox(this)"> <span>Ganti Oli Gardan</span></label>
+              <label class="service-checkbox"><input type="checkbox" value="Ganti Ban" data-type="odometer" onchange="toggleServiceCheckbox(this)"> <span>Ganti Ban</span></label>
+              <label class="service-checkbox"><input type="checkbox" value="Lainnya" id="chkLainnya" data-type="odometer" onchange="toggleServiceCheckbox(this)"> <span>Lainnya (Jarak/Kustom)</span></label>
               <input type="text" class="form-control mt-1 d-none" id="rCustomService" placeholder="Sebutkan perawatan lainnya (pisahkan dengan koma)...">
             </div>
           </div>
-
-          <!-- Grup Legalitas / Pajak -->
           <div class="col-md-6">
             <div class="group-title text-danger"><i class="fas fa-file-invoice me-2"></i>Legalitas & Dokumen</div>
             <div class="d-flex flex-column gap-2">
-              <label class="service-checkbox">
-                <input type="checkbox" value="Pajak Tahunan (STNK)" data-type="date" onchange="toggleServiceCheckbox(this)"> 
-                <span>Pajak Tahunan (STNK)</span>
-              </label>
-              <label class="service-checkbox">
-                <input type="checkbox" value="Pajak 5 Tahunan (Plat)" data-type="date" onchange="toggleServiceCheckbox(this)"> 
-                <span>Pajak 5 Tahunan (Plat)</span>
-              </label>
+              <label class="service-checkbox"><input type="checkbox" value="Pajak Tahunan (STNK)" data-type="date" onchange="toggleServiceCheckbox(this)"> <span>Pajak Tahunan (STNK)</span></label>
+              <label class="service-checkbox"><input type="checkbox" value="Pajak 5 Tahunan (Plat)" data-type="date" onchange="toggleServiceCheckbox(this)"> <span>Pajak 5 Tahunan (Plat)</span></label>
             </div>
           </div>
         </div>
-
-        <!-- Target Section -->
         <div class="p-3 bg-body-tertiary rounded border" id="targetSection">
           <div class="group-title text-dark mb-3"><i class="fas fa-bullseye text-danger me-2"></i>Target Pengingat</div>
-          
-          <!-- Odometer Fields (Dinamis) -->
           <div class="row g-3 mb-3" id="groupOdometer">
-            <div class="col-md-6">
-              <label class="form-label fw-bold small">Odometer Saat Ini (km)</label>
-              <input type="number" class="form-control" id="rCurrentOdo" placeholder="0">
-            </div>
-            <div class="col-md-6">
-              <label class="form-label fw-bold small">Interval Servis (km)</label>
-              <input type="number" class="form-control" id="rInterval" placeholder="cth: 5000">
-            </div>
-            <div class="col-12">
-              <label class="form-label fw-bold small text-primary">Target Odometer (km) *</label>
-              <input type="number" class="form-control border-primary" id="rOdo" placeholder="Target Odo">
-            </div>
+            <div class="col-md-6"><label class="form-label fw-bold small">Odometer Saat Ini (km)</label><input type="number" class="form-control" id="rCurrentOdo" placeholder="0"></div>
+            <div class="col-md-6"><label class="form-label fw-bold small">Interval Servis (km)</label><input type="number" class="form-control" id="rInterval" placeholder="cth: 5000"></div>
+            <div class="col-md-6"><label class="form-label fw-bold small">Interval Servis (bulan)</label><input type="number" class="form-control" id="rIntervalBulan" placeholder="cth: 6"></div>
+            <div class="col-md-6"><label class="form-label fw-bold small text-primary">Target Odometer (km)</label><input type="number" class="form-control border-primary" id="rOdo" placeholder="Target Odo"></div>
           </div>
-
-          <!-- Tanggal Field (Dinamis) -->
           <div class="row g-3" id="groupDate">
-            <div class="col-md-12">
-              <label class="form-label fw-bold small text-danger">Target Tanggal *</label>
-              <input type="date" class="form-control border-danger" id="rDate">
-            </div>
+            <div class="col-md-12"><label class="form-label fw-bold small text-danger">Target Tanggal</label><input type="date" class="form-control border-danger" id="rDate"></div>
           </div>
         </div>
-
         <div class="row g-3 mt-1 mb-3">
           <div class="col-md-6"><label class="form-label fw-bold">Status Pengingat</label><select class="form-select" id="rStatus"><option value="Aktif">Aktif</option><option value="Selesai">Selesai</option></select></div>
         </div>
-
         <div class="mb-3"><label class="form-label fw-bold">Catatan Tambahan</label><textarea class="form-control" id="rNotes" rows="2"></textarea></div>
       </div>
       <div class="modal-footer">
@@ -804,7 +670,6 @@
   </div>
 </div>
 
-<!-- Modal Expense -->
 <div class="modal fade" id="modalExpense" tabindex="-1">
   <div class="modal-dialog modal-dialog-centered modal-fullscreen-sm-down">
     <div class="modal-content">
@@ -834,7 +699,6 @@
   </div>
 </div>
 
-<!-- Modal Fuel Type -->
 <div class="modal fade" id="modalFuelType" tabindex="-1">
   <div class="modal-dialog modal-sm modal-dialog-centered modal-fullscreen-sm-down">
     <div class="modal-content">
@@ -849,7 +713,6 @@
   </div>
 </div>
 
-<!-- Modal Confirm -->
 <div class="modal fade" id="modalConfirm" tabindex="-1">
   <div class="modal-dialog modal-sm modal-dialog-centered">
     <div class="modal-content text-center py-4">
@@ -864,15 +727,56 @@
   </div>
 </div>
 
+<div class="modal fade" id="modalComplete" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header bg-success text-white">
+        <h5 class="modal-title"><i class="fas fa-check-circle me-2"></i>Tandai Selesai &amp; Buat Berikutnya</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <input type="hidden" id="crId">
+        <div class="row g-2">
+          <div class="col-12"><label class="form-label fw-bold">Tanggal Selesai *</label><input type="date" id="crDate" class="form-control"></div>
+          <div class="col-12"><label class="form-label fw-bold">Odometer Saat Servis (km) *</label><input type="number" id="crOdo" class="form-control"></div>
+          <div class="col-12"><label class="form-label">Biaya (Rp)</label><input type="number" id="crCost" class="form-control" placeholder="0 = tidak dicatat ke Biaya"></div>
+          <div class="col-12"><label class="form-label">Bengkel</label><input type="text" id="crWorkshop" class="form-control" placeholder="Nama bengkel"></div>
+          <div class="col-12"><label class="form-label">Catatan</label><textarea id="crNotes" class="form-control" rows="2"></textarea></div>
+        </div>
+        <div class="alert alert-info small mt-3 mb-0" id="crNextInfo"></div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-light" data-bs-dismiss="modal">Batal</button>
+        <button class="btn btn-success" id="btnCompleteReminder" onclick="saveCompleteReminder()"><i class="fas fa-check me-1"></i> Selesaikan</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="modalAnomaly" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header bg-warning text-dark">
+        <h5 class="modal-title"><i class="fas fa-exclamation-triangle me-2"></i>Data Tampak Tidak Biasa</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <p class="mb-2">Sistem mendeteksi potensi kesalahan. Periksa kembali:</p>
+        <ul id="anomalyList" class="small"></ul>
+        <p class="text-muted small mb-0">Tetap simpan data ini?</p>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-light" data-bs-dismiss="modal">Periksa Lagi</button>
+        <button class="btn btn-warning text-dark" onclick="forceSaveFillup()">Ya, Tetap Simpan</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <div id="toastContainer"></div>
 
 <script>
-// ============================================================
-// KONFIGURASI & STATE - TEMPEL DISINI
-// ============================================================
-const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbx1pxKJjWcZVQx5f7I3FXoapk9855ejGGiTQgixBOzqKfanFM2AfBdDTs1xhmeRITmHYg/exec';
-
-// Pancing server (hilangkan cold start) sejak halaman dibuka, sebelum user selesai mengetik
+const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbzJi2LjlwJ6-3f44DtLwuznaHV8P8XhFCAwadq1pwRQecJuc31gecL2N7QXob5OVBkNbw/exec';
 try { fetch(WEB_APP_URL, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ action: 'apiPing' }) }).catch(() => {}); } catch (e) {}
 
 let _busy = 0;
@@ -886,10 +790,7 @@ const FOLDER_ID_FILLUP = '1b5_Z_0uEGDguZNToFgZdlJdRXx54_MOR';
 const FOLDER_ID_EXPENSE = '1WzjTLGZephJK66lg0aYcuNjCWlhi0gn-';
 
 function resetLoadedTabs() {
-  return {
-    dash: false, fillups: false, expenses: false, map: false,
-    reminders: false, vehicles: false, settings: false, users: false, documents: false
-  };
+  return { dash: false, fillups: false, expenses: false, map: false, reminders: false, vehicles: false, settings: false, users: false, documents: false };
 }
 
 const state = {
@@ -900,15 +801,15 @@ const state = {
 let chartC = null, chartM = null, chartComp = null;
 let map = null, mapMarkers = [], currentLocMarker = null;
 let inactivityTimer = null;
-
 let selectedFillupFile = null;
 let selectedExpenseFile = null;
 let currentUploadedFileId = null;
+let _pendingFillup = null;
 
 const el = id => document.getElementById(id);
 const fmtRp = n => 'Rp ' + (Number(n) || 0).toLocaleString('id-ID');
 const fmtNum = n => (Number(n) || 0).toLocaleString('id-ID');
-const safeUrl = u => /^https:\/\//i.test(u || '') ? u : ''; // FIX: blokir javascript: pada tautan struk
+const safeUrl = u => /^https:\/\//i.test(u || '') ? u : '';
 const csvSafe = s => (/^[=+@]/.test(s) || /^-[^\d.,\s]/.test(s)) ? "'" + s : s;
 
 function esc(v) {
@@ -927,20 +828,11 @@ const fmtDate = s => {
   const d = new Date(s);
   return isNaN(d.getTime()) ? '-' : d.toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' });
 };
+const todayStr = () => { const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`; };
 
-const todayStr = () => {
-  const d = new Date();
-  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
-};
-
-function seenKey() { return 'seen_notifs_v2_' + ((state.user && state.user.id) || ''); } // FIX: per pengguna
+function seenKey() { return 'seen_notifs_v2_' + ((state.user && state.user.id) || ''); }
 function notifKey(r) { return `${r.id || ''}|${r.dueDate || ''}|${r.dueOdometer || ''}|${r.status || ''}`; }
-function getSeenNotifs() {
-  try {
-    const raw = localStorage.getItem(seenKey());
-    return raw ? (JSON.parse(raw) || []) : [];
-  } catch (e) { return []; }
-}
+function getSeenNotifs() { try { const raw = localStorage.getItem(seenKey()); return raw ? (JSON.parse(raw) || []) : []; } catch (e) { return []; } }
 
 function togglePasswordVisibility() {
   const passInput = el('loginPass'), icon = el('togglePasswordIcon');
@@ -951,52 +843,48 @@ function togglePasswordVisibility() {
 
 function toast(msg, type = 'success') {
   const icons = { success: 'check-circle', error: 'exclamation-circle', info: 'info-circle' };
-  const container = el('toastContainer');
-  if (!container) return;
-  const div = document.createElement('div');
-  div.className = `app-toast ${type}`;
+  const container = el('toastContainer'); if (!container) return;
+  const div = document.createElement('div'); div.className = `app-toast ${type}`;
   const colorClass = type === 'success' ? 'success' : type === 'error' ? 'danger' : 'primary';
   div.innerHTML = `<i class="fas fa-${icons[type] || 'info-circle'} text-${colorClass}"></i> ${esc(msg)}`;
   container.appendChild(div);
-  setTimeout(() => {
-    div.style.opacity = 0; div.style.transform = 'translateX(120%)';
-    setTimeout(() => div.remove(), 250);
-  }, 3500);
+  setTimeout(() => { div.style.opacity = 0; div.style.transform = 'translateX(120%)'; setTimeout(() => div.remove(), 250); }, 3500);
 }
 
 function setBtnLoading(btnId, loading, text = 'Proses…') {
   const btn = el(btnId); if (!btn) return;
-  if (loading) {
-    if (!btn.dataset.html) btn.dataset.html = btn.innerHTML;
-    btn.disabled = true;
-    btn.innerHTML = `<span class="spinner-border spinner-border-sm"></span> ${esc(text)}`;
-  } else {
-    btn.disabled = false;
-    if (btn.dataset.html) { btn.innerHTML = btn.dataset.html; delete btn.dataset.html; }
-  }
+  if (loading) { if (!btn.dataset.html) btn.dataset.html = btn.innerHTML; btn.disabled = true; btn.innerHTML = `<span class="spinner-border spinner-border-sm"></span> ${esc(text)}`; }
+  else { btn.disabled = false; if (btn.dataset.html) { btn.innerHTML = btn.dataset.html; delete btn.dataset.html; } }
 }
-
 function closeModal(id) { const m = bootstrap.Modal.getInstance(el(id)); if (m) m.hide(); }
 function getModal(id) { return bootstrap.Modal.getOrCreateInstance(el(id)); }
 
 function onFuelTypeChange() {
   const sel = el('fFuelTypeSelect'), opt = sel.options[sel.selectedIndex];
-  if (opt && opt.value) { el('fPrice').value = opt.dataset.price || ''; autoTotal(); }
+  if (opt && opt.value) { el('fPrice').value = opt.dataset.price || ''; autoTotalFrom('amount'); }
+  try { const last = JSON.parse(localStorage.getItem('enzy_last_fill') || '{}'); if (last.price && !el('fPrice').value) el('fPrice').value = last.price; } catch (e) {}
 }
 
-function autoTotal() {
-  const aRaw = el('fAmount').value, pRaw = el('fPrice').value;
-  if (aRaw === '' || pRaw === '') return;
-  const a = parseFloat(aRaw), p = parseFloat(pRaw);
-  if (isFinite(a) && isFinite(p)) el('fTotal').value = Math.round(a * p);
+// Kalkulasi dua arah: isi 2 dari 3 (L, Rp/L, Total)
+function autoTotalFrom(changed) {
+  const a = parseFloat(el('fAmount').value) || 0;
+  const p = parseFloat(el('fPrice').value) || 0;
+  const t = parseFloat(el('fTotal').value) || 0;
+  if (changed === 'total') {
+    if (a > 0 && t > 0 && p <= 0) el('fPrice').value = Math.round(t / a);
+    else if (p > 0 && t > 0 && a <= 0) el('fAmount').value = +(t / p).toFixed(2);
+  } else {
+    if (a > 0 && p > 0) el('fTotal').value = Math.round(a * p);
+    else if (p > 0 && t > 0 && a <= 0) el('fAmount').value = +(t / p).toFixed(2);
+    else if (a > 0 && t > 0 && p <= 0) el('fPrice').value = Math.round(t / a);
+  }
 }
 
 function handleFileSelect(input, type) {
   if (!input.files || !input.files[0]) return;
   const file = input.files[0];
   if (type === 'fillup') {
-    selectedFillupFile = file; currentUploadedFileId = null;
-    el('fReceiptUrlOld').value = '';
+    selectedFillupFile = file; currentUploadedFileId = null; el('fReceiptUrlOld').value = '';
     el('fReceiptPreview').innerHTML = `<i class="fas fa-check-circle"></i> Terpilih: ${esc(file.name)}`;
     el('btnScanOCR').classList.remove('d-none');
   } else {
@@ -1010,38 +898,31 @@ async function scanReceipt() {
   setBtnLoading('btnScanOCR', true, 'Memindai...');
   try {
     const uploadRes = await uploadToDrive(selectedFillupFile, FOLDER_ID_FILLUP);
-    currentUploadedFileId = uploadRes.id;
-    el('fReceiptUrlOld').value = uploadRes.url || '';
+    currentUploadedFileId = uploadRes.id; el('fReceiptUrlOld').value = uploadRes.url || '';
     el('fReceiptPreview').innerHTML = `<i class="fas fa-check-circle text-info"></i> Struk terunggah.`;
     const ocrRes = await callApi('apiOCR', { fileId: currentUploadedFileId });
     if (ocrRes && ocrRes.success) {
-      toast('Scan berhasil! Memasukkan data...', 'success');
+      toast('Scan berhasil!', 'success');
       const parsed = ocrRes.parsed || {};
       if (Number(parsed.liters) > 0) el('fAmount').value = parsed.liters;
-      if (Number(parsed.totalCost) > 0) {
-        el('fTotal').value = parsed.totalCost;
-        if (Number(parsed.liters) > 0) el('fPrice').value = Math.round(parsed.totalCost / parsed.liters);
+      if (Number(parsed.totalCost) > 0) el('fTotal').value = parsed.totalCost;
+      if (Number(parsed.pricePerLiter) > 0) el('fPrice').value = parsed.pricePerLiter;
+      if (parsed.date) el('fDate').value = parsed.date;
+      if (parsed.fuelType) {
+        const ft = state.fuelTypes.find(x => x.name.toLowerCase() === parsed.fuelType.toLowerCase());
+        if (ft) el('fFuelTypeSelect').value = ft.id;
       }
+      autoTotalFrom('total');
       el('fReceiptPreview').innerHTML = `<i class="fas fa-check-circle text-info"></i> Struk terunggah &amp; terbaca.`;
-    } else {
-      toast('Struk terunggah, tetapi teks tidak terbaca. Isi manual.', 'info');
-    }
+    } else toast('Struk terunggah, teks tidak terbaca. Isi manual.', 'info');
   } catch (err) { toast(err.message || 'Gagal memindai struk.', 'error'); }
-  finally {
-    setBtnLoading('btnScanOCR', false);
-  }
+  finally { setBtnLoading('btnScanOCR', false); }
 }
 
-// ============================================================
-// PETA LEAFLET
-// ============================================================
 function initMap() {
   if (map) return;
   map = L.map('map').setView([-6.200000, 106.816666], 10);
-  L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}', {
-    attribution: 'Tiles &copy; Esri', maxZoom: 19
-  }).addTo(map);
-
+  L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}', { attribution: 'Tiles &copy; Esri', maxZoom: 19 }).addTo(map);
   const locateControl = L.control({ position: 'topright' });
   locateControl.onAdd = function () {
     const div = L.DomUtil.create('div', 'leaflet-bar leaflet-control leaflet-control-custom');
@@ -1057,14 +938,13 @@ function initMap() {
 
 function locateMe() {
   if (!navigator.geolocation) { toast('GPS tidak didukung browser ini', 'error'); return; }
-  toast('Mencari lokasi akurat...', 'info');
+  toast('Mencari lokasi...', 'info');
   navigator.geolocation.getCurrentPosition(
     (pos) => {
       const lat = pos.coords.latitude, lng = pos.coords.longitude;
       map.setView([lat, lng], 16);
       if (currentLocMarker) map.removeLayer(currentLocMarker);
-      currentLocMarker = L.circleMarker([lat, lng], { radius: 8, fillColor: '#1a73e8', color: '#fff', weight: 3, opacity: 1, fillOpacity: 1 })
-        .addTo(map).bindPopup('<b>Lokasi Anda Saat Ini</b>').openPopup();
+      currentLocMarker = L.circleMarker([lat, lng], { radius: 8, fillColor: '#1a73e8', color: '#fff', weight: 3, opacity: 1, fillOpacity: 1 }).addTo(map).bindPopup('<b>Lokasi Anda Saat Ini</b>').openPopup();
       toast('Lokasi ditemukan!', 'success');
     },
     () => { toast('Gagal mendapatkan lokasi. Pastikan izin GPS aktif.', 'error'); },
@@ -1074,12 +954,8 @@ function locateMe() {
 
 function renderMapMarkers() {
   if (!map) initMap();
-  mapMarkers.forEach(m => map.removeLayer(m));
-  mapMarkers = [];
-  const validLocations = state.fillups.filter(f => {
-    const lat = Number(f.latitude), lng = Number(f.longitude);
-    return isFinite(lat) && isFinite(lng) && lat !== 0 && lng !== 0;
-  });
+  mapMarkers.forEach(m => map.removeLayer(m)); mapMarkers = [];
+  const validLocations = state.fillups.filter(f => { const lat = Number(f.latitude), lng = Number(f.longitude); return isFinite(lat) && isFinite(lng) && lat !== 0 && lng !== 0; });
   if (validLocations.length === 0) return;
   const bounds = L.latLngBounds();
   validLocations.forEach(f => {
@@ -1092,15 +968,7 @@ function renderMapMarkers() {
   map.fitBounds(bounds, { padding: [30, 30] });
 }
 
-// ============================================================
-// THEME TOGGLE
-// ============================================================
-function initTheme() {
-  let theme = 'light';
-  try { theme = localStorage.getItem('enzy_theme') || 'light'; } catch (e) {}
-  document.documentElement.setAttribute('data-bs-theme', theme);
-  updateThemeIcon(theme);
-}
+function initTheme() { let theme = 'light'; try { theme = localStorage.getItem('enzy_theme') || 'light'; } catch (e) {} document.documentElement.setAttribute('data-bs-theme', theme); updateThemeIcon(theme); }
 function toggleTheme() {
   const current = document.documentElement.getAttribute('data-bs-theme');
   const next = current === 'dark' ? 'light' : 'dark';
@@ -1109,61 +977,46 @@ function toggleTheme() {
   updateThemeIcon(next);
   if (state.user && state.currentVehicleId && state.loadedTabs.dash) loadDashboard();
 }
-function updateThemeIcon(theme) {
-  const icon = el('themeIcon');
-  if (icon) icon.className = theme === 'dark' ? 'fas fa-sun text-warning' : 'fas fa-moon';
-}
+function updateThemeIcon(theme) { const icon = el('themeIcon'); if (icon) icon.className = theme === 'dark' ? 'fas fa-sun text-warning' : 'fas fa-moon'; }
 initTheme();
 
-// ============================================================
-// API WRAPPER
-// ============================================================
 async function callApi(action, ...args) {
   const params = {};
-  if (['apiGetFillups', 'apiGetExpenses', 'apiGetDashboard', 'apiGetReminders', 'apiGetVehicleBundle'].includes(action)) {
+  if (['apiGetFillups','apiGetExpenses','apiGetDashboard','apiGetReminders','apiGetVehicleBundle'].includes(action)) {
     params.vehicleId = args[0];
     if (action === 'apiGetDashboard' || action === 'apiGetVehicleBundle') params.filterMonth = args[1] || '';
-  } else if (['apiUpdateVehicle', 'apiUpdateFillup', 'apiUpdateExpense', 'apiUpdateFuelType', 'apiUpdateUser', 'apiUpdateReminder'].includes(action)) {
+  } else if (['apiUpdateVehicle','apiUpdateFillup','apiUpdateExpense','apiUpdateFuelType','apiUpdateUser','apiUpdateReminder'].includes(action)) {
     params.id = args[0]; params.data = args[1]; params.currentPassword = args[2];
-  } else if (['apiDeleteVehicle', 'apiDeleteFillup', 'apiDeleteExpense', 'apiDeleteFuelType', 'apiDeleteUser', 'apiDeleteReminder', 'apiDeleteDocument'].includes(action)) {
+  } else if (['apiDeleteVehicle','apiDeleteFillup','apiDeleteExpense','apiDeleteFuelType','apiDeleteUser','apiDeleteReminder','apiDeleteDocument'].includes(action)) {
     params.id = args[0];
-  } else if (['apiAddVehicle', 'apiAddFillup', 'apiAddExpense', 'apiAddFuelType', 'apiAddUser', 'apiAddReminder', 'apiAddDocument'].includes(action)) {
+  } else if (['apiAddVehicle','apiAddFillup','apiAddExpense','apiAddFuelType','apiAddUser','apiAddReminder','apiAddDocument'].includes(action)) {
     Object.assign(params, args[0] || {});
-  } else if (action === 'apiLogin') {
-    params.username = args[0]; params.password = args[1];
-  } else if (action === 'apiUploadFile' || action === 'apiOCR') {
-    Object.assign(params, args[0] || {});
-  }
+  } else if (action === 'apiLogin') { params.username = args[0]; params.password = args[1]; }
+  else if (action === 'apiUploadFile' || action === 'apiOCR' || action === 'apiCheckFillupAnomalies' || action === 'apiCompleteReminder') { Object.assign(params, args[0] || {}); }
+  else if (action === 'apiUpdateSetting') { params.key = args[0]; params.value = args[1]; }
 
   busy(1);
   try {
-    // Batas waktu 30 detik agar tombol tidak berputar tanpa akhir
-    const ctrl = new AbortController();
-    const timer = setTimeout(() => ctrl.abort(), 30000);
+    const ctrl = new AbortController(); const timer = setTimeout(() => ctrl.abort(), 30000);
     let response;
     try {
       response = await fetch(WEB_APP_URL, {
         method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-        body: JSON.stringify({ action, params, token: state.user && state.user.token }),
-        signal: ctrl.signal
+        body: JSON.stringify({ action, params, token: state.user && state.user.token }), signal: ctrl.signal
       });
     } catch (e) {
       if (e.name === 'AbortError') throw new Error('Server tidak merespons (lebih dari 30 detik). Coba lagi.');
       throw e;
     } finally { clearTimeout(timer); }
     const textData = await response.text();
-    if (textData.trim().startsWith('<!DOCTYPE') || textData.includes('<!DOCTYPE html>')) {
-      throw new Error('URL Web App tidak valid atau terjadi kesalahan pada server.');
-    }
-    let data;
-    try { data = JSON.parse(textData); } catch (e) { throw new Error('Respons server tidak valid.'); }
+    if (textData.trim().startsWith('<!DOCTYPE') || textData.includes('<!DOCTYPE html>')) throw new Error('URL Web App tidak valid atau terjadi kesalahan pada server.');
+    let data; try { data = JSON.parse(textData); } catch (e) { throw new Error('Respons server tidak valid.'); }
     if (data && data.error) { if (/^Sesi/.test(data.error) && state.user) doLogout(); throw new Error(data.error); }
     return data;
   } catch (err) { throw new Error(err.message || 'Gagal terhubung ke server.'); }
   finally { busy(-1); }
 }
 
-// Kompres foto (maks 1600px, JPEG 80%) agar unggahan cepat & hemat kuota
 async function compressImage(file) {
   const bmp = await createImageBitmap(file);
   const sc = Math.min(1, 1600 / Math.max(bmp.width, bmp.height));
@@ -1171,30 +1024,19 @@ async function compressImage(file) {
   c.getContext('2d').drawImage(bmp, 0, 0, c.width, c.height);
   return c.toDataURL('image/jpeg', 0.8);
 }
-function readAsDataURL(file) {
-  return new Promise((resolve, reject) => { const r = new FileReader(); r.onload = () => resolve(r.result); r.onerror = () => reject(new Error('Gagal membaca file')); r.readAsDataURL(file); });
-}
+function readAsDataURL(file) { return new Promise((resolve, reject) => { const r = new FileReader(); r.onload = () => resolve(r.result); r.onerror = () => reject(new Error('Gagal membaca file')); r.readAsDataURL(file); }); }
 async function uploadToDrive(file, folderId) {
   let dataUrl = null, mime = file.type || 'image/jpeg', name = file.name;
-  if (/^image\//.test(mime) && file.size > 400 * 1024) {
-    try { dataUrl = await compressImage(file); mime = 'image/jpeg'; name = name.replace(/\.[^.]+$/, '') + '.jpg'; } catch (e) { dataUrl = null; }
-  }
+  if (/^image\//.test(mime) && file.size > 400 * 1024) { try { dataUrl = await compressImage(file); mime = 'image/jpeg'; name = name.replace(/\.[^.]+$/, '') + '.jpg'; } catch (e) { dataUrl = null; } }
   if (!dataUrl) dataUrl = await readAsDataURL(file);
   const res = await callApi('apiUploadFile', { base64Data: dataUrl, fileName: name, mimeType: mime, folderId });
   if (res && res.success) return res;
   throw new Error((res && res.error) || 'Gagal upload file.');
 }
 
-// ============================================================
-// AUTH & SESSION
-// ============================================================
 function startInactivityTimer() {
   clearTimeout(inactivityTimer);
-  if (state.user) {
-    inactivityTimer = setTimeout(() => {
-      doLogout(); toast('Sesi berakhir otomatis karena tidak ada aktivitas selama 10 menit.', 'info');
-    }, 600000);
-  }
+  if (state.user) inactivityTimer = setTimeout(() => { doLogout(); toast('Sesi berakhir otomatis karena tidak ada aktivitas selama 10 menit.', 'info'); }, 600000);
 }
 window.addEventListener('mousemove', startInactivityTimer);
 window.addEventListener('keydown', startInactivityTimer);
@@ -1212,7 +1054,7 @@ async function doLogin() {
     try { localStorage.setItem('enzy_user', JSON.stringify(state.user)); } catch (e) {}
     if (res.boot) cacheSave('boot', res.boot);
     el('loginPass').value = ''; initApp(res.boot);
-    if (res.weakPassword) { toast('Password Anda masih default (admin123). Segera ganti sekarang.', 'error'); setTimeout(showProfileModal, 700); }
+    if (res.weakPassword) { toast('Password default (admin123). Segera ganti!', 'error'); setTimeout(showProfileModal, 700); }
   } catch (err) {
     toast(err.message, 'error'); el('btnLogin').disabled = false; el('loginSpinner').classList.add('d-none'); el('loginBtnText').textContent = 'Masuk';
   }
@@ -1237,7 +1079,7 @@ function initApp(boot) {
   el('btnLogin').disabled = false; el('loginSpinner').classList.add('d-none'); el('loginBtnText').textContent = 'Masuk'; el('loginPass').value = '';
   document.body.classList.toggle('viewer', state.user.role === 'viewer');
   state.loadedTabs = resetLoadedTabs(); startInactivityTimer();
-  try { const d0 = document.querySelector('[data-bs-target="#tabDash"]'); if (d0) bootstrap.Tab.getOrCreateInstance(d0).show(); } catch (e) {} // FIX: tab kosong setelah ganti akun
+  try { const d0 = document.querySelector('[data-bs-target="#tabDash"]'); if (d0) bootstrap.Tab.getOrCreateInstance(d0).show(); } catch (e) {}
   const usersTabBtn = document.querySelector('[data-bs-target="#tabUsers"]');
   if (usersTabBtn) usersTabBtn.parentElement.style.display = state.user.role === 'admin' ? 'block' : 'none';
   const mu = document.querySelector('#bmore [data-t="tabUsers"]'); if (mu) mu.style.display = state.user.role === 'admin' ? 'block' : 'none';
@@ -1245,20 +1087,11 @@ function initApp(boot) {
 }
 
 async function syncBoot() {
-  try {
-    const b = await callApi('apiBootstrap'); cacheSave('boot', b);
-    await loadVehicles(b.vehicles); await loadFuelTypes(b.fuelTypes);
-    state.allReminders = b.reminders || []; checkNotifications();
-  } catch (e) {}
+  try { const b = await callApi('apiBootstrap'); cacheSave('boot', b); await loadVehicles(b.vehicles); await loadFuelTypes(b.fuelTypes); state.allReminders = b.reminders || []; checkNotifications(); } catch (e) {}
 }
 
-// ============================================================
-// UI MOBILE: navigasi bawah + tombol cepat + pencarian tabel
-// ============================================================
 function goTab(id) { const b = document.querySelector('[data-bs-target="#' + id + '"]'); if (b) b.click(); el('bmore').classList.remove('open'); }
-// ============================================================
-// DOKUMEN KENDARAAN (STNK, SIM, Pajak, Asuransi) + URUNGKAN HAPUS
-// ============================================================
+
 function buildDocsUI() {
   const pane = document.createElement('div'); pane.className = 'tab-pane fade'; pane.id = 'tabDocs';
   pane.innerHTML = '<div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2"><h5 class="mb-0"><i class="fas fa-folder-open"></i> Dokumen Kendaraan</h5><button class="btn btn-primary btn-sm" onclick="showDocModal()"><i class="fas fa-plus"></i> Tambah Dokumen</button></div>' +
@@ -1278,7 +1111,7 @@ function buildDocsUI() {
 function showDocModal() {
   el('docVehicle').innerHTML = state.vehicles.map(v => `<option value="${esc(v.id)}">${esc(v.name || 'Tanpa Nama')}</option>`).join('');
   if (state.currentVehicleId) el('docVehicle').value = state.currentVehicleId;
-  ['docTitle', 'docDue', 'docNotes', 'docFile'].forEach(i => el(i).value = '');
+  ['docTitle','docDue','docNotes','docFile'].forEach(i => el(i).value = '');
   getModal('modalDoc').show();
 }
 async function loadDocuments() {
@@ -1302,10 +1135,7 @@ async function saveDoc() {
     toast('Dokumen disimpan'); closeModal('modalDoc'); state.loadedTabs.documents = false; await loadTabData('documents');
   } catch (err) { toast(err.message, 'error'); } finally { setBtnLoading('btnSaveDoc', false); }
 }
-function snapOf(type, id) {
-  const src = { fillup: state.fillups, expense: state.expenses, reminder: state.allReminders, document: state.documents }[type];
-  const r = (src || []).find(x => String(x.id) === String(id)); return r ? Object.assign({}, r) : null;
-}
+function snapOf(type, id) { const src = { fillup: state.fillups, expense: state.expenses, reminder: state.allReminders, document: state.documents }[type]; const r = (src || []).find(x => String(x.id) === String(id)); return r ? Object.assign({}, r) : null; }
 function offerUndo(type, snap) {
   const addMap = { fillup: 'apiAddFillup', expense: 'apiAddExpense', reminder: 'apiAddReminder', document: 'apiAddDocument' };
   const c = el('toastContainer'); if (!snap || !addMap[type] || !c) return;
@@ -1345,7 +1175,6 @@ function addTableSearch() {
     w.parentNode.insertBefore(i, w);
   });
 }
-
 function labelCells(w) {
   const hs = [...w.querySelectorAll('thead th')].map(h => h.textContent.trim());
   w.querySelectorAll('tbody tr').forEach(r => {
@@ -1353,24 +1182,14 @@ function labelCells(w) {
     cells.forEach((c, i) => {
       if (c.tagName !== 'TD' || c.hasAttribute('colspan')) return;
       if (hs[i] && !c.dataset.label) c.dataset.label = hs[i];
-      if (c.dataset.wrapped) return;
-      c.dataset.wrapped = '1';
+      if (c.dataset.wrapped) return; c.dataset.wrapped = '1';
       const isAksi = i === cells.length - 1 && c.querySelector('button');
       if (isAksi) {
         c.classList.add('cell-aksi');
-        // Satu pembungkus untuk semua tombol (edit, hapus, dst.)
-        const kids = [...c.childNodes];
-        const single = kids.filter(n => n.nodeType === 1);
-        if (single.length === 1 && single[0].tagName === 'DIV') { single[0].classList.add('cell-act'); }
-        else {
-          const wrap = document.createElement('div'); wrap.className = 'cell-act d-flex justify-content-end gap-1';
-          kids.forEach(n => wrap.appendChild(n)); c.appendChild(wrap);
-        }
-      } else if (c.childNodes.length > 1) {
-        // Sel berisi beberapa elemen (teks + badge, ikon + teks, dll.) dijadikan satu blok
-        const wrap = document.createElement('div'); wrap.className = 'cell-v';
-        [...c.childNodes].forEach(n => wrap.appendChild(n)); c.appendChild(wrap);
-      }
+        const kids = [...c.childNodes]; const single = kids.filter(n => n.nodeType === 1);
+        if (single.length === 1 && single[0].tagName === 'DIV') single[0].classList.add('cell-act');
+        else { const wrap = document.createElement('div'); wrap.className = 'cell-act d-flex justify-content-end gap-1'; kids.forEach(n => wrap.appendChild(n)); c.appendChild(wrap); }
+      } else if (c.childNodes.length > 1) { const wrap = document.createElement('div'); wrap.className = 'cell-v'; [...c.childNodes].forEach(n => wrap.appendChild(n)); c.appendChild(wrap); }
     });
   });
 }
@@ -1383,7 +1202,7 @@ function enhanceTables() {
   document.querySelectorAll('.table-responsive').forEach((w, n) => {
     labelCells(w);
     new MutationObserver(() => labelCells(w)).observe(w.querySelector('tbody'), { childList: true });
-    if (w.closest('#tabFillups, #tabExpenses')) return; // dua tab ini sudah punya tombol Ekspor sendiri
+    if (w.closest('#tabFillups, #tabExpenses')) return;
     const b = document.createElement('div'); b.className = 'd-flex gap-2 justify-content-end mb-2';
     b.innerHTML = '<button class="btn btn-sm btn-outline-success"><i class="fas fa-file-csv"></i> Excel/CSV</button><button class="btn btn-sm btn-outline-secondary"><i class="fas fa-print"></i> Cetak/PDF</button>';
     b.children[0].onclick = () => exportTableCSV(w, 'tabel' + (n + 1)); b.children[1].onclick = () => window.print();
@@ -1394,14 +1213,11 @@ window.addEventListener('load', () => {
   try { buildDocsUI(); buildMobileUI(); addTableSearch(); enhanceTables(); } catch (e) {}
   try { el('fDate').value = todayStr(); el('eDate').value = todayStr(); } catch (e) {}
   let savedUser = null;
-  try { const raw = localStorage.getItem('enzy_user'); if (raw) savedUser = JSON.parse(raw); } 
+  try { const raw = localStorage.getItem('enzy_user'); if (raw) savedUser = JSON.parse(raw); }
   catch (e) { try { localStorage.removeItem('enzy_user'); } catch (x) {} }
   if (savedUser && savedUser.id && savedUser.token) { state.user = savedUser; const cb = cacheLoad('boot'); initApp(cb); if (cb) syncBoot(); } else { el('loginView').style.display = 'flex'; }
 });
 
-// ============================================================
-// OPTIMASI PARALEL LOADING
-// ============================================================
 async function refreshAll(boot) {
   try {
     if (!boot) { boot = await callApi('apiBootstrap'); cacheSave('boot', boot); }
@@ -1421,58 +1237,21 @@ async function refreshAll(boot) {
   } catch (err) { toast(err.message, 'error'); }
 }
 
-// ============================================================
-// REFRESH PER TAB (Tombol "Refresh" di setiap menu)
-// ============================================================
 async function refreshTab(tabName, btnEl) {
-  const btn = btnEl || null;
-  const icon = btn ? btn.querySelector('i') : null;
-
-  if (btn) btn.disabled = true;
-  if (icon) icon.classList.add('fa-spin');
-
+  const btn = btnEl || null; const icon = btn ? btn.querySelector('i') : null;
+  if (btn) btn.disabled = true; if (icon) icon.classList.add('fa-spin');
   try {
-    // 1. Reset flag agar tab dipaksa reload
     state.loadedTabs[tabName] = false;
-
-    // 2. Reset dependency tab
-    if (tabName === 'dash') {
-      state.loadedTabs.fillups = false;
-      state.loadedTabs.expenses = false;
-    }
-    if (tabName === 'map') {
-      state.loadedTabs.fillups = false;
-    }
-
-    // 3. Muat ulang data pendukung bersama
-    if (['dash', 'fillups', 'expenses', 'map', 'reminders', 'vehicles'].includes(tabName)) {
-      await loadVehicles();
-    }
-    if (['fillups', 'expenses', 'settings'].includes(tabName)) {
-      await loadFuelTypes();
-    }
-
-    // 4. Reminders butuh refresh khusus (bukan pakai cache)
-    if (tabName === 'reminders') {
-      await loadRemindersForNotif();
-      renderReminderTable();
-      state.loadedTabs.reminders = true;
-    } else {
-      await loadTabData(tabName);
-    }
-
-    // 5. Dashboard: sekalian refresh notifikasi (Odometer bisa berubah)
-    if (tabName === 'dash') {
-      await loadRemindersForNotif();
-    }
-
+    if (tabName === 'dash') { state.loadedTabs.fillups = false; state.loadedTabs.expenses = false; }
+    if (tabName === 'map') state.loadedTabs.fillups = false;
+    if (['dash','fillups','expenses','map','reminders','vehicles'].includes(tabName)) await loadVehicles();
+    if (['fillups','expenses','settings'].includes(tabName)) await loadFuelTypes();
+    if (tabName === 'reminders') { await loadRemindersForNotif(); renderReminderTable(); state.loadedTabs.reminders = true; }
+    else await loadTabData(tabName);
+    if (tabName === 'dash') await loadRemindersForNotif();
     toast('Data berhasil dimuat ulang', 'success');
-  } catch (err) {
-    toast(err.message || 'Gagal memuat ulang data', 'error');
-  } finally {
-    if (btn) btn.disabled = false;
-    if (icon) icon.classList.remove('fa-spin');
-  }
+  } catch (err) { toast(err.message || 'Gagal memuat ulang data', 'error'); }
+  finally { if (btn) btn.disabled = false; if (icon) icon.classList.remove('fa-spin'); }
 }
 
 async function loadTabData(tabName) {
@@ -1481,41 +1260,26 @@ async function loadTabData(tabName) {
     if (tabName === 'dash') { if (!state.loadedTabs.dash) { await loadDashboard(); state.loadedTabs.dash = true; } }
     else if (tabName === 'fillups') { if (!state.loadedTabs.fillups) { await loadFillups(); state.loadedTabs.fillups = true; } }
     else if (tabName === 'expenses') { if (!state.loadedTabs.expenses) { await loadExpenses(); state.loadedTabs.expenses = true; } }
-    else if (tabName === 'map') {
-      if (!state.loadedTabs.map) {
-        if (!state.loadedTabs.fillups) { await loadFillups(); state.loadedTabs.fillups = true; }
-        renderMapMarkers(); state.loadedTabs.map = true;
-      }
-      setTimeout(() => { if (map) map.invalidateSize(); }, 200);
-    }
+    else if (tabName === 'map') { if (!state.loadedTabs.map) { if (!state.loadedTabs.fillups) { await loadFillups(); state.loadedTabs.fillups = true; } renderMapMarkers(); state.loadedTabs.map = true; } setTimeout(() => { if (map) map.invalidateSize(); }, 200); }
     else if (tabName === 'reminders') { if (!state.loadedTabs.reminders) { await loadReminders(); state.loadedTabs.reminders = true; } }
     else if (tabName === 'vehicles') { if (!state.loadedTabs.vehicles) { await loadVehicleTable(); state.loadedTabs.vehicles = true; } }
     else if (tabName === 'settings') {
       if (!state.loadedTabs.settings) {
-        el('fuelTypeTbody').innerHTML = state.fuelTypes.map(ft => `
-          <tr><td><strong>${esc(ft.name)}</strong></td><td>${fmtRp(ft.price)}</td>
-            <td class="text-end">
-              <button class="btn btn-sm btn-outline-primary icon-btn" onclick="editFuelType('${esc(ft.id)}')"><i class="fas fa-pen"></i></button>
-              <button class="btn btn-sm btn-outline-danger icon-btn" onclick="confirmDelete('fueltype','${esc(ft.id)}')"><i class="fas fa-trash"></i></button>
-            </td>
-          </tr>`).join('');
+        el('fuelTypeTbody').innerHTML = state.fuelTypes.map(ft => `<tr><td><strong>${esc(ft.name)}</strong></td><td>${fmtRp(ft.price)}</td><td class="text-end"><button class="btn btn-sm btn-outline-primary icon-btn" onclick="editFuelType('${esc(ft.id)}')"><i class="fas fa-pen"></i></button><button class="btn btn-sm btn-outline-danger icon-btn" onclick="confirmDelete('fueltype','${esc(ft.id)}')"><i class="fas fa-trash"></i></button></td></tr>`).join('');
         state.loadedTabs.settings = true;
       }
+      loadMonthlyBudget();
     }
     else if (tabName === 'documents') { if (!state.loadedTabs.documents) { await loadDocuments(); state.loadedTabs.documents = true; } }
     else if (tabName === 'users') { if (!state.loadedTabs.users && state.user.role === 'admin') { await loadUsers(); state.loadedTabs.users = true; } }
   } catch (err) { console.error('Gagal load tab', tabName, err); toast(err.message || 'Gagal memuat data. Coba refresh.', 'error'); }
 }
 
-// ============================================================
-// PROFILE & USER
-// ============================================================
 function showProfileModal() {
   el('pId').value = state.user.id; el('pName').value = state.user.name || '';
   el('pEmail').value = state.user.email || ''; el('pPhone').value = state.user.phone || ''; el('pPass').value = ''; el('pOldPass').value = '';
   getModal('modalProfile').show();
 }
-
 async function saveProfile() {
   const data = { name: el('pName').value.trim(), email: el('pEmail').value.trim(), phone: el('pPhone').value.trim() };
   const newPass = el('pPass').value; if (newPass) data.password = newPass;
@@ -1531,31 +1295,16 @@ async function saveProfile() {
     closeModal('modalProfile');
   } catch (err) { toast(err.message, 'error'); } finally { setBtnLoading('btnSaveProfile', false); }
 }
-
 async function loadUsers() {
   const data = await callApi('apiGetUsers') || []; state.users = data;
-  el('userTbody').innerHTML = data.map(u => `
-    <tr>
-      <td><strong>${esc(u.name || '-')}</strong></td><td>${esc(u.username || '')}</td><td>${esc(u.email || '-')}</td><td>${esc(u.phone || '-')}</td>
-      <td><span class="badge ${u.role === 'admin' ? 'bg-primary' : 'bg-secondary'}">${esc(u.role || '')}</span></td>
-      <td class="text-end">
-        <button class="btn btn-sm btn-outline-primary icon-btn" onclick="editUser('${esc(u.id)}')"><i class="fas fa-pen"></i></button>
-        <button class="btn btn-sm btn-outline-danger icon-btn" onclick="confirmDelete('user','${esc(u.id)}')"><i class="fas fa-trash"></i></button>
-      </td>
-    </tr>`).join('');
+  el('userTbody').innerHTML = data.map(u => `<tr><td><strong>${esc(u.name || '-')}</strong></td><td>${esc(u.username || '')}</td><td>${esc(u.email || '-')}</td><td>${esc(u.phone || '-')}</td><td><span class="badge ${u.role === 'admin' ? 'bg-primary' : 'bg-secondary'}">${esc(u.role || '')}</span></td><td class="text-end"><button class="btn btn-sm btn-outline-primary icon-btn" onclick="editUser('${esc(u.id)}')"><i class="fas fa-pen"></i></button><button class="btn btn-sm btn-outline-danger icon-btn" onclick="confirmDelete('user','${esc(u.id)}')"><i class="fas fa-trash"></i></button></td></tr>`).join('');
 }
-
-function showUserModal() {
-  el('uId').value = ''; el('uName').value = ''; el('uUser').value = ''; el('uPass').value = ''; el('uEmail').value = ''; el('uPhone').value = ''; el('uRole').value = 'user';
-  getModal('modalUser').show();
-}
-
+function showUserModal() { el('uId').value = ''; el('uName').value = ''; el('uUser').value = ''; el('uPass').value = ''; el('uEmail').value = ''; el('uPhone').value = ''; el('uRole').value = 'user'; getModal('modalUser').show(); }
 function editUser(id) {
   const u = state.users.find(x => String(x.id) === String(id)); if (!u) return;
   el('uId').value = u.id; el('uName').value = u.name || ''; el('uUser').value = u.username || ''; el('uPass').value = ''; el('uEmail').value = u.email || ''; el('uPhone').value = u.phone || ''; el('uRole').value = u.role || 'user';
   getModal('modalUser').show();
 }
-
 async function saveUser() {
   const id = el('uId').value;
   const data = { name: el('uName').value.trim(), username: el('uUser').value.trim(), email: el('uEmail').value.trim(), phone: el('uPhone').value.trim(), role: el('uRole').value };
@@ -1563,65 +1312,43 @@ async function saveUser() {
   if (!data.name || !data.username) { toast('Lengkapi form', 'error'); return; }
   if (!id && !data.password) { toast('Password wajib diisi', 'error'); return; }
   setBtnLoading('btnSaveUser', true);
-  try {
-    const res = id ? await callApi('apiUpdateUser', id, data) : await callApi('apiAddUser', data);
-    closeModal('modalUser'); toast(res.message);
-    state.loadedTabs.users = false; await loadUsers(); state.loadedTabs.users = true;
-  } catch (err) { toast(err.message, 'error'); } finally { setBtnLoading('btnSaveUser', false); }
+  try { const res = id ? await callApi('apiUpdateUser', id, data) : await callApi('apiAddUser', data); closeModal('modalUser'); toast(res.message); state.loadedTabs.users = false; await loadUsers(); state.loadedTabs.users = true; }
+  catch (err) { toast(err.message, 'error'); } finally { setBtnLoading('btnSaveUser', false); }
 }
 
-// ============================================================
-// REMINDER & NOTIFICATION LOGIC (UPGRADED)
-// ============================================================
-async function loadRemindersForNotif() {
-  try { state.allReminders = await callApi('apiGetReminders', 'ALL') || []; } catch (err) { state.allReminders = []; }
-  checkNotifications();
-}
-
-async function loadReminders() {
-  if (!state.allReminders || state.allReminders.length === 0) await loadRemindersForNotif();
-  renderReminderTable();
-}
+async function loadRemindersForNotif() { try { state.allReminders = await callApi('apiGetReminders', 'ALL') || []; } catch (err) { state.allReminders = []; } checkNotifications(); }
+async function loadReminders() { if (!state.allReminders || state.allReminders.length === 0) await loadRemindersForNotif(); renderReminderTable(); }
 
 function renderReminderTable() {
   const filterVeh = el('reminderVehicleFilter').value;
   let data = state.allReminders || [];
   if (filterVeh !== 'ALL') data = data.filter(r => String(r.vehicleId) === String(filterVeh));
-
   const today = new Date(); today.setHours(0, 0, 0, 0);
   if (data.length === 0) {
-    el('reminderTbody').innerHTML = '<tr><td colspan="6" class="text-center py-4 text-muted">Tidak ada pengingat.</td></tr>';
+    el('reminderTbody').innerHTML = `<tr><td colspan="6" class="text-center py-5 text-muted"><i class="fas fa-bell-slash fa-2x mb-2 d-block opacity-50"></i><div>Belum ada pengingat servis.</div><button class="btn btn-sm btn-primary mt-2" onclick="showReminderModal()"><i class="fas fa-plus me-1"></i> Tambah jadwal ganti oli</button></td></tr>`;
     return;
   }
-
   el('reminderTbody').innerHTML = data.map(r => {
     const vehicle = state.vehicles.find(v => String(v.id) === String(r.vehicleId));
     const vName = vehicle ? vehicle.name : 'Unknown';
     const vOdo = vehicle ? (Number(vehicle.latestOdometer) || 0) : 0;
-
     const serviceList = r.serviceTypes ? String(r.serviceTypes).split(',').map(s => s.trim()).filter(Boolean) : [r.title || 'Perawatan'];
-    // Berikan warna badge berbeda untuk Pajak dan Servis
     const serviceHtml = serviceList.map(s => {
       let badgeClass = 'bg-secondary';
       if (s.toLowerCase().includes('pajak')) badgeClass = 'bg-warning text-dark';
       else if (s.toLowerCase().includes('oli') || s.toLowerCase().includes('servis') || s.toLowerCase().includes('tune')) badgeClass = 'bg-info text-dark';
       return `<span class="badge ${badgeClass} mb-1 me-1">${esc(s)}</span>`;
     }).join('');
-
     const targetText = [];
     if (r.dueOdometer) targetText.push(`<i class="fas fa-tachometer-alt me-1"></i> ${fmtNum(r.dueOdometer)} km`);
     if (r.dueDate) targetText.push(`<i class="fas fa-calendar-alt me-1"></i> ${esc(fmtDate(r.dueDate))}`);
-
-    const remainingText = [];
-    let isUrgent = false;
-
+    const remainingText = []; let isUrgent = false;
     if (r.dueOdometer && vOdo > 0) {
       const sisaKm = Number(r.dueOdometer) - vOdo;
       if (sisaKm <= 0) { remainingText.push(`<span class="text-danger fw-bold"><i class="fas fa-exclamation-circle"></i> Lewat ${fmtNum(Math.abs(sisaKm))} km</span>`); isUrgent = true; }
       else if (sisaKm <= 500) { remainingText.push(`<span class="text-warning fw-bold">Sisa ${fmtNum(sisaKm)} km</span>`); isUrgent = true; }
       else { remainingText.push(`Sisa ${fmtNum(sisaKm)} km`); }
     }
-
     if (r.dueDate) {
       const dDate = new Date(r.dueDate + 'T00:00:00');
       if (!isNaN(dDate.getTime())) {
@@ -1632,21 +1359,17 @@ function renderReminderTable() {
         else { remainingText.push(`Sisa ${diffDays} hari`); }
       }
     }
-
     const statusBadge = r.status === 'Selesai' ? '<span class="badge bg-success">Selesai</span>' : (isUrgent ? '<span class="badge badge-soft-danger">Mendesak</span>' : '<span class="badge badge-soft-warning">Aktif</span>');
-
     return `
     <tr>
       <td><strong>${esc(vName)}</strong></td>
-      <td>
-        <div class="reminder-title">${serviceHtml}</div>
-        <div class="reminder-services">${esc(r.notes || '')}</div>
-      </td>
+      <td><div class="reminder-title">${serviceHtml}</div><div class="reminder-services">${esc(r.notes || '')}</div></td>
       <td>${targetText.join('<br>') || '-'}</td>
       <td>${remainingText.join('<br>') || '-'}</td>
       <td>${statusBadge}</td>
       <td class="text-end">
         <div class="d-flex justify-content-end gap-1">
+          ${r.status === 'Aktif' ? `<button class="btn btn-sm btn-outline-success icon-btn" title="Tandai Selesai" onclick="showCompleteReminder('${esc(r.id)}')"><i class="fas fa-check"></i></button>` : ''}
           <button class="btn btn-sm btn-outline-primary icon-btn" onclick="editReminder('${esc(r.id)}')"><i class="fas fa-pen"></i></button>
           <button class="btn btn-sm btn-outline-danger icon-btn" onclick="confirmDelete('reminder','${esc(r.id)}')"><i class="fas fa-trash"></i></button>
         </div>
@@ -1655,303 +1378,160 @@ function renderReminderTable() {
   }).join('');
 }
 
-function checkNotifications() {
-  const seenKeys = getSeenNotifs();
-  const dueReminders = [];
-  const today = new Date(); today.setHours(0, 0, 0, 0);
-
-  (state.allReminders || []).forEach(r => {
-    if (r.status !== 'Aktif') return;
-    let isDue = false;
-    const reasons = [];
-
-    if (r.dueDate) {
-      const dDate = new Date(r.dueDate + 'T00:00:00');
-      if (!isNaN(dDate.getTime())) {
-        dDate.setHours(0, 0, 0, 0);
-        if (dDate <= today) { isDue = true; reasons.push('Tanggal telah tiba'); }
-      }
-    }
-
-    if (r.dueOdometer) {
-      const v = state.vehicles.find(veh => String(veh.id) === String(r.vehicleId));
-      const latestOdo = v ? (Number(v.latestOdometer) || 0) : 0;
-      if (latestOdo >= Number(r.dueOdometer)) { isDue = true; reasons.push('Odometer tercapai'); }
-    }
-
-    if (isDue) {
-      const key = notifKey(r);
-      if (!seenKeys.includes(key)) dueReminders.push({ ...r, reason: reasons.join(', '), _key: key });
-    }
-  });
-
-  state.unreadNotifs = dueReminders;
-  const badge = el('notifBadge');
-  if (dueReminders.length > 0) { badge.textContent = dueReminders.length; badge.classList.remove('d-none'); }
-  else badge.classList.add('d-none');
-
-  const list = el('notifList');
-  if (dueReminders.length === 0) {
-    list.innerHTML = `<li><div class="dropdown-item text-center text-muted py-3">Tidak ada notifikasi baru</div></li>`;
-  } else {
-    list.innerHTML = `<li><h6 class="dropdown-header">Pengingat Jatuh Tempo</h6></li>` + dueReminders.map(r => {
-      const v = state.vehicles.find(veh => String(veh.id) === String(r.vehicleId));
-      const vName = v ? v.name : 'Unknown';
-      return `
-      <li>
-        <a class="dropdown-item py-2" href="#" onclick="event.preventDefault(); goToReminder('${esc(r.id)}')">
-          <div class="d-flex w-100 justify-content-between">
-            <h6 class="mb-1 text-danger"><i class="fas fa-exclamation-circle me-1"></i> ${esc(vName)}</h6>
-          </div>
-          <p class="mb-1 small fw-bold">${esc(r.serviceTypes || r.title || '')}</p>
-          <small class="text-muted">${esc(r.reason)}</small>
-        </a>
-      </li>
-      <li><hr class="dropdown-divider"></li>`;
-    }).join('');
-  }
+function showCompleteReminder(id) {
+  const r = state.allReminders.find(x => String(x.id) === String(id)); if (!r) return;
+  el('crId').value = r.id; el('crDate').value = todayStr();
+  const v = state.vehicles.find(x => String(x.id) === String(r.vehicleId));
+  el('crOdo').value = v ? (v.latestOdometer || '') : '';
+  el('crCost').value = ''; el('crWorkshop').value = ''; el('crNotes').value = '';
+  const iKm = Number(r.intervalKm) || 0, iBl = Number(r.intervalBulan) || 0;
+  let info = '';
+  if (iKm > 0) info += `Pengingat berikutnya: +${fmtNum(iKm)} km. `;
+  if (iBl > 0) info += `Atau +${iBl} bulan. `;
+  el('crNextInfo').innerHTML = info ? `<i class="fas fa-info-circle"></i> ${info}` : 'Belum ada interval tersimpan. Pengingat berikut tidak dibuat otomatis — atur saat edit pengingat.';
+  getModal('modalComplete').show();
+}
+async function saveCompleteReminder() {
+  const id = el('crId').value, date = el('crDate').value, odo = Number(el('crOdo').value);
+  if (!date || !isFinite(odo) || odo <= 0) { toast('Tanggal & odometer wajib diisi.', 'error'); return; }
+  setBtnLoading('btnCompleteReminder', true);
+  try {
+    const res = await callApi('apiCompleteReminder', { id, date, odometer: odo, cost: Number(el('crCost').value) || 0, workshop: el('crWorkshop').value.trim(), notes: el('crNotes').value.trim() });
+    closeModal('modalComplete'); toast(res.message || 'Pengingat diselesaikan.');
+    state.loadedTabs = resetLoadedTabs(); await refreshAll();
+  } catch (err) { toast(err.message, 'error'); }
+  finally { setBtnLoading('btnCompleteReminder', false); }
 }
 
+function checkNotifications() {
+  const seenKeys = getSeenNotifs(); const dueReminders = [];
+  const today = new Date(); today.setHours(0, 0, 0, 0);
+  (state.allReminders || []).forEach(r => {
+    if (r.status !== 'Aktif') return;
+    let isDue = false; const reasons = [];
+    if (r.dueDate) { const dDate = new Date(r.dueDate + 'T00:00:00'); if (!isNaN(dDate.getTime())) { dDate.setHours(0, 0, 0, 0); if (dDate <= today) { isDue = true; reasons.push('Tanggal telah tiba'); } } }
+    if (r.dueOdometer) { const v = state.vehicles.find(veh => String(veh.id) === String(r.vehicleId)); const latestOdo = v ? (Number(v.latestOdometer) || 0) : 0; if (latestOdo >= Number(r.dueOdometer)) { isDue = true; reasons.push('Odometer tercapai'); } }
+    if (isDue) { const key = notifKey(r); if (!seenKeys.includes(key)) dueReminders.push({ ...r, reason: reasons.join(', '), _key: key }); }
+  });
+  state.unreadNotifs = dueReminders;
+  const badge = el('notifBadge');
+  if (dueReminders.length > 0) { badge.textContent = dueReminders.length; badge.classList.remove('d-none'); } else badge.classList.add('d-none');
+  const list = el('notifList');
+  if (dueReminders.length === 0) list.innerHTML = `<li><div class="dropdown-item text-center text-muted py-3">Tidak ada notifikasi baru</div></li>`;
+  else list.innerHTML = `<li><h6 class="dropdown-header">Pengingat Jatuh Tempo</h6></li>` + dueReminders.map(r => {
+    const v = state.vehicles.find(veh => String(veh.id) === String(r.vehicleId));
+    const vName = v ? v.name : 'Unknown';
+    return `<li><a class="dropdown-item py-2" href="#" onclick="event.preventDefault(); goToReminder('${esc(r.id)}')"><div class="d-flex w-100 justify-content-between"><h6 class="mb-1 text-danger"><i class="fas fa-exclamation-circle me-1"></i> ${esc(vName)}</h6></div><p class="mb-1 small fw-bold">${esc(r.serviceTypes || r.title || '')}</p><small class="text-muted">${esc(r.reason)}</small></a></li><li><hr class="dropdown-divider"></li>`;
+  }).join('');
+}
 function markNotifsAsRead() {
   if (!state.unreadNotifs || state.unreadNotifs.length === 0) return;
   const seenKeys = getSeenNotifs();
-  state.unreadNotifs.forEach(r => {
-    const key = r._key || notifKey(r);
-    if (!seenKeys.includes(key)) seenKeys.push(key);
-  });
+  state.unreadNotifs.forEach(r => { const key = r._key || notifKey(r); if (!seenKeys.includes(key)) seenKeys.push(key); });
   const trimmed = seenKeys.slice(-500);
   try { localStorage.setItem(seenKey(), JSON.stringify(trimmed)); } catch (e) {}
   el('notifBadge').classList.add('d-none');
 }
-
 function goToReminder(id) {
   const r = state.allReminders.find(x => String(x.id) === String(id));
   if (r) { el('reminderVehicleFilter').value = 'ALL'; renderReminderTable(); }
-  const tabBtn = document.querySelector('[data-bs-target="#tabReminders"]');
-  if (tabBtn) new bootstrap.Tab(tabBtn).show();
+  const tabBtn = document.querySelector('[data-bs-target="#tabReminders"]'); if (tabBtn) new bootstrap.Tab(tabBtn).show();
 }
 
-// ============================================================
-// REMINDER MODAL (UPGRADED)
-// ============================================================
-function populateVehicleSelect(selectId) {
-  const sel = el(selectId); sel.innerHTML = '';
-  state.vehicles.forEach(v => {
-    sel.innerHTML += `<option value="${esc(v.id)}">${esc(v.name || 'Tanpa Nama')} (${esc(v.licensePlate || 'Tanpa Plat')})</option>`;
-  });
-}
-
-// Fungsi dinamis untuk show/hide field odometer & tanggal
+function populateVehicleSelect(selectId) { const sel = el(selectId); sel.innerHTML = ''; state.vehicles.forEach(v => { sel.innerHTML += `<option value="${esc(v.id)}">${esc(v.name || 'Tanpa Nama')} (${esc(v.licensePlate || 'Tanpa Plat')})</option>`; }); }
 function toggleReminderFields() {
   const checked = Array.from(document.querySelectorAll('#modalReminder .service-checkbox input[type="checkbox"]:checked'));
   const hasOdo = checked.some(cb => cb.dataset.type === 'odometer');
   const hasDate = checked.some(cb => cb.dataset.type === 'date');
-
   const groupOdo = el('groupOdometer');
-  const inputOdo = el('rOdo');
-  const groupDate = el('groupDate');
-  const inputDate = el('rDate');
-
-  // Jika hanya memilih tipe "Tanggal" (Pajak), sembunyikan Odometer.
-  if (hasDate && !hasOdo) {
-    groupOdo.classList.add('d-none');
-    inputOdo.required = false;
-    inputOdo.value = ''; // Clear nilainya agar tidak tersimpan tak sengaja
-    el('rInterval').value = ''; 
-    inputDate.required = true;
-  } 
-  // Jika ada Odometer (Servis), tampilkan Odometer.
-  else {
-    groupOdo.classList.remove('d-none');
-    inputDate.required = false;
-    if (!hasDate && hasOdo) {
-      inputOdo.required = true;
-    }
-  }
+  if (hasDate && !hasOdo) { groupOdo.classList.add('d-none'); el('rOdo').required = false; el('rOdo').value = ''; el('rInterval').value = ''; el('rIntervalBulan').value = ''; el('rDate').required = true; }
+  else { groupOdo.classList.remove('d-none'); el('rDate').required = false; if (!hasDate && hasOdo) el('rOdo').required = true; }
 }
-
 function toggleServiceCheckbox(cb) {
   const label = cb.closest('.service-checkbox');
-  if (cb.checked) label.classList.add('active');
-  else label.classList.remove('active');
-
-  if (cb.id === 'chkLainnya') {
-    el('rCustomService').classList.toggle('d-none', !cb.checked);
-    if (cb.checked) el('rCustomService').focus();
-  }
-  
+  if (cb.checked) label.classList.add('active'); else label.classList.remove('active');
+  if (cb.id === 'chkLainnya') { el('rCustomService').classList.toggle('d-none', !cb.checked); if (cb.checked) el('rCustomService').focus(); }
   toggleReminderFields();
 }
-
 function showReminderModal() {
   if (state.vehicles.length === 0) { toast('Tambah kendaraan dulu', 'error'); return; }
   el('rId').value = ''; el('rVehicleId').disabled = false;
   populateVehicleSelect('rVehicleId');
   if (state.currentVehicleId) el('rVehicleId').value = state.currentVehicleId;
-
-  // Reset checkboxes dan class active
-  document.querySelectorAll('#modalReminder .service-checkbox input[type="checkbox"]').forEach(cb => {
-    cb.checked = false;
-    cb.closest('.service-checkbox').classList.remove('active');
-  });
-  
+  document.querySelectorAll('#modalReminder .service-checkbox input[type="checkbox"]').forEach(cb => { cb.checked = false; cb.closest('.service-checkbox').classList.remove('active'); });
   el('rCustomService').value = ''; el('rCustomService').classList.add('d-none');
-
   const vId = el('rVehicleId').value;
   const v = state.vehicles.find(veh => String(veh.id) === String(vId));
   el('rCurrentOdo').value = v ? v.latestOdometer : '';
-
-  el('rInterval').value = ''; el('rOdo').value = ''; el('rDate').value = ''; el('rStatus').value = 'Aktif'; el('rNotes').value = '';
-
-  toggleReminderFields(); // Set kondisi awal
+  el('rInterval').value = ''; el('rIntervalBulan').value = ''; el('rOdo').value = ''; el('rDate').value = ''; el('rStatus').value = 'Aktif'; el('rNotes').value = '';
+  toggleReminderFields();
   getModal('modalReminder').show();
 }
-
 function editReminder(id) {
   const r = state.allReminders.find(x => String(x.id) === String(id)); if (!r) return;
-  el('rId').value = r.id;
-  
-  populateVehicleSelect('rVehicleId');
+  el('rId').value = r.id; populateVehicleSelect('rVehicleId');
   el('rVehicleId').value = r.vehicleId; el('rVehicleId').disabled = true;
-
-  // Reset checkboxes
-  document.querySelectorAll('#modalReminder .service-checkbox input[type="checkbox"]').forEach(cb => {
-    cb.checked = false; cb.closest('.service-checkbox').classList.remove('active');
-  });
+  document.querySelectorAll('#modalReminder .service-checkbox input[type="checkbox"]').forEach(cb => { cb.checked = false; cb.closest('.service-checkbox').classList.remove('active'); });
   el('rCustomService').value = ''; el('rCustomService').classList.add('d-none');
-
-  // Parsing data serviceTypes dari DB
   const servicesStr = r.serviceTypes || r.title || '';
   const services = String(servicesStr).split(',').map(s => s.trim()).filter(Boolean);
   const customs = [];
-
   services.forEach(s => {
     let cb = Array.from(document.querySelectorAll('#modalReminder .service-checkbox input[type="checkbox"]')).find(c => c.value === s);
-    
-    // Backward compatibility: Data lama "Pajak/STNK" diubah ke "Pajak Tahunan"
     if (!cb && s === 'Pajak/STNK') cb = document.querySelector('#modalReminder .service-checkbox input[value="Pajak Tahunan (STNK)"]');
-    
-    if (cb) {
-      cb.checked = true;
-      cb.closest('.service-checkbox').classList.add('active');
-    } else {
-      customs.push(s);
-    }
+    if (cb) { cb.checked = true; cb.closest('.service-checkbox').classList.add('active'); } else customs.push(s);
   });
-
-  if (customs.length > 0) {
-    const lainCb = document.querySelector('#modalReminder .service-checkbox input[value="Lainnya"]');
-    if (lainCb) {
-      lainCb.checked = true;
-      lainCb.closest('.service-checkbox').classList.add('active');
-    }
-    el('rCustomService').classList.remove('d-none');
-    el('rCustomService').value = customs.join(', ');
-  }
-
+  if (customs.length > 0) { const lainCb = document.querySelector('#modalReminder .service-checkbox input[value="Lainnya"]'); if (lainCb) { lainCb.checked = true; lainCb.closest('.service-checkbox').classList.add('active'); } el('rCustomService').classList.remove('d-none'); el('rCustomService').value = customs.join(', '); }
   el('rCurrentOdo').value = r.currentOdometer || '';
   el('rOdo').value = r.dueOdometer || '';
-  el('rInterval').value = ''; 
-  el('rDate').value = r.dueDate || ''; 
-  el('rStatus').value = r.status || 'Aktif'; 
-  el('rNotes').value = r.notes || '';
-
-  toggleReminderFields(); // Panggil fungsi dinamis setelah data terisi
+  el('rInterval').value = ''; el('rIntervalBulan').value = r.intervalBulan || '';
+  el('rDate').value = r.dueDate || ''; el('rStatus').value = r.status || 'Aktif'; el('rNotes').value = r.notes || '';
+  el('rInterval').value = r.intervalKm || '';
+  toggleReminderFields();
   getModal('modalReminder').show();
 }
-
 async function saveReminder() {
   const id = el('rId').value;
-  
-  const selectedServices = [];
-  let hasOdo = false;
-  let hasDate = false;
-
+  const selectedServices = []; let hasOdo = false; let hasDate = false;
   document.querySelectorAll('#modalReminder .service-checkbox input[type="checkbox"]:checked').forEach(cb => {
     if (cb.dataset.type === 'odometer') hasOdo = true;
     if (cb.dataset.type === 'date') hasDate = true;
-
-    if (cb.value === 'Lainnya') {
-      const custom = el('rCustomService').value.trim();
-      if (custom) custom.split(',').map(s => s.trim()).filter(Boolean).forEach(s => selectedServices.push(s));
-    } else {
-      selectedServices.push(cb.value);
-    }
+    if (cb.value === 'Lainnya') { const custom = el('rCustomService').value.trim(); if (custom) custom.split(',').map(s => s.trim()).filter(Boolean).forEach(s => selectedServices.push(s)); }
+    else selectedServices.push(cb.value);
   });
-  
   if (selectedServices.length === 0) { toast('Pilih minimal satu jenis perawatan', 'error'); return; }
-  
   const dueOdo = hasOdo ? el('rOdo').value : '';
   const dueDate = el('rDate').value;
-  
-  // Validasi Dinamis
-  if (hasOdo && !dueOdo && !dueDate) {
-    toast('Isi minimal Target Odometer atau Target Tanggal', 'error'); return;
-  }
-  if (!hasOdo && hasDate && !dueDate) {
-    toast('Isi Target Tanggal untuk Pajak/Dokumen', 'error'); return;
-  }
-
-  const data = { 
-    vehicleId: el('rVehicleId').value, 
-    title: selectedServices[0], 
-    serviceTypes: selectedServices.join(', '), 
-    dueDate: dueDate, 
-    currentOdometer: hasOdo ? el('rCurrentOdo').value : '',
-    dueOdometer: dueOdo, 
-    status: el('rStatus').value, 
-    notes: el('rNotes').value 
-  };
-  
+  if (hasOdo && !dueOdo && !dueDate) { toast('Isi minimal Target Odometer atau Target Tanggal', 'error'); return; }
+  if (!hasOdo && hasDate && !dueDate) { toast('Isi Target Tanggal untuk Pajak/Dokumen', 'error'); return; }
+  const data = { vehicleId: el('rVehicleId').value, title: selectedServices[0], serviceTypes: selectedServices.join(', '), dueDate, currentOdometer: hasOdo ? el('rCurrentOdo').value : '', dueOdometer: dueOdo, status: el('rStatus').value, notes: el('rNotes').value, intervalKm: el('rInterval').value, intervalBulan: el('rIntervalBulan').value };
   setBtnLoading('btnSaveReminder', true);
   try {
     const res = id ? await callApi('apiUpdateReminder', id, data) : await callApi('apiAddReminder', data);
-    closeModal('modalReminder'); toast(res.message); el('rVehicleId').disabled = false; 
-    
+    closeModal('modalReminder'); toast(res.message); el('rVehicleId').disabled = false;
     await loadRemindersForNotif();
     if (state.loadedTabs.reminders) { state.loadedTabs.reminders = false; await loadReminders(); state.loadedTabs.reminders = true; }
   } catch (err) { toast(err.message, 'error'); } finally { setBtnLoading('btnSaveReminder', false); }
 }
-
-function hitungTargetOdo() {
-  const curr = parseFloat(el('rCurrentOdo').value) || 0;
-  const interval = parseFloat(el('rInterval').value) || 0;
-  if (curr && interval) { el('rOdo').value = curr + interval; }
-}
+function hitungTargetOdo() { const curr = parseFloat(el('rCurrentOdo').value) || 0; const interval = parseFloat(el('rInterval').value) || 0; if (curr && interval) el('rOdo').value = curr + interval; }
 el('rCurrentOdo').addEventListener('input', hitungTargetOdo);
 el('rInterval').addEventListener('input', hitungTargetOdo);
+el('rVehicleId').addEventListener('change', function () { const v = state.vehicles.find(veh => String(veh.id) === String(this.value)); el('rCurrentOdo').value = v ? v.latestOdometer : ''; hitungTargetOdo(); });
 
-el('rVehicleId').addEventListener('change', function() {
-  const v = state.vehicles.find(veh => String(veh.id) === String(this.value));
-  el('rCurrentOdo').value = v ? v.latestOdometer : '';
-  hitungTargetOdo();
-});
-
-// ============================================================
-// GPS LOCATION (FORM)
-// ============================================================
 function getGPSLocation() {
   if (!navigator.geolocation) { toast('GPS tidak didukung', 'error'); return; }
   el('gpsSpinner').classList.remove('d-none');
   navigator.geolocation.getCurrentPosition(async (position) => {
     const lat = position.coords.latitude, lng = position.coords.longitude;
     el('fLat').value = lat; el('fLng').value = lng;
-    try {
-      const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&zoom=18`);
-      const data = await res.json();
-      let name = data.address?.amenity || data.address?.road || data.address?.city || `Lat:${lat.toFixed(4)} Lng:${lng.toFixed(4)}`;
-      el('fStation').value = name; toast('Lokasi ditemukan!');
-    } catch (e) { el('fStation').value = `Lat:${lat.toFixed(4)} Lng:${lng.toFixed(4)}`; } 
+    try { const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&zoom=18`); const data = await res.json(); let name = data.address?.amenity || data.address?.road || data.address?.city || `Lat:${lat.toFixed(4)} Lng:${lng.toFixed(4)}`; el('fStation').value = name; toast('Lokasi ditemukan!'); }
+    catch (e) { el('fStation').value = `Lat:${lat.toFixed(4)} Lng:${lng.toFixed(4)}`; }
     finally { el('gpsSpinner').classList.add('d-none'); }
   }, () => { el('gpsSpinner').classList.add('d-none'); toast('Gagal mendapatkan GPS', 'error'); }, { enableHighAccuracy: true });
 }
 
-// ============================================================
-// DATA LOADING & CRUD (LANJUTAN)
-// ============================================================
 el('vehicleSelector').addEventListener('change', e => {
-  const newId = e.target.value;
-  if (newId === state.currentVehicleId) return;
+  const newId = e.target.value; if (newId === state.currentVehicleId) return;
   state.currentVehicleId = newId;
   if (state.currentVehicleId) {
     state.loadedTabs = resetLoadedTabs();
@@ -1969,11 +1549,7 @@ function generateDashboardFilterOptions() {
   state.expenses.forEach(e => { if (e.date && e.date.length >= 7) monthsSet.add(String(e.date).substring(0, 7)); });
   const sortedMonths = Array.from(monthsSet).sort().reverse();
   sel.innerHTML = '<option value="">Semua Waktu</option>';
-  sortedMonths.forEach(m => {
-    const [year, month] = m.split('-');
-    const d = new Date(Number(year), Number(month) - 1);
-    sel.innerHTML += `<option value="${esc(m)}">${esc(d.toLocaleDateString('id-ID', { month: 'long', year: 'numeric' }))}</option>`;
-  });
+  sortedMonths.forEach(m => { const [year, month] = m.split('-'); const d = new Date(Number(year), Number(month) - 1); sel.innerHTML += `<option value="${esc(m)}">${esc(d.toLocaleDateString('id-ID', { month: 'long', year: 'numeric' }))}</option>`; });
   if (Array.from(sel.options).some(o => o.value === currentVal)) sel.value = currentVal;
 }
 
@@ -1985,17 +1561,11 @@ function exportCSV(type) {
   if (end) data = data.filter(d => d.date <= end);
   if (data.length === 0) { toast('Tidak ada data', 'info'); return; }
   let headers, rows;
-  if (type === 'fillup') {
-    headers = ['Tanggal', 'Odometer', 'Jarak (km)', 'Jumlah BBM (L)', 'Jenis BBM', 'Harga/L', 'Total Biaya', 'SPBU', 'Catatan'];
-    rows = data.map(f => [f.date, f.odometer, f.distance || '-', f.fuelAmount, f.fuelType, f.fuelPrice, f.totalCost, f.station || '', f.notes || '']);
-  } else {
-    headers = ['Tanggal', 'Kategori', 'Jumlah', 'Catatan'];
-    rows = data.map(e => [e.date, e.category, e.amount, e.notes || '']);
-  }
+  if (type === 'fillup') { headers = ['Tanggal','Odometer','Jarak (km)','Jumlah BBM (L)','Jenis BBM','Harga/L','Total Biaya','SPBU','Catatan']; rows = data.map(f => [f.date, f.odometer, f.distance || '-', f.fuelAmount, f.fuelType, f.fuelPrice, f.totalCost, f.station || '', f.notes || '']); }
+  else { headers = ['Tanggal','Kategori','Jumlah','Catatan']; rows = data.map(e => [e.date, e.category, e.amount, e.notes || '']); }
   const csvContent = [headers.join(','), ...rows.map(r => r.map(c => { let s = String(c); s = csvSafe(s); return '"' + s.replace(/"/g, '""') + '"'; }).join(','))].join('\n');
   const blob = new Blob(['\uFEFF' + csvContent], { type: 'text/csv;charset=utf-8;' });
-  const link = document.createElement('a');
-  link.setAttribute('href', URL.createObjectURL(blob)); link.setAttribute('download', `Enzy_Gempa_${type}_${todayStr()}.csv`);
+  const link = document.createElement('a'); link.setAttribute('href', URL.createObjectURL(blob)); link.setAttribute('download', `Enzy_Gempa_${type}_${todayStr()}.csv`);
   document.body.appendChild(link); link.click(); document.body.removeChild(link); URL.revokeObjectURL(link.href);
 }
 
@@ -2014,7 +1584,6 @@ async function loadVehicles(pre) {
   sel.innerHTML = '<option value="">-- Pilih Kendaraan --</option>';
   state.vehicles.forEach(v => { sel.innerHTML += `<option value="${esc(v.id)}">${esc(v.name || 'Tanpa Nama')} (${esc(v.licensePlate || 'Tanpa Plat')})</option>`; });
   if (state.vehicles.length <= 1) sel.classList.add('single-vehicle'); else sel.classList.remove('single-vehicle');
-
   const filterSel = el('reminderVehicleFilter');
   if (filterSel) {
     const prevFilter = filterSel.value || 'ALL';
@@ -2022,10 +1591,7 @@ async function loadVehicles(pre) {
     state.vehicles.forEach(v => { filterSel.innerHTML += `<option value="${esc(v.id)}">${esc(v.name || 'Tanpa Nama')}</option>`; });
     if (prevFilter === 'ALL' || state.vehicles.some(v => String(v.id) === prevFilter)) filterSel.value = prevFilter; else filterSel.value = 'ALL';
   }
-
-  if (state.vehicles.length === 0) {
-    state.currentVehicleId = ''; el('dashContent').classList.add('d-none'); el('dashEmpty').classList.remove('d-none'); return;
-  }
+  if (state.vehicles.length === 0) { state.currentVehicleId = ''; el('dashContent').classList.add('d-none'); el('dashEmpty').classList.remove('d-none'); return; }
   el('dashEmpty').classList.add('d-none'); el('dashContent').classList.remove('d-none');
   state.currentVehicleId = (prev && state.vehicles.some(v => String(v.id) === prev)) ? prev : state.vehicles[0].id;
   sel.value = state.currentVehicleId;
@@ -2033,25 +1599,9 @@ async function loadVehicles(pre) {
 
 async function loadVehicleTable() {
   if (state.vehicles.length === 0) { el('vehicleTbody').innerHTML = '<tr><td colspan="6" class="text-center py-4 text-muted">Belum ada kendaraan.</td></tr>'; return; }
-  el('vehicleTbody').innerHTML = state.vehicles.map(v => `
-    <tr>
-      <td><strong>${esc(v.name || '-')}</strong>${String(v.id) === String(state.currentVehicleId) ? ' <span class="badge bg-primary">Aktif</span>' : ''}</td>
-      <td>${esc([v.make, v.model].filter(Boolean).join(' ') || '-')}</td>
-      <td>${esc(v.licensePlate || '-')}</td><td>${esc(v.fuelType || '-')}</td><td>${fmtNum(v.initialOdometer)} km</td>
-      <td class="text-end">
-        <div class="d-flex justify-content-end gap-1">
-          <button class="btn btn-sm btn-outline-success icon-btn" onclick="selectVehicle('${esc(v.id)}')"><i class="fas fa-check"></i></button>
-          <button class="btn btn-sm btn-outline-primary icon-btn" onclick="editVehicle('${esc(v.id)}')"><i class="fas fa-pen"></i></button>
-          <button class="btn btn-sm btn-outline-danger icon-btn" onclick="confirmDelete('vehicle','${esc(v.id)}')"><i class="fas fa-trash"></i></button>
-        </div>
-      </td>
-    </tr>`).join('');
+  el('vehicleTbody').innerHTML = state.vehicles.map(v => `<tr><td><strong>${esc(v.name || '-')}</strong>${String(v.id) === String(state.currentVehicleId) ? ' <span class="badge bg-primary">Aktif</span>' : ''}</td><td>${esc([v.make, v.model].filter(Boolean).join(' ') || '-')}</td><td>${esc(v.licensePlate || '-')}</td><td>${esc(v.fuelType || '-')}</td><td>${fmtNum(v.initialOdometer)} km</td><td class="text-end"><div class="d-flex justify-content-end gap-1"><button class="btn btn-sm btn-outline-success icon-btn" onclick="selectVehicle('${esc(v.id)}')"><i class="fas fa-check"></i></button><button class="btn btn-sm btn-outline-primary icon-btn" onclick="editVehicle('${esc(v.id)}')"><i class="fas fa-pen"></i></button><button class="btn btn-sm btn-outline-danger icon-btn" onclick="confirmDelete('vehicle','${esc(v.id)}')"><i class="fas fa-trash"></i></button></div></td></tr>`).join('');
 }
-
-function selectVehicle(id) {
-  state.currentVehicleId = id; el('vehicleSelector').value = id; state.loadedTabs = resetLoadedTabs(); loadTabData('dash');
-  const tabBtn = document.querySelector('[data-bs-target="#tabDash"]'); if (tabBtn) new bootstrap.Tab(tabBtn).show();
-}
+function selectVehicle(id) { state.currentVehicleId = id; el('vehicleSelector').value = id; state.loadedTabs = resetLoadedTabs(); loadTabData('dash'); const tabBtn = document.querySelector('[data-bs-target="#tabDash"]'); if (tabBtn) new bootstrap.Tab(tabBtn).show(); }
 
 async function loadDashboard() {
   if (!state.currentVehicleId) return;
@@ -2059,13 +1609,9 @@ async function loadDashboard() {
   const ck = 'bundle_' + vid + '_' + fm0;
   state.warm = state.warm || {};
   let shownCache = false;
-  if (!state.warm[vid]) { // sesi baru: tampilkan data tersimpan dulu, lalu segarkan di latar belakang
-    const cached = cacheLoad(ck);
-    if (cached) { try { await applyBundle(cached, fm0); shownCache = true; } catch (e) {} }
-  }
+  if (!state.warm[vid]) { const cached = cacheLoad(ck); if (cached) { try { await applyBundle(cached, fm0); shownCache = true; } catch (e) {} } }
   let b;
-  try { b = await callApi('apiGetVehicleBundle', vid, fm0); }
-  catch (err) { if (!shownCache) throw err; toast('Offline: menampilkan data tersimpan terakhir.', 'info'); return; }
+  try { b = await callApi('apiGetVehicleBundle', vid, fm0); } catch (err) { if (!shownCache) throw err; toast('Offline: menampilkan data tersimpan terakhir.', 'info'); return; }
   if (!b || b.error) { toast((b && b.error) || 'Data dashboard tidak valid.', 'error'); return; }
   if (state.currentVehicleId !== vid) return;
   state.warm[vid] = true; cacheSave(ck, b);
@@ -2088,9 +1634,7 @@ async function applyBundle(b, fm0) {
 function renderDashboard(data, filterMonth) {
   const s = data.stats;
   if (!s) { toast('Data dashboard tidak valid.', 'error'); return; }
-
   if (s.insight) { el('aiInsightBox').classList.remove('d-none'); el('aiInsightText').innerText = s.insight; } else { el('aiInsightBox').classList.add('d-none'); }
-
   el('statCards').innerHTML = `
     <div class="col-6 col-md-6 col-lg-4"><div class="stat-card primary"><i class="fas fa-gas-pump icon"></i><div class="label">Total Biaya BBM</div><div class="value">${fmtRp(s.totalFuelCost)}</div></div></div>
     <div class="col-6 col-md-6 col-lg-4"><div class="stat-card warning"><i class="fas fa-receipt icon"></i><div class="label">Total Biaya Lain</div><div class="value">${fmtRp(s.totalOtherCost)}</div></div></div>
@@ -2098,30 +1642,78 @@ function renderDashboard(data, filterMonth) {
     <div class="col-6 col-md-6 col-lg-4"><div class="stat-card success"><i class="fas fa-tachometer-alt icon"></i><div class="label">Konsumsi Rata-rata</div><div class="value">${s.avgConsumption} <small class="text-muted">km/L</small></div></div></div>
     <div class="col-6 col-md-6 col-lg-4"><div class="stat-card info"><i class="fas fa-road icon"></i><div class="label">Odometer ${filterMonth ? 'Akhir Bulan' : 'Terakhir'}</div><div class="value">${fmtNum(s.lastOdometer)} <small class="text-muted">km</small></div></div></div>
     <div class="col-6 col-md-6 col-lg-4"><div class="stat-card purple"><i class="fas fa-coins icon"></i><div class="label">Biaya per KM</div><div class="value">${fmtRp(s.costPerKm)}</div></div></div>
-    <div class="col-12 mt-2 mt-md-3">
-      <div class="stat-card carbon d-flex align-items-center justify-content-between">
-        <div>
-          <div class="label text-success">Jejak Karbon (Carbon Footprint)</div>
-          <div class="value text-success">${s.carbonEmission} kg CO2</div>
-          <div class="small text-muted mt-1"><i class="fas fa-tree text-success"></i> Butuh ± ${s.treesNeeded} pohon untuk menyerapnya selama setahun.</div>
-        </div>
-        <i class="fas fa-leaf fa-3x text-success opacity-50"></i>
-      </div>
-    </div>`;
-
+    <div class="col-12 mt-2 mt-md-3"><div class="stat-card carbon d-flex align-items-center justify-content-between">
+      <div><div class="label text-success">Jejak Karbon (Carbon Footprint)</div><div class="value text-success">${s.carbonEmission} kg CO2</div><div class="small text-muted mt-1"><i class="fas fa-tree text-success"></i> Butuh ± ${s.treesNeeded} pohon untuk menyerapnya selama setahun.</div></div>
+      <i class="fas fa-leaf fa-3x text-success opacity-50"></i></div></div>`;
   el('detailStats').innerHTML = `
     <li class="list-group-item d-flex justify-content-between align-items-center"><span><i class="fas fa-arrow-up text-success me-2"></i>Konsumsi Terbaik</span><span class="badge bg-success">${s.bestCons} km/L</span></li>
     <li class="list-group-item d-flex justify-content-between align-items-center"><span><i class="fas fa-arrow-down text-danger me-2"></i>Konsumsi Terburuk</span><span class="badge bg-danger">${s.worstCons} km/L</span></li>
     <li class="list-group-item d-flex justify-content-between align-items-center"><span><i class="fas fa-tint text-primary me-2"></i>Total BBM Dipakai</span><span class="fw-bold">${fmtNum(s.totalLiters)} L</span></li>
     <li class="list-group-item d-flex justify-content-between align-items-center"><span><i class="fas fa-map-signs text-warning me-2"></i>Total Jarak Tempuh</span><span class="fw-bold">${fmtNum(s.totalDistance)} km</span></li>`;
-
   renderChart('chartConsumption', data.consumptionChart, 'line', 'km/L', '#34a853');
   renderChart('chartMonthly', data.monthlyCost, 'bar', 'Total Biaya', '#1a73e8');
   try { renderTrend(data.monthlyCost); } catch (e) {}
   el('comparisonSection').style.display = 'none';
   try { renderServiceStatus(); } catch (e) {}
   el('btnLoadCompWrapper').style.display = state.vehicles.length > 1 ? 'block' : 'none';
+  try { renderAdvancedDashboard(data, filterMonth); } catch (e) { console.warn('advanced render', e); }
 }
+
+function renderAdvancedDashboard(data, filterMonth) {
+  const s = data.stats || {}; const wrap = el('statCards'); if (!wrap) return;
+  if (data.budget) {
+    const b = data.budget;
+    const color = b.percent >= 100 ? 'danger' : b.percent >= 80 ? 'warning' : 'success';
+    wrap.insertAdjacentHTML('beforeend', `<div class="col-12 mt-2"><div class="stat-card"><div class="d-flex justify-content-between align-items-center mb-2"><div class="label"><i class="fas fa-wallet me-1"></i>Anggaran Bulan Ini</div><small class="text-${color} fw-bold">${fmtRp(b.spent)} / ${fmtRp(b.monthlyBudget)} (${b.percent}%)</small></div><div class="progress" style="height:10px"><div class="progress-bar bg-${color}" style="width:${Math.min(100, b.percent)}%"></div></div>${b.warning ? `<div class="small text-danger mt-2"><i class="fas fa-exclamation-triangle"></i> Sudah ${b.percent}% dari anggaran. Hati-hati!</div>` : ''}</div></div>`);
+  }
+  if (data.remainingTank) {
+    const rt = data.remainingTank;
+    wrap.insertAdjacentHTML('beforeend', `<div class="col-12 col-md-6 col-lg-4 mt-2"><div class="stat-card info"><i class="fas fa-gas-pump icon"></i><div class="label">Estimasi Sisa Tangki</div><div class="value">${fmtNum(rt.estKm)} <small>km</small></div><div class="small text-muted">±${rt.remainingLiters} L · ${rt.estDays !== null ? `isi lagi ~${rt.estDays} hari (${fmtDate(rt.estDate)})` : 'belum cukup data'}</div></div></div>`);
+  }
+  if (data.carbonComparison) {
+    const c = data.carbonComparison; const up = c.diff > 0;
+    wrap.insertAdjacentHTML('beforeend', `<div class="col-12 col-md-6 col-lg-8 mt-2"><div class="stat-card carbon"><i class="fas fa-leaf icon text-success"></i><div class="label">Jejak Karbon Bulan Ini vs Bulan Lalu</div><div class="value text-success">${c.thisMonth} kg <small class="text-muted">vs ${c.lastMonth} kg</small></div><div class="small ${up ? 'text-danger' : 'text-success'}"><i class="fas fa-arrow-${up ? 'up' : 'down'}"></i> ${Math.abs(c.diff).toFixed(2)} kg CO₂ ${up ? 'lebih banyak' : 'lebih sedikit'}</div></div></div>`);
+  }
+  if (data.tco && (data.tco.purchasePrice > 0 || data.tco.totalOwnership > 0)) {
+    const t = data.tco;
+    wrap.insertAdjacentHTML('beforeend', `<div class="col-12 mt-2"><div class="stat-card purple"><div class="label">Total Biaya Kepemilikan (TCO)</div><div class="value">${fmtRp(t.totalOwnership)}</div><div class="small text-muted">Operasional ${fmtRp(t.operatingCost)} + Beli ${fmtRp(t.purchasePrice)}${t.months > 0 ? ` · ≈ ${fmtRp(t.costPerMonth)}/bln selama ${t.months} bln` : ''} · ${fmtRp(t.costPerKm)}/km</div></div></div>`);
+  }
+  if (data.fuelTypeComparison && data.fuelTypeComparison.length > 1) {
+    const rows = data.fuelTypeComparison.map((f, i) => `<tr><td>${i === 0 ? '<span class="badge bg-success">Paling hemat</span> ' : ''}${esc(f.fuelType)}</td><td>${fmtRp(f.costPerKm)}/km</td><td>${f.avgConsumption} km/L</td><td>${f.count}×</td></tr>`).join('');
+    wrap.insertAdjacentHTML('beforeend', `<div class="col-12 mt-3"><div class="panel"><h6 class="mb-3"><i class="fas fa-balance-scale text-warning me-1"></i> Perbandingan Nyata per Jenis BBM</h6><div class="table-responsive"><table class="table table-sm"><thead><tr><th>Jenis BBM</th><th>Biaya per KM</th><th>Rata-rata km/L</th><th>Frekuensi</th></tr></thead><tbody>${rows}</tbody></table></div><div class="small text-muted mt-2">Biaya per km = total biaya ÷ jarak tempuh.</div></div></div>`);
+  }
+  if (data.stationRanking && data.stationRanking.length >= 2) {
+    const rows = data.stationRanking.slice(0, 8).map((st, i) => `<tr><td>${i + 1}. <strong>${esc(st.station)}</strong></td><td>${st.avgConsumption > 0 ? st.avgConsumption + ' km/L' : '-'}</td><td>${st.avgPrice ? fmtRp(st.avgPrice) : '-'}</td><td>${st.visits}×</td></tr>`).join('');
+    wrap.insertAdjacentHTML('beforeend', `<div class="col-12 col-lg-6 mt-3"><div class="panel"><h6 class="mb-3"><i class="fas fa-gas-pump text-primary me-1"></i> Peringkat SPBU (Efisiensi)</h6><div class="table-responsive"><table class="table table-sm mb-0"><thead><tr><th>SPBU</th><th>Rata km/L</th><th>Harga</th><th>Kunjungan</th></tr></thead><tbody>${rows}</tbody></table></div></div></div>`);
+  }
+  if (data.categoryBreakdown && Object.keys(data.categoryBreakdown).length > 0) {
+    const id = 'chartCategory_' + Date.now();
+    wrap.insertAdjacentHTML('beforeend', `<div class="col-12 col-lg-6 mt-3"><div class="panel"><h6 class="mb-3"><i class="fas fa-chart-pie text-warning me-1"></i> Biaya per Kategori</h6><div class="chart-container"><canvas id="${id}"></canvas></div></div></div>`);
+    const cats = Object.keys(data.categoryBreakdown);
+    const colors = ['#1a73e8','#34a853','#fbbc04','#ea4335','#9c27b0','#00acc1','#ff7043'];
+    applyChartTheme();
+    new Chart(el(id).getContext('2d'), { type: 'doughnut', data: { labels: cats, datasets: [{ data: cats.map(c => data.categoryBreakdown[c]), backgroundColor: colors.slice(0, cats.length) }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } } } });
+  }
+  if (data.fuelPriceTrend && data.fuelPriceTrend.length >= 2) {
+    const id = 'chartFuelPrice_' + Date.now();
+    wrap.insertAdjacentHTML('beforeend', `<div class="col-12 mt-3"><div class="panel"><h6 class="mb-3"><i class="fas fa-chart-line text-danger me-1"></i> Tren Harga BBM per Liter</h6><div class="chart-container" style="height:220px"><canvas id="${id}"></canvas></div></div></div>`);
+    applyChartTheme();
+    new Chart(el(id).getContext('2d'), { type: 'line', data: { labels: data.fuelPriceTrend.map(p => fmtDate(p.date)), datasets: [{ label: 'Harga/L', data: data.fuelPriceTrend.map(p => p.price), borderColor: '#ea4335', backgroundColor: '#ea433520', fill: true, tension: 0.3, pointRadius: 3 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: false, ticks: { callback: v => 'Rp ' + fmtNum(v) } } } } });
+  }
+}
+
+async function loadMultiSummary() {
+  try {
+    const list = await callApi('apiGetMultiSummary') || [];
+    if (!list.length) { el('multiSummary').innerHTML = ''; return; }
+    const totalMonth = list.reduce((s, v) => s + (v.monthCost || 0), 0);
+    const top = [...list].sort((a, b) => b.monthCost - a.monthCost)[0];
+    el('multiSummary').innerHTML = `<div class="panel mb-3"><div class="d-flex justify-content-between align-items-center mb-2"><h6 class="mb-0"><i class="fas fa-th-large text-info me-1"></i> Ringkasan Semua Kendaraan (Bulan Ini)</h6><button class="btn btn-sm btn-link p-0" onclick="el('multiSummary').innerHTML=''">Tutup</button></div><div class="small text-muted mb-2">Total biaya semua kendaraan: <b>${fmtRp(totalMonth)}</b> · Paling boros: <b>${esc(top ? top.name : '-')}</b> (${fmtRp(top ? top.monthCost : 0)})</div><div class="table-responsive"><table class="table table-sm mb-0"><thead><tr><th>Kendaraan</th><th>Biaya Bulan Ini</th><th>Odometer</th><th>Pengingat Mendesak</th></tr></thead><tbody>${list.map(v => `<tr><td><strong>${esc(v.name || '-')}</strong><br><small class="text-muted">${esc(v.licensePlate || '')}</small></td><td>${fmtRp(v.monthCost)}</td><td>${fmtNum(v.latestOdometer)} km</td><td>${v.mostUrgent ? `<span class="badge bg-${v.mostUrgent.daysLeft < 0 ? 'danger' : v.mostUrgent.daysLeft <= 7 ? 'warning' : 'secondary'}">${esc(v.mostUrgent.serviceTypes)} (${v.mostUrgent.daysLeft < 0 ? 'lewat' : v.mostUrgent.daysLeft + ' hr'})</span>` : '<span class="text-muted small">-</span>'}</td></tr>`).join('')}</tbody></table></div></div>`;
+  } catch (e) { toast('Gagal memuat ringkasan: ' + e.message, 'error'); }
+}
+
+async function loadMonthlyBudget() { try { const s = await callApi('apiGetSettings'); if (el('setMonthlyBudget')) el('setMonthlyBudget').value = s.monthlyBudget || ''; } catch (e) {} }
+async function saveMonthlyBudget() { const v = el('setMonthlyBudget').value || '0'; try { await callApi('apiUpdateSetting', 'monthlyBudget', v); toast('Anggaran disimpan.'); state.loadedTabs.dash = false; } catch (e) { toast(e.message, 'error'); } }
 
 function renderServiceStatus() {
   const v = state.vehicles.find(x => String(x.id) === String(state.currentVehicleId)); if (!v) return;
@@ -2133,14 +1725,12 @@ function renderServiceStatus() {
     return { n: r.serviceTypes || r.title || 'Servis', txt: txt.join(' / '), lvl };
   }).sort((a, b) => b.lvl - a.lvl);
   const c = ['success', 'warning', 'danger'], l = ['Aman', 'Segera', 'Terlambat'];
-  el('statCards').insertAdjacentHTML('beforeend', `<div class="col-12 mt-2 mt-md-3"><div class="stat-card"><div class="label"><i class="fas fa-wrench"></i> Status Servis</div>` +
-    (rows.length ? rows.map(r => `<div class="svc-row"><span>${esc(r.n)}<br><small class="text-muted">${esc(r.txt)}</small></span><span class="badge bg-${c[r.lvl]}">${l[r.lvl]}</span></div>`).join('') : '<div class="small text-muted">Belum ada pengingat servis untuk kendaraan ini.</div>') + '</div></div>');
+  el('statCards').insertAdjacentHTML('beforeend', `<div class="col-12 mt-2 mt-md-3"><div class="stat-card"><div class="label"><i class="fas fa-wrench"></i> Status Servis</div>` + (rows.length ? rows.map(r => `<div class="svc-row"><span>${esc(r.n)}<br><small class="text-muted">${esc(r.txt)}</small></span><span class="badge bg-${c[r.lvl]}">${l[r.lvl]}</span></div>`).join('') : '<div class="small text-muted">Belum ada pengingat servis untuk kendaraan ini.</div>') + '</div></div>');
 }
 
 function renderTrend(mc) {
   if (!mc || Array.isArray(mc)) return;
   const k = Object.keys(mc).sort(); if (!k.length) return;
-  // FIX: pakai bulan kalender sebenarnya (sebelumnya "bulan ini" = bulan terakhir yang punya data)
   const now = new Date(), mk = d => d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0');
   const cur = Number(mc[mk(now)]) || 0, prev = Number(mc[mk(new Date(now.getFullYear(), now.getMonth() - 1, 1))]) || 0;
   let last = []; for (let i = 1; i <= 6; i++) last.push(mk(new Date(now.getFullYear(), now.getMonth() - i, 1)));
@@ -2148,16 +1738,10 @@ function renderTrend(mc) {
   const avg = last.reduce((a, x) => a + (Number(mc[x]) || 0), 0) / last.length;
   const pct = prev ? Math.round((cur - prev) / prev * 100) : null;
   const up = pct !== null && pct > 0;
-  el('statCards').insertAdjacentHTML('beforeend', `
-    <div class="col-12 col-lg-6 mt-2 mt-md-3"><div class="stat-card"><div class="label">Bulan Ini vs Bulan Lalu</div>
-      <div class="value">${fmtRp(cur)} ${pct === null ? '' : `<small class="${up ? 'text-danger' : 'text-success'}"><i class="fas fa-arrow-${up ? 'up' : 'down'}"></i> ${Math.abs(pct)}%</small>`}</div>
-      <div class="small text-muted">Bulan lalu: ${fmtRp(prev)}</div></div></div>
-    <div class="col-12 col-lg-6 mt-2 mt-md-3"><div class="stat-card"><div class="label">Estimasi Biaya Bulan Depan</div>
-      <div class="value">${fmtRp(Math.round(avg))}</div><div class="small text-muted">Rata-rata ${last.length} bulan terakhir</div></div></div>`);
+  el('statCards').insertAdjacentHTML('beforeend', `<div class="col-12 col-lg-6 mt-2 mt-md-3"><div class="stat-card"><div class="label">Bulan Ini vs Bulan Lalu</div><div class="value">${fmtRp(cur)} ${pct === null ? '' : `<small class="${up ? 'text-danger' : 'text-success'}"><i class="fas fa-arrow-${up ? 'up' : 'down'}"></i> ${Math.abs(pct)}%</small>`}</div><div class="small text-muted">Bulan lalu: ${fmtRp(prev)}</div></div></div><div class="col-12 col-lg-6 mt-2 mt-md-3"><div class="stat-card"><div class="label">Estimasi Biaya Bulan Depan</div><div class="value">${fmtRp(Math.round(avg))}</div><div class="small text-muted">Rata-rata ${last.length} bulan terakhir</div></div></div>`);
 }
 
 function showComparisonSection() { el('comparisonSection').style.display = 'block'; el('btnLoadCompWrapper').style.display = 'none'; loadComparison(); }
-
 async function loadComparison() {
   if (state.vehicles.length <= 1) { el('comparisonSection').style.display = 'none'; el('btnLoadCompWrapper').style.display = 'none'; return; }
   el('comparisonSection').style.display = 'block';
@@ -2168,35 +1752,18 @@ async function loadComparison() {
     const promises = state.vehicles.map(v => callApi('apiGetDashboard', v.id, ''));
     const results = (await Promise.allSettled(promises)).map(r => r.status === 'fulfilled' ? r.value : null);
     const labels = [], dataCons = [], dataCost = [];
-    results.forEach(res => {
-      if (res && !res.error && res.stats && res.vehicle) { labels.push(res.vehicle.name); dataCons.push(res.stats.avgConsumption); dataCost.push(res.stats.costPerKm); }
-    });
+    results.forEach(res => { if (res && !res.error && res.stats && res.vehicle) { labels.push(res.vehicle.name); dataCons.push(res.stats.avgConsumption); dataCost.push(res.stats.costPerKm); } });
     if (labels.length === 0) { toast('Tidak ada data untuk dibandingkan.', 'info'); el('comparisonSection').style.display = 'none'; el('btnLoadCompWrapper').style.display = 'block'; return; }
     applyChartTheme();
     const ctx = el('chartComparison').getContext('2d');
-    chartComp = new Chart(ctx, {
-      type: 'bar',
-      data: { labels, datasets: [
-        { label: 'Konsumsi (km/L)', data: dataCons, backgroundColor: '#34a853', yAxisID: 'y', borderRadius: 6, maxBarThickness: 60 },
-        { label: 'Biaya per KM (Rp)', data: dataCost, type: 'line', borderColor: '#ea4335', backgroundColor: '#ea4335', borderWidth: 3, pointRadius: 5, pointBackgroundColor: '#fff', pointBorderColor: '#ea4335', yAxisID: 'y1' }
-      ]},
-      options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'top' } }, scales: {
-        y: { type: 'linear', display: true, position: 'left', title: { display: true, text: 'Konsumsi (km/L)' }, beginAtZero: true },
-        y1: { type: 'linear', display: true, position: 'right', title: { display: true, text: 'Biaya per KM (Rp)' }, beginAtZero: true, grid: { drawOnChartArea: false } }
-      }}
-    });
-  } catch (err) { toast('Gagal memuat perbandingan: ' + err.message, 'error'); } 
+    chartComp = new Chart(ctx, { type: 'bar', data: { labels, datasets: [{ label: 'Konsumsi (km/L)', data: dataCons, backgroundColor: '#34a853', yAxisID: 'y', borderRadius: 6, maxBarThickness: 60 }, { label: 'Biaya per KM (Rp)', data: dataCost, type: 'line', borderColor: '#ea4335', backgroundColor: '#ea4335', borderWidth: 3, pointRadius: 5, pointBackgroundColor: '#fff', pointBorderColor: '#ea4335', yAxisID: 'y1' }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'top' } }, scales: { y: { type: 'linear', display: true, position: 'left', title: { display: true, text: 'Konsumsi (km/L)' }, beginAtZero: true }, y1: { type: 'linear', display: true, position: 'right', title: { display: true, text: 'Biaya per KM (Rp)' }, beginAtZero: true, grid: { drawOnChartArea: false } } } } });
+  } catch (err) { toast('Gagal memuat perbandingan: ' + err.message, 'error'); }
   finally { if (iconComp) iconComp.classList.remove('fa-spin'); if (btnComp) btnComp.disabled = false; }
 }
 
-function applyChartTheme() {
-  const dark = document.documentElement.getAttribute('data-bs-theme') === 'dark';
-  Chart.defaults.color = dark ? '#cccccc' : '#666666';
-  Chart.defaults.borderColor = dark ? 'rgba(255,255,255,.12)' : 'rgba(0,0,0,.1)';
-}
+function applyChartTheme() { const dark = document.documentElement.getAttribute('data-bs-theme') === 'dark'; Chart.defaults.color = dark ? '#cccccc' : '#666666'; Chart.defaults.borderColor = dark ? 'rgba(255,255,255,.12)' : 'rgba(0,0,0,.1)'; }
 function renderChart(canvasId, dataPoints, type, label, color) {
-  applyChartTheme();
-  const canvas = el(canvasId); if (!canvas) return;
+  applyChartTheme(); const canvas = el(canvasId); if (!canvas) return;
   const ctx = canvas.getContext('2d');
   if (canvasId === 'chartConsumption' && chartC) { try { chartC.destroy(); } catch (e) {} chartC = null; }
   if (canvasId === 'chartMonthly' && chartM) { try { chartM.destroy(); } catch (e) {} chartM = null; }
@@ -2216,25 +1783,11 @@ function applyFillupFilter() {
   if (end) data = data.filter(f => f.date <= end);
   el('fillupCountInfo').innerHTML = `Menampilkan <b>${data.length}</b> data`;
   if (data.length === 0) { el('fillupTbody').innerHTML = '<tr><td colspan="9" class="text-center py-4 text-muted">Tidak ada data.</td></tr>'; return; }
-  el('fillupTbody').innerHTML = data.map(f => `
-    <tr>
-      <td>${esc(fmtDate(f.date))}</td><td>${fmtNum(f.odometer)}</td>
-      <td>${f.distance ? `<span class="badge bg-info text-dark">+${fmtNum(f.distance)} km</span>` : '-'}</td>
-      <td>${esc(f.fuelAmount)} L <span class="badge bg-secondary text-xs">${esc(f.fuelType || '-')}</span></td>
-      <td>${fmtRp(f.fuelPrice)}</td><td class="fw-semibold">${fmtRp(f.totalCost)}</td>
-      <td>${esc(f.station || '-')}</td>
-      <td>${safeUrl(f.receiptUrl) ? `<a href="${esc(safeUrl(f.receiptUrl))}" target="_blank" rel="noopener" class="btn btn-sm btn-outline-secondary"><i class="fas fa-image"></i></a>` : '-'}</td>
-      <td class="text-end">
-        <div class="d-flex justify-content-end gap-1">
-          <button class="btn btn-sm btn-outline-primary icon-btn" onclick="editFillup('${esc(f.id)}')"><i class="fas fa-pen"></i></button>
-          <button class="btn btn-sm btn-outline-danger icon-btn" onclick="confirmDelete('fillup','${esc(f.id)}')"><i class="fas fa-trash"></i></button>
-        </div>
-      </td>
-    </tr>`).join('');
+  el('fillupTbody').innerHTML = data.map(f => `<tr><td>${esc(fmtDate(f.date))}</td><td>${fmtNum(f.odometer)}</td><td>${f.distance ? `<span class="badge bg-info text-dark">+${fmtNum(f.distance)} km</span>` : '-'}</td><td>${esc(f.fuelAmount)} L <span class="badge bg-secondary text-xs">${esc(f.fuelType || '-')}</span></td><td>${fmtRp(f.fuelPrice)}</td><td class="fw-semibold">${fmtRp(f.totalCost)}</td><td>${esc(f.station || '-')}</td><td>${safeUrl(f.receiptUrl) ? `<a href="${esc(safeUrl(f.receiptUrl))}" target="_blank" rel="noopener" class="btn btn-sm btn-outline-secondary"><i class="fas fa-image"></i></a>` : '-'}</td><td class="text-end"><div class="d-flex justify-content-end gap-1"><button class="btn btn-sm btn-outline-primary icon-btn" onclick="editFillup('${esc(f.id)}')"><i class="fas fa-pen"></i></button><button class="btn btn-sm btn-outline-danger icon-btn" onclick="confirmDelete('fillup','${esc(f.id)}')"><i class="fas fa-trash"></i></button></div></td></tr>`).join('');
 }
 function resetFillupFilter() { el('filterFillupStart').value = ''; el('filterFillupEnd').value = ''; applyFillupFilter(); }
 
-function showFillupModal() { _showFillupModal(); try { const m = JSON.parse(localStorage.getItem('enzy_last_fill') || '{}'); if (m.st) el('fStation').value = m.st; if (m.ft && state.fuelTypes.some(f => String(f.id) === m.ft)) { el('fFuelTypeSelect').value = m.ft; onFuelTypeChange(); } } catch (e) {} }
+function showFillupModal() { _showFillupModal(); try { const m = JSON.parse(localStorage.getItem('enzy_last_fill') || '{}'); if (m.st) el('fStation').value = m.st; if (m.ft && state.fuelTypes.some(f => String(f.id) === m.ft)) { el('fFuelTypeSelect').value = m.ft; onFuelTypeChange(); } else if (m.price) el('fPrice').value = m.price; } catch (e) {} }
 document.addEventListener('change', e => {
   if (!e.target || e.target.id !== 'fOdometer') return;
   const last = Math.max(0, ...state.fillups.map(f => Number(f.odometer) || 0)), d = Number(e.target.value) - last;
@@ -2250,10 +1803,9 @@ function _showFillupModal() {
   else lastOdo = Number(state.vehicles.find(v => String(v.id) === String(state.currentVehicleId))?.initialOdometer) || '';
   el('fOdometer').value = lastOdo;
   el('fAmount').value = ''; el('fPrice').value = ''; el('fTotal').value = ''; el('fStation').value = ''; el('fNotes').value = ''; el('fPartial').checked = false; el('fLat').value = ''; el('fLng').value = '';
-  if (state.fuelTypes.length > 0) { el('fFuelTypeSelect').value = state.fuelTypes[0].id; onFuelTypeChange(); } else { el('fFuelTypeSelect').value = ''; }
+  if (state.fuelTypes.length > 0) { el('fFuelTypeSelect').value = state.fuelTypes[0].id; onFuelTypeChange(); } else el('fFuelTypeSelect').value = '';
   getModal('modalFillup').show();
 }
-
 function editFillup(id) {
   const f = state.fillups.find(x => String(x.id) === String(id)); if (!f) return;
   el('fId').value = f.id; el('fDate').value = f.date || ''; el('fOdometer').value = f.odometer || ''; el('fAmount').value = f.fuelAmount || ''; el('fPrice').value = f.fuelPrice || ''; el('fTotal').value = f.totalCost || '';
@@ -2265,16 +1817,41 @@ function editFillup(id) {
 }
 
 async function saveFillup() {
-  try { localStorage.setItem('enzy_last_fill', JSON.stringify({ st: el('fStation').value, ft: el('fFuelTypeSelect').value })); } catch (e) {}
+  try { localStorage.setItem('enzy_last_fill', JSON.stringify({ st: el('fStation').value, ft: el('fFuelTypeSelect').value, price: el('fPrice').value })); } catch (e) {}
   const id = el('fId').value;
-  const ftSelect = el('fFuelTypeSelect'), ftId = ftSelect.value, ftName = ftId ? ftSelect.options[ftSelect.selectedIndex].text : ((state.fillups.find(x => String(x.id) === String(el('fId').value)) || {}).fuelType || '');
-  const dateVal = el('fDate').value, odoNum = Number(el('fOdometer').value), amountNum = Number(el('fAmount').value), priceNum = Number(el('fPrice').value), totalNum = Number(el('fTotal').value) || (amountNum * priceNum);
+  const ftSelect = el('fFuelTypeSelect'), ftId = ftSelect.value;
+  const ftName = ftId ? ftSelect.options[ftSelect.selectedIndex].text : ((state.fillups.find(x => String(x.id) === String(id)) || {}).fuelType || '');
+  const dateVal = el('fDate').value, odoNum = Number(el('fOdometer').value);
+  const amountNum = Number(el('fAmount').value), priceNum = Number(el('fPrice').value);
+  const totalNum = Number(el('fTotal').value) || (amountNum * priceNum);
   if (!dateVal || !isFinite(odoNum) || odoNum < 0 || !isFinite(amountNum) || amountNum <= 0 || !isFinite(priceNum) || priceNum <= 0) { toast('Lengkapi form dengan benar.', 'error'); return; }
   const others = state.fillups.filter(f => String(f.id) !== String(id));
   const prevF = others.filter(f => f.date <= dateVal).sort((a, b) => a.date < b.date ? 1 : a.date > b.date ? -1 : Number(b.odometer) - Number(a.odometer))[0];
-  const nextF = others.filter(f => f.date > dateVal).sort((a, b) => a.date < b.date ? -1 : a.date > b.date ? 1 : 0)[0];
+  const nextF = others.filter(f => f.date > dateVal).sort((a, b) => a.date < b.date ? -1 : 1)[0];
   if (prevF && odoNum < Number(prevF.odometer)) { toast('Odometer lebih kecil dari pengisian sebelumnya (' + fmtNum(prevF.odometer) + ' km).', 'error'); return; }
   if (nextF && odoNum > Number(nextF.odometer)) { toast('Odometer lebih besar dari pengisian sesudahnya (' + fmtNum(nextF.odometer) + ' km).', 'error'); return; }
+  try {
+    const chk = await callApi('apiCheckFillupAnomalies', { id, vehicleId: state.currentVehicleId, date: dateVal, odometer: odoNum, fuelAmount: amountNum, fuelPrice: priceNum, fuelType: ftName });
+    if (chk && chk.warnings && chk.warnings.length > 0) {
+      el('anomalyList').innerHTML = chk.warnings.map(w => `<li>${esc(w.message)}</li>`).join('');
+      getModal('modalAnomaly').show();
+      return;
+    }
+  } catch (e) { /* lanjut simpan kalau cek gagal */ }
+  await _executeFillupSave(id, dateVal, odoNum, amountNum, ftName, priceNum, totalNum);
+}
+
+async function forceSaveFillup() { closeModal('modalAnomaly'); await saveFillupSkipCheck(); }
+async function saveFillupSkipCheck() {
+  const id = el('fId').value;
+  const ftSelect = el('fFuelTypeSelect'), ftId = ftSelect.value;
+  const ftName = ftId ? ftSelect.options[ftSelect.selectedIndex].text : ((state.fillups.find(x => String(x.id) === String(id)) || {}).fuelType || '');
+  const dateVal = el('fDate').value, odoNum = Number(el('fOdometer').value), amountNum = Number(el('fAmount').value), priceNum = Number(el('fPrice').value);
+  const totalNum = Number(el('fTotal').value) || (amountNum * priceNum);
+  await _executeFillupSave(id, dateVal, odoNum, amountNum, ftName, priceNum, totalNum);
+}
+
+async function _executeFillupSave(id, dateVal, odoNum, amountNum, ftName, priceNum, totalNum) {
   setBtnLoading('btnSaveFillup', true);
   try {
     let receiptUrl = el('fReceiptUrlOld').value;
@@ -2294,35 +1871,21 @@ function applyExpenseFilter() {
   if (end) data = data.filter(e => e.date <= end);
   el('expenseCountInfo').innerHTML = `Menampilkan <b>${data.length}</b> data`;
   if (data.length === 0) { el('expenseTbody').innerHTML = '<tr><td colspan="6" class="text-center py-4 text-muted">Tidak ada data.</td></tr>'; return; }
-  el('expenseTbody').innerHTML = data.map(e => `
-    <tr>
-      <td>${esc(fmtDate(e.date))}</td><td><span class="badge bg-secondary">${esc(e.category || '-')}</span></td>
-      <td class="fw-semibold">${fmtRp(e.amount)}</td><td>${esc(e.notes || '-')}</td>
-      <td>${safeUrl(e.receiptUrl) ? `<a href="${esc(safeUrl(e.receiptUrl))}" target="_blank" rel="noopener" class="btn btn-sm btn-outline-secondary"><i class="fas fa-image"></i></a>` : '-'}</td>
-      <td class="text-end">
-        <div class="d-flex justify-content-end gap-1">
-          <button class="btn btn-sm btn-outline-primary icon-btn" onclick="editExpense('${esc(e.id)}')"><i class="fas fa-pen"></i></button>
-          <button class="btn btn-sm btn-outline-danger icon-btn" onclick="confirmDelete('expense','${esc(e.id)}')"><i class="fas fa-trash"></i></button>
-        </div>
-      </td>
-    </tr>`).join('');
+  el('expenseTbody').innerHTML = data.map(e => `<tr><td>${esc(fmtDate(e.date))}</td><td><span class="badge bg-secondary">${esc(e.category || '-')}</span></td><td class="fw-semibold">${fmtRp(e.amount)}</td><td>${esc(e.notes || '-')}</td><td>${safeUrl(e.receiptUrl) ? `<a href="${esc(safeUrl(e.receiptUrl))}" target="_blank" rel="noopener" class="btn btn-sm btn-outline-secondary"><i class="fas fa-image"></i></a>` : '-'}</td><td class="text-end"><div class="d-flex justify-content-end gap-1"><button class="btn btn-sm btn-outline-primary icon-btn" onclick="editExpense('${esc(e.id)}')"><i class="fas fa-pen"></i></button><button class="btn btn-sm btn-outline-danger icon-btn" onclick="confirmDelete('expense','${esc(e.id)}')"><i class="fas fa-trash"></i></button></div></td></tr>`).join('');
 }
 function resetExpenseFilter() { el('filterExpenseStart').value = ''; el('filterExpenseEnd').value = ''; applyExpenseFilter(); }
-
 function showExpenseModal() {
   if (!state.currentVehicleId) { toast('Pilih kendaraan', 'error'); return; }
   el('eId').value = ''; el('eReceiptUrlOld').value = ''; el('eDate').value = todayStr(); el('eCategory').value = 'Servis'; el('eAmount').value = ''; el('eNotes').value = '';
   selectedExpenseFile = null; el('eReceiptPreview').innerHTML = ''; el('eReceiptCamera').value = ''; el('eReceiptGallery').value = '';
   getModal('modalExpense').show();
 }
-
 function editExpense(id) {
   const e = state.expenses.find(x => String(x.id) === String(id)); if (!e) return;
   el('eId').value = e.id; el('eDate').value = e.date || ''; el('eCategory').value = e.category || 'Servis'; el('eAmount').value = e.amount || ''; el('eNotes').value = e.notes || ''; el('eReceiptUrlOld').value = e.receiptUrl || '';
   selectedExpenseFile = null; el('eReceiptPreview').innerHTML = e.receiptUrl ? '<i class="fas fa-check-circle"></i> Struk sudah ada' : ''; el('eReceiptCamera').value = ''; el('eReceiptGallery').value = '';
   getModal('modalExpense').show();
 }
-
 async function saveExpense() {
   const id = el('eId').value, dateVal = el('eDate').value, amountNum = Number(el('eAmount').value);
   if (!dateVal || !isFinite(amountNum) || amountNum <= 0) { toast('Lengkapi form dengan benar.', 'error'); return; }
@@ -2337,15 +1900,16 @@ async function saveExpense() {
   } catch (err) { toast(err.message, 'error'); } finally { setBtnLoading('btnSaveExpense', false); }
 }
 
-function showVehicleModal() { el('vId').value = ''; ['vName', 'vPlate', 'vMake', 'vModel', 'vYear', 'vFuelType', 'vTank', 'vOdo'].forEach(id => el(id).value = ''); getModal('modalVehicle').show(); }
+function showVehicleModal() { el('vId').value = ''; ['vName','vPlate','vMake','vModel','vYear','vFuelType','vTank','vOdo','vPurchasePrice','vPurchaseDate','vTargetKmL'].forEach(id => el(id).value = ''); getModal('modalVehicle').show(); }
 function editVehicle(id) {
   const v = state.vehicles.find(x => String(x.id) === String(id)); if (!v) return;
   el('vId').value = v.id; el('vName').value = v.name || ''; el('vPlate').value = v.licensePlate || ''; el('vMake').value = v.make || ''; el('vModel').value = v.model || ''; el('vYear').value = v.year || ''; el('vFuelType').value = v.fuelType || ''; el('vTank').value = v.tankCapacity || ''; el('vOdo').value = v.initialOdometer || '';
+  el('vPurchasePrice').value = v.purchasePrice || ''; el('vPurchaseDate').value = v.purchaseDate || ''; el('vTargetKmL').value = v.targetKmL || '';
   getModal('modalVehicle').show();
 }
 async function saveVehicle() {
   const id = el('vId').value;
-  const data = { name: el('vName').value.trim(), licensePlate: el('vPlate').value.trim(), make: el('vMake').value.trim(), model: el('vModel').value.trim(), year: el('vYear').value, fuelType: el('vFuelType').value, tankCapacity: el('vTank').value, initialOdometer: el('vOdo').value };
+  const data = { name: el('vName').value.trim(), licensePlate: el('vPlate').value.trim(), make: el('vMake').value.trim(), model: el('vModel').value.trim(), year: el('vYear').value, fuelType: el('vFuelType').value, tankCapacity: el('vTank').value, initialOdometer: el('vOdo').value, purchasePrice: el('vPurchasePrice').value, purchaseDate: el('vPurchaseDate').value, targetKmL: el('vTargetKmL').value };
   if (!data.name) { toast('Nama wajib diisi.', 'error'); return; }
   setBtnLoading('btnSaveVehicle', true);
   try {
@@ -2362,7 +1926,7 @@ async function saveFuelType() {
   const id = el('ftId').value; const data = { name: el('ftName').value.trim(), price: el('ftPrice').value };
   if (!data.name || !data.price) { toast('Lengkapi form', 'error'); return; }
   setBtnLoading('btnSaveFuelType', true);
-  try { const res = id ? await callApi('apiUpdateFuelType', id, data) : await callApi('apiAddFuelType', data); closeModal('modalFuelType'); toast(res.message); await loadFuelTypes(); state.loadedTabs.settings = false; await loadTabData('settings'); } 
+  try { const res = id ? await callApi('apiUpdateFuelType', id, data) : await callApi('apiAddFuelType', data); closeModal('modalFuelType'); toast(res.message); await loadFuelTypes(); state.loadedTabs.settings = false; await loadTabData('settings'); }
   catch (err) { toast(err.message, 'error'); } finally { setBtnLoading('btnSaveFuelType', false); }
 }
 
@@ -2382,6 +1946,7 @@ function confirmDelete(type, id) {
     } catch (err) { toast(err.message, 'error'); }
   };
 }
+
 document.querySelector('[data-bs-target="#tabMap"]').addEventListener('shown.bs.tab', () => {
   if (!map) return;
   map.invalidateSize();
