@@ -334,7 +334,8 @@
               <i class="fas fa-sync-alt"></i> <span class="d-none d-md-inline">Refresh</span>
             </button>
           </div>
-          <div id="map"></div>
+                <div id="mapInfo" class="mb-2"></div>
+      <div id="map"></div>
         </div>
       </div>
 
@@ -776,7 +777,7 @@
 <div id="toastContainer"></div>
 
 <script>
-const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbzJi2LjlwJ6-3f44DtLwuznaHV8P8XhFCAwadq1pwRQecJuc31gecL2N7QXob5OVBkNbw/exec';
+const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbz_zbBDRLIyUtNlOVh7YMCHJTw1qevlxGzt8yMzpqU2BiUFor9BIRoK1e7wj9vUoLrw9g/exec';
 try { fetch(WEB_APP_URL, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ action: 'apiPing' }) }).catch(() => {}); } catch (e) {}
 
 let _busy = 0;
@@ -955,8 +956,19 @@ function locateMe() {
 function renderMapMarkers() {
   if (!map) initMap();
   mapMarkers.forEach(m => map.removeLayer(m)); mapMarkers = [];
-  const validLocations = state.fillups.filter(f => { const lat = Number(f.latitude), lng = Number(f.longitude); return isFinite(lat) && isFinite(lng) && lat !== 0 && lng !== 0; });
-  if (validLocations.length === 0) return;
+  
+  const validLocations = state.fillups.filter(f => { 
+    const lat = Number(f.latitude), lng = Number(f.longitude); 
+    return isFinite(lat) && isFinite(lng) && lat !== 0 && lng !== 0; 
+  });
+  
+  const infoBox = el('mapInfo');
+  if (validLocations.length === 0) {
+    if (infoBox) infoBox.innerHTML = '<div class="alert alert-warning small mb-0"><i class="fas fa-info-circle"></i> Belum ada data pengisian BBM dengan koordinat GPS. Saat mengisi BBM, pastikan Anda menekan tombol <b>GPS</b> di samping nama SPBU agar lokasi tersimpan.</div>';
+    return;
+  }
+  if (infoBox) infoBox.innerHTML = '';
+  
   const bounds = L.latLngBounds();
   validLocations.forEach(f => {
     const lat = Number(f.latitude), lng = Number(f.longitude);
