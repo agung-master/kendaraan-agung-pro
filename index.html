@@ -943,6 +943,21 @@ function initMap() {
 }
 
 function locateMe() {
+  if (!navigator.geolocation) { toast('GPS tidak didukung browser ini', 'error'); return; }
+  toast('Mencari lokasi...', 'info');
+  navigator.geolocation.getCurrentPosition(
+    (pos) => {
+      const lat = pos.coords.latitude, lng = pos.coords.longitude;
+      map.setView([lat, lng], 16);
+      if (currentLocMarker) map.removeLayer(currentLocMarker);
+      currentLocMarker = L.circleMarker([lat, lng], { radius: 8, fillColor: '#1a73e8', color: '#fff', weight: 3, opacity: 1, fillOpacity: 1 }).addTo(map).bindPopup('<b>Lokasi Anda Saat Ini</b>').openPopup();
+      toast('Lokasi ditemukan!', 'success');
+    },
+    () => { toast('Gagal mendapatkan lokasi. Pastikan izin GPS aktif.', 'error'); },
+    { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+  );
+}
+
 // ============================================================
 // FITUR PENCARIAN SPBU TERDEKAT (GPS + Overpass API)
 // ============================================================
@@ -1002,7 +1017,7 @@ async function findNearbySPBU() {
               <i class="fas fa-route"></i> Rute Google Maps
             </a>
           </div>
-        `);
+        );
         
         window.nearbyMarkers.push(marker);
         bounds.extend([sLat, sLng]);
@@ -1019,20 +1034,6 @@ async function findNearbySPBU() {
   }, 
   () => { toast('Gagal mendapatkan lokasi. Pastikan izin GPS aktif.', 'error'); },
   { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 });
-}
-  if (!navigator.geolocation) { toast('GPS tidak didukung browser ini', 'error'); return; }
-  toast('Mencari lokasi...', 'info');
-  navigator.geolocation.getCurrentPosition(
-    (pos) => {
-      const lat = pos.coords.latitude, lng = pos.coords.longitude;
-      map.setView([lat, lng], 16);
-      if (currentLocMarker) map.removeLayer(currentLocMarker);
-      currentLocMarker = L.circleMarker([lat, lng], { radius: 8, fillColor: '#1a73e8', color: '#fff', weight: 3, opacity: 1, fillOpacity: 1 }).addTo(map).bindPopup('<b>Lokasi Anda Saat Ini</b>').openPopup();
-      toast('Lokasi ditemukan!', 'success');
-    },
-    () => { toast('Gagal mendapatkan lokasi. Pastikan izin GPS aktif.', 'error'); },
-    { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
-  );
 }
 
 function renderMapMarkers() {
