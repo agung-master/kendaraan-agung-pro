@@ -328,11 +328,16 @@
 
       <div class="tab-pane fade" id="tabMap">
         <div class="panel">
-          <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
-            <h5 class="mb-0"><i class="fas fa-map-marked-alt text-danger me-2"></i>Heatmap Lokasi Pengisian BBM</h5>
-            <button class="btn btn-sm btn-outline-primary refresh-btn" onclick="refreshTab('map', this)" title="Muat ulang data peta">
-              <i class="fas fa-sync-alt"></i> <span class="d-none d-md-inline">Refresh</span>
-            </button>
+                    <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+            <h5 class="mb-0"><i class="fas fa-map-marked-alt text-danger me-2"></i>Peta Lokasi SPBU</h5>
+            <div class="d-flex gap-2 w-100 w-md-auto mt-2 mt-md-0">
+              <button class="btn btn-primary flex-grow-1" onclick="findNearbySPBU()">
+                <i class="fas fa-location-arrow"></i> Cari SPBU Terdekat
+              </button>
+              <button class="btn btn-sm btn-outline-primary refresh-btn" onclick="refreshTab('map', this)" title="Muat ulang data peta">
+                <i class="fas fa-sync-alt"></i> <span class="d-none d-md-inline">Refresh</span>
+              </button>
+            </div>
           </div>
                 <div id="mapInfo" class="mb-2"></div>
       <div id="map"></div>
@@ -777,7 +782,7 @@
 <div id="toastContainer"></div>
 
 <script>
-const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbz_zbBDRLIyUtNlOVh7YMCHJTw1qevlxGzt8yMzpqU2BiUFor9BIRoK1e7wj9vUoLrw9g/exec';
+const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbx7vvsIkFZU0h0O0GMqz082uyAU-L7x_20Xjcvdy677jfjoHK8FspJIVfF3ueR4QXLqug/exec';
 try { fetch(WEB_APP_URL, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ action: 'apiPing' }) }).catch(() => {}); } catch (e) {}
 
 let _busy = 0;
@@ -938,6 +943,83 @@ function initMap() {
 }
 
 function locateMe() {
+// ============================================================
+// FITUR PENCARIAN SPBU TERDEKAT (GPS + Overpass API)
+// ============================================================
+async function findNearbySPBU() {
+  if (!navigator.geolocation) { toast('Fitur GPS tidak didukung browser ini.', 'error'); return; }
+  
+  toast('Mencari lokasi Anda dan SPBU terdekat...', 'info');
+  if (!map) initMap();
+
+  navigator.geolocation.getCurrentPosition(async (pos) => {
+    const lat = pos.coords.latitude, lng = pos.coords.longitude;
+    
+    // Pindahkan peta ke lokasi pengguna
+    map.setView([lat, lng], 15);
+    
+    // Hapus penanda lokasi sebelumnya jika ada
+    if (currentLocMarker) map.removeLayer(currentLocMarker);
+    currentLocMarker = L.circleMarker([lat, lng], { radius: 8, fillColor: '#1a73e8', color: '#fff', weight: 3, opacity: 1, fillOpacity: 1 })
+      .addTo(map).bindPopup('<b>Lokasi Anda Saat Ini</b>').openPopup();
+
+    try {
+      // Query Overpass API: Cari SPBU dalam radius 5km (5000 meter)
+      const query = `[out:json];(node["amenity"="fuel"](around:5000,${lat},${lng}););out;`;
+      const res = await fetch(`https://overpass-api.de/api/interpreter?data=${encodeURIComponent(query)}`);
+      const data = await res.json();
+      
+      if (!data.elements || data.elements.length === 0) {
+        toast('Tidak ditemukan SPBU dalam radius 5 km dari lokasi Anda.', 'info');
+        return;
+      }
+
+      // Hapus marker SPBU terdekat sebelumnya agar tidak menumpuk
+      if (window.nearbyMarkers) {
+        window.nearbyMarkers.forEach(m => map.removeLayer(m));
+      }
+      window.nearbyMarkers = [];
+
+      const bounds = L.latLngBounds();
+      bounds.extend([lat, lng]); // Masukkan lokasi pengguna ke batas peta
+
+      data.elements.forEach(el => {
+        const sLat = el.lat, sLng = el.lon;
+        const tags = el.tags || {};
+        const name = tags.name || tags.brand || 'SPBU';
+        const brand = tags.brand ? ` (${tags.brand})` : '';
+        
+        // Buat marker berwarna oranye untuk SPBU terdekat
+        const marker = L.circleMarker([sLat, sLng], { radius: 7, fillColor: '#fbbc04', color: '#fff', weight: 2, opacity: 1, fillOpacity: 1 }).addTo(map);
+        
+        // Link ke Google Maps untuk navigasi rute
+        const gmapsLink = `https://www.google.com/maps/dir/?api=1&destination=${sLat},${sLng}`;
+        
+        marker.bindPopup(`
+          <div class="text-center">
+            <b style="font-size:14px;">${esc(name)}${esc(brand)}</b><br>
+            <a href="${gmapsLink}" target="_blank" class="btn btn-sm btn-primary mt-2" style="color:white; text-decoration:none;">
+              <i class="fas fa-route"></i> Rute Google Maps
+            </a>
+          </div>
+        `);
+        
+        window.nearbyMarkers.push(marker);
+        bounds.extend([sLat, sLng]);
+      });
+
+      // Sesuaikan zoom peta agar semua titik (Anda + SPBU) terlihat
+      map.fitBounds(bounds, { padding: [40, 40] });
+      toast(`Ditemukan ${data.elements.length} SPBU terdekat!`, 'success');
+
+    } catch (err) {
+      console.error(err);
+      toast('Gagal memuat data SPBU. Coba beberapa saat lagi.', 'error');
+    }
+  }, 
+  () => { toast('Gagal mendapatkan lokasi. Pastikan izin GPS aktif.', 'error'); },
+  { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 });
+}
   if (!navigator.geolocation) { toast('GPS tidak didukung browser ini', 'error'); return; }
   toast('Mencari lokasi...', 'info');
   navigator.geolocation.getCurrentPosition(
