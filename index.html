@@ -782,7 +782,7 @@
 <div id="toastContainer"></div>
 
 <script>
-const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbznBkkEw4CAY7X2W0-2jhm2edSXywqVon-5R7A6x5qvqZQwc7uQOmwn4i8DepXffFT5xA/exec';
+const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbz3hBhMj16zd_31YziZzOwO7W5hdKYB0yuZ9KbFjtJp2phOKwEsllJ588rQzEL2kRwC/exec';
 try { fetch(WEB_APP_URL, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ action: 'apiPing' }) }).catch(() => {}); } catch (e) {}
 
 let _busy = 0;
@@ -943,21 +943,6 @@ function initMap() {
 }
 
 function locateMe() {
-  if (!navigator.geolocation) { toast('GPS tidak didukung browser ini', 'error'); return; }
-  toast('Mencari lokasi...', 'info');
-  navigator.geolocation.getCurrentPosition(
-    (pos) => {
-      const lat = pos.coords.latitude, lng = pos.coords.longitude;
-      map.setView([lat, lng], 16);
-      if (currentLocMarker) map.removeLayer(currentLocMarker);
-      currentLocMarker = L.circleMarker([lat, lng], { radius: 8, fillColor: '#1a73e8', color: '#fff', weight: 3, opacity: 1, fillOpacity: 1 }).addTo(map).bindPopup('<b>Lokasi Anda Saat Ini</b>').openPopup();
-      toast('Lokasi ditemukan!', 'success');
-    },
-    () => { toast('Gagal mendapatkan lokasi. Pastikan izin GPS aktif.', 'error'); },
-    { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
-  );
-}
-
 // ============================================================
 // FITUR PENCARIAN SPBU TERDEKAT (GPS + Overpass API)
 // ============================================================
@@ -1017,7 +1002,7 @@ async function findNearbySPBU() {
               <i class="fas fa-route"></i> Rute Google Maps
             </a>
           </div>
-        );
+        `);
         
         window.nearbyMarkers.push(marker);
         bounds.extend([sLat, sLng]);
@@ -1034,6 +1019,20 @@ async function findNearbySPBU() {
   }, 
   () => { toast('Gagal mendapatkan lokasi. Pastikan izin GPS aktif.', 'error'); },
   { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 });
+}
+  if (!navigator.geolocation) { toast('GPS tidak didukung browser ini', 'error'); return; }
+  toast('Mencari lokasi...', 'info');
+  navigator.geolocation.getCurrentPosition(
+    (pos) => {
+      const lat = pos.coords.latitude, lng = pos.coords.longitude;
+      map.setView([lat, lng], 16);
+      if (currentLocMarker) map.removeLayer(currentLocMarker);
+      currentLocMarker = L.circleMarker([lat, lng], { radius: 8, fillColor: '#1a73e8', color: '#fff', weight: 3, opacity: 1, fillOpacity: 1 }).addTo(map).bindPopup('<b>Lokasi Anda Saat Ini</b>').openPopup();
+      toast('Lokasi ditemukan!', 'success');
+    },
+    () => { toast('Gagal mendapatkan lokasi. Pastikan izin GPS aktif.', 'error'); },
+    { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+  );
 }
 
 function renderMapMarkers() {
