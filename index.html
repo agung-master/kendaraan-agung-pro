@@ -870,7 +870,7 @@
 // ============================================================
 // KONFIGURASI & STATE - TEMPEL DISINI
 // ============================================================
-const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbxabZ0FU8_uMnKJnKSZ7kpettCrzjlOTcMtWRJxccD3aYOGMCJf6YkXtkFsSyfhVpkFdQ/exec';
+const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbx1pxKJjWcZVQx5f7I3FXoapk9855ejGGiTQgixBOzqKfanFM2AfBdDTs1xhmeRITmHYg/exec';
 
 // Pancing server (hilangkan cold start) sejak halaman dibuka, sebelum user selesai mengetik
 try { fetch(WEB_APP_URL, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ action: 'apiPing' }) }).catch(() => {}); } catch (e) {}
@@ -908,6 +908,8 @@ let currentUploadedFileId = null;
 const el = id => document.getElementById(id);
 const fmtRp = n => 'Rp ' + (Number(n) || 0).toLocaleString('id-ID');
 const fmtNum = n => (Number(n) || 0).toLocaleString('id-ID');
+const safeUrl = u => /^https:\/\//i.test(u || '') ? u : ''; // FIX: blokir javascript: pada tautan struk
+const csvSafe = s => (/^[=+@]/.test(s) || /^-[^\d.,\s]/.test(s)) ? "'" + s : s;
 
 function esc(v) {
   if (v === null || v === undefined) return '';
@@ -931,10 +933,11 @@ const todayStr = () => {
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
 };
 
+function seenKey() { return 'seen_notifs_v2_' + ((state.user && state.user.id) || ''); } // FIX: per pengguna
 function notifKey(r) { return `${r.id || ''}|${r.dueDate || ''}|${r.dueOdometer || ''}|${r.status || ''}`; }
 function getSeenNotifs() {
   try {
-    const raw = localStorage.getItem('seen_notifs_v2');
+    const raw = localStorage.getItem(seenKey());
     return raw ? (JSON.parse(raw) || []) : [];
   } catch (e) { return []; }
 }
@@ -1160,20 +1163,26 @@ async function callApi(action, ...args) {
   finally { busy(-1); }
 }
 
+// Kompres foto (maks 1600px, JPEG 80%) agar unggahan cepat & hemat kuota
+async function compressImage(file) {
+  const bmp = await createImageBitmap(file);
+  const sc = Math.min(1, 1600 / Math.max(bmp.width, bmp.height));
+  const c = document.createElement('canvas'); c.width = Math.round(bmp.width * sc); c.height = Math.round(bmp.height * sc);
+  c.getContext('2d').drawImage(bmp, 0, 0, c.width, c.height);
+  return c.toDataURL('image/jpeg', 0.8);
+}
+function readAsDataURL(file) {
+  return new Promise((resolve, reject) => { const r = new FileReader(); r.onload = () => resolve(r.result); r.onerror = () => reject(new Error('Gagal membaca file')); r.readAsDataURL(file); });
+}
 async function uploadToDrive(file, folderId) {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onload = async () => {
-      try {
-        const res = await callApi('apiUploadFile', {
-          base64Data: reader.result, fileName: file.name, mimeType: file.type || 'image/jpeg', folderId
-        });
-        if (res && res.success) resolve(res); else reject(new Error((res && res.error) || 'Gagal upload file.'));
-      } catch (err) { reject(err); }
-    };
-    reader.onerror = () => reject(new Error('Gagal membaca file'));
-    reader.readAsDataURL(file);
-  });
+  let dataUrl = null, mime = file.type || 'image/jpeg', name = file.name;
+  if (/^image\//.test(mime) && file.size > 400 * 1024) {
+    try { dataUrl = await compressImage(file); mime = 'image/jpeg'; name = name.replace(/\.[^.]+$/, '') + '.jpg'; } catch (e) { dataUrl = null; }
+  }
+  if (!dataUrl) dataUrl = await readAsDataURL(file);
+  const res = await callApi('apiUploadFile', { base64Data: dataUrl, fileName: name, mimeType: mime, folderId });
+  if (res && res.success) return res;
+  throw new Error((res && res.error) || 'Gagal upload file.');
 }
 
 // ============================================================
@@ -1228,6 +1237,7 @@ function initApp(boot) {
   el('btnLogin').disabled = false; el('loginSpinner').classList.add('d-none'); el('loginBtnText').textContent = 'Masuk'; el('loginPass').value = '';
   document.body.classList.toggle('viewer', state.user.role === 'viewer');
   state.loadedTabs = resetLoadedTabs(); startInactivityTimer();
+  try { const d0 = document.querySelector('[data-bs-target="#tabDash"]'); if (d0) bootstrap.Tab.getOrCreateInstance(d0).show(); } catch (e) {} // FIX: tab kosong setelah ganti akun
   const usersTabBtn = document.querySelector('[data-bs-target="#tabUsers"]');
   if (usersTabBtn) usersTabBtn.parentElement.style.display = state.user.role === 'admin' ? 'block' : 'none';
   const mu = document.querySelector('#bmore [data-t="tabUsers"]'); if (mu) mu.style.display = state.user.role === 'admin' ? 'block' : 'none';
@@ -1365,7 +1375,7 @@ function labelCells(w) {
   });
 }
 function exportTableCSV(w, name) {
-  const rows = [...w.querySelectorAll('tr')].filter(r => r.style.display !== 'none').map(r => [...r.children].slice(0, -1).map(c => '"' + c.textContent.trim().replace(/"/g, '""') + '"').join(','));
+  const rows = [...w.querySelectorAll('tr')].filter(r => r.style.display !== 'none').map(r => [...r.children].slice(0, -1).map(c => '"' + csvSafe(c.textContent.trim()).replace(/"/g, '""') + '"').join(','));
   const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob(['\ufeff' + rows.join('\n')], { type: 'text/csv' }));
   a.download = 'enzy_' + name + '_' + new Date().toISOString().slice(0, 10) + '.csv'; a.click();
 }
@@ -1407,6 +1417,7 @@ async function refreshAll(boot) {
     else if (activeTab === '#tabVehicles') await loadTabData('vehicles');
     else if (activeTab === '#tabSettings') await loadTabData('settings');
     else if (activeTab === '#tabUsers') await loadTabData('users');
+    else if (activeTab === '#tabDocs') await loadTabData('documents');
   } catch (err) { toast(err.message, 'error'); }
 }
 
@@ -1709,7 +1720,7 @@ function markNotifsAsRead() {
     if (!seenKeys.includes(key)) seenKeys.push(key);
   });
   const trimmed = seenKeys.slice(-500);
-  try { localStorage.setItem('seen_notifs_v2', JSON.stringify(trimmed)); } catch (e) {}
+  try { localStorage.setItem(seenKey(), JSON.stringify(trimmed)); } catch (e) {}
   el('notifBadge').classList.add('d-none');
 }
 
@@ -1981,7 +1992,7 @@ function exportCSV(type) {
     headers = ['Tanggal', 'Kategori', 'Jumlah', 'Catatan'];
     rows = data.map(e => [e.date, e.category, e.amount, e.notes || '']);
   }
-  const csvContent = [headers.join(','), ...rows.map(r => r.map(c => { let s = String(c); if (/^[=+@-]/.test(s)) s = "'" + s; return '"' + s.replace(/"/g, '""') + '"'; }).join(','))].join('\n');
+  const csvContent = [headers.join(','), ...rows.map(r => r.map(c => { let s = String(c); s = csvSafe(s); return '"' + s.replace(/"/g, '""') + '"'; }).join(','))].join('\n');
   const blob = new Blob(['\uFEFF' + csvContent], { type: 'text/csv;charset=utf-8;' });
   const link = document.createElement('a');
   link.setAttribute('href', URL.createObjectURL(blob)); link.setAttribute('download', `Enzy_Gempa_${type}_${todayStr()}.csv`);
@@ -2129,8 +2140,12 @@ function renderServiceStatus() {
 function renderTrend(mc) {
   if (!mc || Array.isArray(mc)) return;
   const k = Object.keys(mc).sort(); if (!k.length) return;
-  const cur = Number(mc[k[k.length - 1]]) || 0, prev = k.length > 1 ? Number(mc[k[k.length - 2]]) || 0 : 0;
-  const last = k.slice(-6), avg = last.reduce((a, x) => a + (Number(mc[x]) || 0), 0) / last.length;
+  // FIX: pakai bulan kalender sebenarnya (sebelumnya "bulan ini" = bulan terakhir yang punya data)
+  const now = new Date(), mk = d => d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0');
+  const cur = Number(mc[mk(now)]) || 0, prev = Number(mc[mk(new Date(now.getFullYear(), now.getMonth() - 1, 1))]) || 0;
+  let last = []; for (let i = 1; i <= 6; i++) last.push(mk(new Date(now.getFullYear(), now.getMonth() - i, 1)));
+  last = last.filter(x => x >= k[0]); if (!last.length) last = [mk(now)];
+  const avg = last.reduce((a, x) => a + (Number(mc[x]) || 0), 0) / last.length;
   const pct = prev ? Math.round((cur - prev) / prev * 100) : null;
   const up = pct !== null && pct > 0;
   el('statCards').insertAdjacentHTML('beforeend', `
@@ -2151,7 +2166,7 @@ async function loadComparison() {
   if (chartComp) { try { chartComp.destroy(); } catch (e) {} chartComp = null; }
   try {
     const promises = state.vehicles.map(v => callApi('apiGetDashboard', v.id, ''));
-    const results = await Promise.all(promises);
+    const results = (await Promise.allSettled(promises)).map(r => r.status === 'fulfilled' ? r.value : null);
     const labels = [], dataCons = [], dataCost = [];
     results.forEach(res => {
       if (res && !res.error && res.stats && res.vehicle) { labels.push(res.vehicle.name); dataCons.push(res.stats.avgConsumption); dataCost.push(res.stats.costPerKm); }
@@ -2208,7 +2223,7 @@ function applyFillupFilter() {
       <td>${esc(f.fuelAmount)} L <span class="badge bg-secondary text-xs">${esc(f.fuelType || '-')}</span></td>
       <td>${fmtRp(f.fuelPrice)}</td><td class="fw-semibold">${fmtRp(f.totalCost)}</td>
       <td>${esc(f.station || '-')}</td>
-      <td>${f.receiptUrl ? `<a href="${esc(f.receiptUrl)}" target="_blank" rel="noopener" class="btn btn-sm btn-outline-secondary"><i class="fas fa-image"></i></a>` : '-'}</td>
+      <td>${safeUrl(f.receiptUrl) ? `<a href="${esc(safeUrl(f.receiptUrl))}" target="_blank" rel="noopener" class="btn btn-sm btn-outline-secondary"><i class="fas fa-image"></i></a>` : '-'}</td>
       <td class="text-end">
         <div class="d-flex justify-content-end gap-1">
           <button class="btn btn-sm btn-outline-primary icon-btn" onclick="editFillup('${esc(f.id)}')"><i class="fas fa-pen"></i></button>
@@ -2252,7 +2267,7 @@ function editFillup(id) {
 async function saveFillup() {
   try { localStorage.setItem('enzy_last_fill', JSON.stringify({ st: el('fStation').value, ft: el('fFuelTypeSelect').value })); } catch (e) {}
   const id = el('fId').value;
-  const ftSelect = el('fFuelTypeSelect'), ftId = ftSelect.value, ftName = ftId ? ftSelect.options[ftSelect.selectedIndex].text : '';
+  const ftSelect = el('fFuelTypeSelect'), ftId = ftSelect.value, ftName = ftId ? ftSelect.options[ftSelect.selectedIndex].text : ((state.fillups.find(x => String(x.id) === String(el('fId').value)) || {}).fuelType || '');
   const dateVal = el('fDate').value, odoNum = Number(el('fOdometer').value), amountNum = Number(el('fAmount').value), priceNum = Number(el('fPrice').value), totalNum = Number(el('fTotal').value) || (amountNum * priceNum);
   if (!dateVal || !isFinite(odoNum) || odoNum < 0 || !isFinite(amountNum) || amountNum <= 0 || !isFinite(priceNum) || priceNum <= 0) { toast('Lengkapi form dengan benar.', 'error'); return; }
   const others = state.fillups.filter(f => String(f.id) !== String(id));
@@ -2283,7 +2298,7 @@ function applyExpenseFilter() {
     <tr>
       <td>${esc(fmtDate(e.date))}</td><td><span class="badge bg-secondary">${esc(e.category || '-')}</span></td>
       <td class="fw-semibold">${fmtRp(e.amount)}</td><td>${esc(e.notes || '-')}</td>
-      <td>${e.receiptUrl ? `<a href="${esc(e.receiptUrl)}" target="_blank" rel="noopener" class="btn btn-sm btn-outline-secondary"><i class="fas fa-image"></i></a>` : '-'}</td>
+      <td>${safeUrl(e.receiptUrl) ? `<a href="${esc(safeUrl(e.receiptUrl))}" target="_blank" rel="noopener" class="btn btn-sm btn-outline-secondary"><i class="fas fa-image"></i></a>` : '-'}</td>
       <td class="text-end">
         <div class="d-flex justify-content-end gap-1">
           <button class="btn btn-sm btn-outline-primary icon-btn" onclick="editExpense('${esc(e.id)}')"><i class="fas fa-pen"></i></button>
@@ -2354,7 +2369,7 @@ async function saveFuelType() {
 function confirmDelete(type, id) {
   state.editTarget = { type, id };
   const labels = { fillup: 'pengisian BBM ini', expense: 'biaya ini', vehicle: 'kendaraan ini', fueltype: 'jenis BBM ini', user: 'pengguna ini', reminder: 'pengingat ini', document: 'dokumen ini' };
-  el('confirmText').textContent = `Hapus ${labels[type] || 'data ini'}? Tindakan ini tidak bisa dibatalkan.`;
+  el('confirmText').textContent = type === 'vehicle' ? 'Hapus kendaraan ini beserta SEMUA data pengisian BBM, biaya, pengingat, dan dokumennya? Tindakan ini tidak bisa dibatalkan.' : `Hapus ${labels[type] || 'data ini'}? Tindakan ini tidak bisa dibatalkan.`;
   const m = getModal('modalConfirm'); m.show();
   el('btnConfirmDelete').onclick = async () => {
     m.hide();
