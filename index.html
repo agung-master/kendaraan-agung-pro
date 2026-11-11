@@ -90,7 +90,17 @@
     .app-toast.success { border-left-color:#34a853; } .app-toast.error { border-left-color:#ea4335; } .app-toast.info { border-left-color:#1a73e8; }
     @keyframes slideIn { from { transform: translateX(120%); opacity:0; } to { transform:translateX(0); opacity:1; } }
     .chart-container { position: relative; height: 260px; }
-    #map { height: 500px; border-radius: var(--card-radius); z-index: 1; }
+    /* ===== PETA SPBU ===== */
+    #map { height: clamp(380px, 62vh, 700px); width: 100%; border-radius: var(--card-radius); z-index: 1; background: #e5e3df; }
+    .poi-wrap { background: transparent !important; border: 0 !important; }
+    .poi-pin { width: 30px; height: 30px; border-radius: 50%; border: 2px solid #fff; box-shadow: 0 2px 6px rgba(0,0,0,.45); display: flex; align-items: center; justify-content: center; color: #fff; font-size: 13px; }
+    .poi-pin.nearest { width: 38px; height: 38px; font-size: 16px; box-shadow: 0 0 0 5px rgba(217,48,37,.35), 0 2px 8px rgba(0,0,0,.5); animation: nearPulse 1.8s infinite; }
+    @keyframes nearPulse { 0%,100% { box-shadow: 0 0 0 4px rgba(217,48,37,.35), 0 2px 8px rgba(0,0,0,.5); } 50% { box-shadow: 0 0 0 10px rgba(217,48,37,.08), 0 2px 8px rgba(0,0,0,.5); } }
+    .me-dot { width: 18px; height: 18px; border-radius: 50%; background: #1a73e8; border: 3px solid #fff; box-shadow: 0 0 0 0 rgba(26,115,232,.6); animation: mePulse 2s infinite; }
+    @keyframes mePulse { 70% { box-shadow: 0 0 0 16px rgba(26,115,232,0); } 100% { box-shadow: 0 0 0 0 rgba(26,115,232,0); } }
+    .poi-ic { width: 34px; height: 34px; border-radius: 50%; color: #fff; display: inline-flex; align-items: center; justify-content: center; flex: 0 0 34px; font-size: 14px; }
+    .poi-item { cursor: pointer; }
+    .leaflet-popup-content { margin: 12px 14px; min-width: 190px; }
     .credit-text { font-size: 0.8rem; color: rgba(255, 255, 255, 0.8); margin-top: 20px; text-align: center; letter-spacing: 0.5px; }
     .credit-text strong { color: #fff; font-weight: 600; }
     .app-footer { margin-top: auto; padding: 20px 0; text-align: center; font-size: 0.8rem; color: #5f6368; border-top: 1px solid #e0e0e0; background: #fff; }
@@ -140,7 +150,7 @@
       .table td .d-flex { justify-content: flex-end; }
       .icon-btn { width: 36px; height: 36px; margin-left: 4px; }
       .chart-container { height: 220px !important; }
-      #map { height: 350px; }
+      #map { height: 58vh; min-height: 340px; }
       .dropdown-menu[aria-labelledby="notifDropdown"] { position: fixed !important; top: 60px !important; left: 2vw !important; right: 2vw !important; width: 96vw !important; margin: 0 auto; }
       body { padding-bottom: calc(72px + env(safe-area-inset-bottom, 0px)) !important; }
       .nav-tabs { display:none !important; }
@@ -328,19 +338,40 @@
 
       <div class="tab-pane fade" id="tabMap">
         <div class="panel">
-                    <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+          <div class="d-flex justify-content-between align-items-center mb-2 flex-wrap gap-2">
             <h5 class="mb-0"><i class="fas fa-map-marked-alt text-danger me-2"></i>Peta Lokasi SPBU</h5>
-            <div class="d-flex gap-2 w-100 w-md-auto mt-2 mt-md-0">
-              <button class="btn btn-primary flex-grow-1" onclick="findNearbySPBU()">
-                <i class="fas fa-location-arrow"></i> Cari SPBU Terdekat
-              </button>
-              <button class="btn btn-sm btn-outline-primary refresh-btn" onclick="refreshTab('map', this)" title="Muat ulang data peta">
-                <i class="fas fa-sync-alt"></i> <span class="d-none d-md-inline">Refresh</span>
-              </button>
-            </div>
+            <span class="badge bg-secondary" id="gpsBadge"><i class="fas fa-satellite-dish me-1"></i>GPS belum aktif</span>
           </div>
-                <div id="mapInfo" class="mb-2"></div>
-      <div id="map"></div>
+          <div class="d-flex gap-2 flex-wrap mb-2">
+            <button class="btn btn-primary flex-grow-1" id="btnNearby" onclick="findNearbySPBU()">
+              <i class="fas fa-location-arrow"></i> Cari SPBU Terdekat
+            </button>
+            <button class="btn btn-outline-primary" onclick="searchHere()" title="Cari di area peta yang sedang Anda lihat (berguna untuk survei sebelum berangkat)">
+              <i class="fas fa-search-location"></i> <span class="d-none d-md-inline">Cari di area ini</span>
+            </button>
+            <button class="btn btn-primary" id="btnFollow" onclick="toggleFollow()" title="Peta mengikuti posisi Anda secara realtime">
+              <i class="fas fa-crosshairs"></i> <span class="d-none d-md-inline">Ikuti saya</span>
+            </button>
+            <button class="btn btn-sm btn-outline-primary refresh-btn" onclick="refreshMap(this)" title="Muat ulang data peta">
+              <i class="fas fa-sync-alt"></i> <span class="d-none d-md-inline">Refresh</span>
+            </button>
+          </div>
+          <div class="d-flex gap-2 flex-wrap align-items-center mb-2">
+            <div id="poiChips" class="d-flex gap-1 flex-wrap"></div>
+            <select id="poiRadius" class="form-select form-select-sm w-auto ms-auto" onchange="changeRadius()" title="Radius pencarian">
+              <option value="2000">Radius 2 km</option>
+              <option value="5000" selected>Radius 5 km</option>
+              <option value="10000">Radius 10 km</option>
+              <option value="20000">Radius 20 km</option>
+            </select>
+          </div>
+          <div id="mapInfo" class="small text-muted mb-2"></div>
+          <div id="map"></div>
+          <div class="mt-3">
+            <h6 class="mb-2"><i class="fas fa-list-ol text-primary me-1"></i> Terdekat dari lokasi Anda</h6>
+            <div id="nearbyList" class="list-group"><div class="list-group-item text-muted small">Belum ada data. Tekan <b>Cari SPBU Terdekat</b> dan izinkan akses lokasi.</div></div>
+            <div class="small text-muted mt-2"><i class="fas fa-info-circle"></i> Data lokasi dari OpenStreetMap. Di beberapa daerah data mungkin belum lengkap; selalu cek kondisi SPBU di lapangan.</div>
+          </div>
         </div>
       </div>
 
@@ -782,7 +813,20 @@
 <div id="toastContainer"></div>
 
 <script>
-const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbzBGtdjxkt4QvYLNe70dnD_ntODDGil8GDcw7JFFvEzUXUaHSEOsoV09FpCqzAmTOVaxg/exec';
+// ╔══════════════════════════════════════════════════════════════════════╗
+// ║  👇👇👇  TEMPEL DISINI  (URL Web App dari Code.gs)  👇👇👇            ║
+// ║                                                                      ║
+// ║  Cara mendapatkan URL:                                               ║
+// ║  Apps Script → Terapkan/Deploy → Kelola penerapan → salin "URL       ║
+// ║  aplikasi web" (berakhiran /exec), lalu tempel MENGGANTIKAN teks     ║
+// ║  di antara tanda kutip ' ' pada baris const WEB_APP_URL di bawah.    ║
+// ║  Setiap membuat penerapan BARU, URL-nya berubah → tempel ulang.      ║
+// ╚══════════════════════════════════════════════════════════════════════╝
+const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbw0Nq9YuYmlSIVFsLXZAbAFOFVOeFRv6YPRQKGgsBpjM9BShY9M7nq3vNbQoTjs1OrkCg/exec';
+// ☝️☝️☝️  TEMPEL URL DI ATAS (di antara tanda kutip)  ☝️☝️☝️
+window.addEventListener('load', () => {
+  if (!/^https:\/\/script\.google\.com\/macros\/s\/[^\s']+\/exec$/.test(WEB_APP_URL)) toast('URL Web App belum benar. Tempel URL Code.gs di bagian "TEMPEL DISINI" pada kode index.html.', 'error');
+});
 try { fetch(WEB_APP_URL, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ action: 'apiPing' }) }).catch(() => {}); } catch (e) {}
 
 let _busy = 0;
@@ -925,141 +969,319 @@ async function scanReceipt() {
   finally { setBtnLoading('btnScanOCR', false); }
 }
 
+// ============================================================
+// PETA SPBU — GPS realtime + pencarian SPBU/fasilitas (OpenStreetMap / Overpass)
+// ============================================================
+const POI_TYPES = {
+  fuel:     { label: 'SPBU',    icon: 'fa-gas-pump',    color: '#e8710a', q: '["amenity"="fuel"]' },
+  charging: { label: 'SPKLU',   icon: 'fa-bolt',        color: '#188038', q: '["amenity"="charging_station"]' },
+  repair:   { label: 'Bengkel', icon: 'fa-wrench',      color: '#5f6368', q: '["shop"="car_repair"]' },
+  atm:      { label: 'ATM',     icon: 'fa-credit-card', color: '#1a73e8', q: '["amenity"="atm"]' },
+  hospital: { label: 'RS',      icon: 'fa-hospital',    color: '#d93025', q: '["amenity"="hospital"]' }
+};
+const FUEL_TAGS = { 'fuel:octane_90': 'RON 90', 'fuel:octane_92': 'RON 92', 'fuel:octane_95': 'RON 95', 'fuel:octane_98': 'RON 98', 'fuel:diesel': 'Solar/Diesel', 'fuel:cng': 'CNG', 'fuel:lpg': 'LPG' };
+const OVERPASS_URLS = ['https://overpass-api.de/api/interpreter', 'https://overpass.kumi.systems/api/interpreter', 'https://overpass.private.coffee/api/interpreter'];
+
+const geo = {
+  watchId: null, lat: null, lng: null, acc: null, follow: true, firstFix: false, denied: false,
+  userMarker: null, accCircle: null, poiLayer: null, histLayer: null,
+  items: [], markers: {}, active: new Set(['fuel']), radius: 5000,
+  lastSearch: null, lastSearchAt: 0, searching: false, nearestId: null
+};
+
+function distM(lat1, lng1, lat2, lng2) {
+  const R = 6371000, r = Math.PI / 180;
+  const dLat = (lat2 - lat1) * r, dLng = (lng2 - lng1) * r;
+  const a = Math.sin(dLat / 2) ** 2 + Math.cos(lat1 * r) * Math.cos(lat2 * r) * Math.sin(dLng / 2) ** 2;
+  return 2 * R * Math.asin(Math.sqrt(a));
+}
+function fmtDist(m) { return m < 1000 ? (Math.max(10, Math.round(m / 10) * 10)) + ' m' : (m / 1000).toFixed(1) + ' km'; }
+function refLL() {
+  if (geo.lat !== null) return [geo.lat, geo.lng];
+  if (geo.lastSearch) return [geo.lastSearch.lat, geo.lastSearch.lng];
+  if (map) { const c = map.getCenter(); return [c.lat, c.lng]; }
+  return null;
+}
+function setGps(kind, text) {
+  const b = el('gpsBadge'); if (!b) return;
+  const cls = { off: 'bg-secondary', wait: 'bg-warning text-dark', on: 'bg-success', err: 'bg-danger' }[kind] || 'bg-secondary';
+  b.className = 'badge ' + cls;
+  b.innerHTML = '<i class="fas fa-satellite-dish me-1"></i>' + esc(text);
+}
+function setMapStatus(html) { const i = el('mapInfo'); if (i) i.innerHTML = html; }
+function updateFollowBtn() {
+  const b = el('btnFollow'); if (!b) return;
+  b.classList.toggle('btn-primary', geo.follow); b.classList.toggle('btn-outline-secondary', !geo.follow);
+}
+
 function initMap() {
   if (map) return;
-  map = L.map('map').setView([-6.200000, 106.816666], 10);
-  L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}', { attribution: 'Tiles &copy; Esri', maxZoom: 19 }).addTo(map);
+  const osm = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19, attribution: '&copy; OpenStreetMap contributors' });
+  const esriStreet = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}', { maxZoom: 19, attribution: 'Tiles &copy; Esri' });
+  const esriSat = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', { maxZoom: 19, attribution: 'Tiles &copy; Esri' });
+
+  // Tampilan awal: seluruh Indonesia (otomatis pindah ke lokasi Anda begitu GPS aktif)
+  map = L.map('map', { center: [-2.5, 118], zoom: 5, minZoom: 3, layers: [osm], worldCopyJump: true, maxBounds: [[-85, -180], [85, 180]], maxBoundsViscosity: 1 });
+  geo.poiLayer = L.layerGroup().addTo(map);
+  geo.histLayer = L.layerGroup().addTo(map);
+
+  L.control.layers(
+    { 'Peta Jalan (detail)': osm, 'Peta Jalan (Esri)': esriStreet, 'Satelit': esriSat },
+    { 'SPBU & fasilitas': geo.poiLayer, 'Riwayat isi BBM': geo.histLayer },
+    { position: 'topright', collapsed: true }
+  ).addTo(map);
+  L.control.scale({ imperial: false, position: 'bottomleft' }).addTo(map);
+
   const locateControl = L.control({ position: 'topright' });
   locateControl.onAdd = function () {
-    const div = L.DomUtil.create('div', 'leaflet-bar leaflet-control leaflet-control-custom');
-    div.innerHTML = '<a href="#" title="Lokasi Saya"><i class="fas fa-crosshairs" style="font-size: 18px; line-height: 30px; color: #1a73e8;"></i></a>';
-    div.style.backgroundColor = 'white'; div.style.width = '34px'; div.style.height = '34px';
-    div.style.cursor = 'pointer'; div.style.display = 'flex'; div.style.alignItems = 'center'; div.style.justifyContent = 'center';
-    div.style.boxShadow = '0 1px 5px rgba(0,0,0,0.4)'; div.style.borderRadius = '4px';
-    div.onclick = function (e) { e.preventDefault(); e.stopPropagation(); locateMe(); };
+    const div = L.DomUtil.create('div', 'leaflet-bar leaflet-control');
+    div.innerHTML = '<a href="#" title="Lokasi Saya" role="button" style="display:flex;align-items:center;justify-content:center;width:34px;height:34px;"><i class="fas fa-crosshairs" style="font-size:18px;color:#1a73e8;"></i></a>';
+    L.DomEvent.disableClickPropagation(div);
+    div.onclick = function (e) { e.preventDefault(); locateMe(); };
     return div;
   };
   locateControl.addTo(map);
+
+  map.on('dragstart', () => { if (geo.follow) { geo.follow = false; updateFollowBtn(); } });
+
+  // Perbaikan peta terpotong: hitung ulang ukuran setiap kali kontainer berubah / tab ditampilkan
+  if (window.ResizeObserver) new ResizeObserver(() => { if (map) map.invalidateSize(); }).observe(el('map'));
+
+  el('poiChips').innerHTML = Object.entries(POI_TYPES).map(([k, t]) =>
+    `<button type="button" class="btn btn-sm" data-poi="${k}" onclick="togglePoi('${k}')"><i class="fas ${t.icon}"></i> ${t.label}</button>`).join('');
+  updatePoiChips(); updateFollowBtn();
+  el('nearbyList').addEventListener('click', ev => {
+    const row = ev.target.closest('.poi-item'); if (row && !ev.target.closest('a')) focusPOI(row.getAttribute('data-id'));
+  });
 }
 
+function updatePoiChips() {
+  document.querySelectorAll('#poiChips [data-poi]').forEach(b => {
+    const on = geo.active.has(b.getAttribute('data-poi'));
+    b.classList.toggle('btn-dark', on); b.classList.toggle('btn-outline-secondary', !on);
+  });
+}
+function togglePoi(k) {
+  if (geo.active.has(k)) geo.active.delete(k); else geo.active.add(k);
+  updatePoiChips();
+  if (!geo.active.size) { geo.items = []; renderPOI(); setMapStatus('Pilih minimal satu jenis lokasi.'); return; }
+  researchLast();
+}
+function changeRadius() { geo.radius = Number(el('poiRadius').value) || 5000; researchLast(); }
+function toggleFollow() {
+  geo.follow = !geo.follow; updateFollowBtn();
+  if (geo.follow) { if (geo.lat !== null) map.setView([geo.lat, geo.lng], Math.max(map.getZoom(), 15)); else startTracking(); }
+}
 function locateMe() {
-// ============================================================
-// FITUR PENCARIAN SPBU TERDEKAT (GPS + Overpass API)
-// ============================================================
-async function findNearbySPBU() {
-  if (!navigator.geolocation) { toast('Fitur GPS tidak didukung browser ini.', 'error'); return; }
-  
-  toast('Mencari lokasi Anda dan SPBU terdekat...', 'info');
-  if (!map) initMap();
+  initMap(); geo.follow = true; updateFollowBtn();
+  if (geo.lat !== null) map.setView([geo.lat, geo.lng], Math.max(map.getZoom(), 16)); else startTracking();
+}
 
-  navigator.geolocation.getCurrentPosition(async (pos) => {
-    const lat = pos.coords.latitude, lng = pos.coords.longitude;
-    
-    // Pindahkan peta ke lokasi pengguna
-    map.setView([lat, lng], 15);
-    
-    // Hapus penanda lokasi sebelumnya jika ada
-    if (currentLocMarker) map.removeLayer(currentLocMarker);
-    currentLocMarker = L.circleMarker([lat, lng], { radius: 8, fillColor: '#1a73e8', color: '#fff', weight: 3, opacity: 1, fillOpacity: 1 })
-      .addTo(map).bindPopup('<b>Lokasi Anda Saat Ini</b>').openPopup();
+// ---------- GPS realtime ----------
+function startTracking() {
+  if (!navigator.geolocation) { setGps('err', 'GPS tidak didukung'); toast('Fitur GPS tidak didukung browser ini.', 'error'); return; }
+  if (geo.watchId !== null) return;
+  setGps('wait', 'Mencari lokasi…');
+  geo.watchId = navigator.geolocation.watchPosition(onGeoPos, onGeoErr, { enableHighAccuracy: true, maximumAge: 5000, timeout: 20000 });
+}
+function stopTracking() {
+  if (geo.watchId !== null) { navigator.geolocation.clearWatch(geo.watchId); geo.watchId = null; }
+  setGps('off', 'GPS dijeda');
+}
+function onGeoPos(pos) {
+  const lat = pos.coords.latitude, lng = pos.coords.longitude, acc = pos.coords.accuracy;
+  geo.lat = lat; geo.lng = lng; geo.acc = acc; geo.denied = false;
+  const ll = [lat, lng];
+  if (!geo.userMarker) {
+    geo.userMarker = L.marker(ll, { icon: L.divIcon({ className: 'poi-wrap', html: '<div class="me-dot"></div>', iconSize: [18, 18], iconAnchor: [9, 9] }), zIndexOffset: 1000, title: 'Lokasi Anda' }).addTo(map).bindPopup('<b>Lokasi Anda saat ini</b>');
+    geo.accCircle = L.circle(ll, { radius: acc, weight: 1, color: '#1a73e8', fillColor: '#1a73e8', fillOpacity: 0.12, interactive: false }).addTo(map);
+  } else {
+    geo.userMarker.setLatLng(ll); geo.accCircle.setLatLng(ll).setRadius(acc);
+  }
+  setGps('on', 'GPS aktif · ±' + Math.round(acc) + ' m');
+  if (!geo.firstFix) { geo.firstFix = true; map.setView(ll, 15); }
+  else if (geo.follow) map.panTo(ll, { animate: true });
 
+  const first = !geo.lastSearch;
+  const movedFar = geo.lastSearch && distM(geo.lastSearch.lat, geo.lastSearch.lng, lat, lng) > Math.max(400, geo.radius * 0.2);
+  if ((first || movedFar) && Date.now() - geo.lastSearchAt > 15000) searchPOI(lat, lng, { fit: first });
+  else refreshDistances();
+}
+function onGeoErr(err) {
+  if (err.code === 1) {
+    geo.denied = true; stopTracking(); setGps('err', 'Izin lokasi ditolak');
+    setMapStatus('<span class="text-danger"><i class="fas fa-ban"></i> Izin lokasi ditolak.</span> Aktifkan izin lokasi untuk situs ini di pengaturan browser, lalu tekan <b>Cari SPBU Terdekat</b>. Anda tetap bisa menggeser peta lalu menekan <b>Cari di area ini</b>.');
+    fitHistoryIfNoGps();
+  } else if (err.code === 2) { setGps('err', 'Lokasi tidak tersedia'); setMapStatus('Sinyal GPS belum tersedia. Coba pindah ke tempat terbuka.'); }
+  else { setGps('wait', 'Menunggu sinyal GPS…'); }
+}
+
+// ---------- Pencarian lokasi (Overpass API) ----------
+async function overpassQuery(q) {
+  let lastErr;
+  for (const url of OVERPASS_URLS) {
+    const ctrl = new AbortController(); const tm = setTimeout(() => ctrl.abort(), 25000);
     try {
-      // Query Overpass API: Cari SPBU dalam radius 5km (5000 meter)
-      const query = `[out:json];(node["amenity"="fuel"](around:5000,${lat},${lng}););out;`;
-      const res = await fetch(`https://overpass-api.de/api/interpreter?data=${encodeURIComponent(query)}`);
-      const data = await res.json();
-      
-      if (!data.elements || data.elements.length === 0) {
-        toast('Tidak ditemukan SPBU dalam radius 5 km dari lokasi Anda.', 'info');
-        return;
-      }
-
-      // Hapus marker SPBU terdekat sebelumnya agar tidak menumpuk
-      if (window.nearbyMarkers) {
-        window.nearbyMarkers.forEach(m => map.removeLayer(m));
-      }
-      window.nearbyMarkers = [];
-
-      const bounds = L.latLngBounds();
-      bounds.extend([lat, lng]); // Masukkan lokasi pengguna ke batas peta
-
-      data.elements.forEach(el => {
-        const sLat = el.lat, sLng = el.lon;
-        const tags = el.tags || {};
-        const name = tags.name || tags.brand || 'SPBU';
-        const brand = tags.brand ? ` (${tags.brand})` : '';
-        
-        // Buat marker berwarna oranye untuk SPBU terdekat
-        const marker = L.circleMarker([sLat, sLng], { radius: 7, fillColor: '#fbbc04', color: '#fff', weight: 2, opacity: 1, fillOpacity: 1 }).addTo(map);
-        
-        // Link ke Google Maps untuk navigasi rute
-        const gmapsLink = `https://www.google.com/maps/dir/?api=1&destination=${sLat},${sLng}`;
-        
-        marker.bindPopup(`
-          <div class="text-center">
-            <b style="font-size:14px;">${esc(name)}${esc(brand)}</b><br>
-            <a href="${gmapsLink}" target="_blank" class="btn btn-sm btn-primary mt-2" style="color:white; text-decoration:none;">
-              <i class="fas fa-route"></i> Rute Google Maps
-            </a>
-          </div>
-        `);
-        
-        window.nearbyMarkers.push(marker);
-        bounds.extend([sLat, sLng]);
-      });
-
-      // Sesuaikan zoom peta agar semua titik (Anda + SPBU) terlihat
-      map.fitBounds(bounds, { padding: [40, 40] });
-      toast(`Ditemukan ${data.elements.length} SPBU terdekat!`, 'success');
-
-    } catch (err) {
-      console.error(err);
-      toast('Gagal memuat data SPBU. Coba beberapa saat lagi.', 'error');
+      const res = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/x-www-form-urlencoded' }, body: 'data=' + encodeURIComponent(q), signal: ctrl.signal });
+      if (!res.ok) throw new Error('HTTP ' + res.status);
+      return await res.json();
+    } catch (e) { lastErr = e; } finally { clearTimeout(tm); }
+  }
+  throw lastErr || new Error('Overpass gagal');
+}
+function poiTypeOf(t) {
+  t = t || {};
+  if (t.amenity === 'fuel') return 'fuel';
+  if (t.amenity === 'charging_station') return 'charging';
+  if (t.shop === 'car_repair') return 'repair';
+  if (t.amenity === 'atm') return 'atm';
+  if (t.amenity === 'hospital') return 'hospital';
+  return null;
+}
+async function searchPOI(lat, lng, opts) {
+  opts = opts || {};
+  if (geo.searching) return;
+  const types = [...geo.active];
+  if (!types.length) return;
+  geo.searching = true; geo.lastSearchAt = Date.now();
+  const btn = el('btnNearby'); if (btn) btn.disabled = true;
+  setMapStatus('<span class="spinner-border spinner-border-sm me-1"></span> Mencari lokasi di sekitar…');
+  try {
+    const body = types.map(k => `nwr${POI_TYPES[k].q}(around:${geo.radius},${lat},${lng});`).join('');
+    const data = await overpassQuery(`[out:json][timeout:25];(${body});out center tags 400;`);
+    const seen = new Set();
+    geo.items = (data.elements || []).map(e => {
+      const la = e.lat != null ? e.lat : (e.center && e.center.lat), lo = e.lon != null ? e.lon : (e.center && e.center.lon);
+      const type = poiTypeOf(e.tags);
+      if (la == null || lo == null || !type) return null;
+      const id = e.type + '/' + e.id; if (seen.has(id)) return null; seen.add(id);
+      const t = e.tags || {};
+      return { id, type, lat: la, lng: lo, tags: t, name: t.name || t.brand || t.operator || POI_TYPES[type].label, dist: 0 };
+    }).filter(Boolean);
+    geo.lastSearch = { lat, lng };
+    renderPOI();
+    const nFuel = geo.items.filter(i => i.type === 'fuel').length;
+    const kmTxt = (geo.radius / 1000) + ' km';
+    setMapStatus(geo.items.length
+      ? `<i class="fas fa-check-circle text-success"></i> Ditemukan <b>${geo.items.length}</b> lokasi dalam radius ${kmTxt}${geo.active.has('fuel') ? ` (${nFuel} SPBU)` : ''}. Peta diperbarui otomatis saat Anda berpindah tempat.`
+      : `Tidak ada lokasi ditemukan dalam radius ${kmTxt}. Coba perbesar radius.`);
+    if (opts.fit) {
+      const b = L.latLngBounds([[lat, lng]]);
+      geo.items.slice(0, 4).forEach(i => b.extend([i.lat, i.lng]));
+      if (b.isValid() && geo.items.length) map.fitBounds(b, { padding: [50, 50], maxZoom: 16 });
     }
-  }, 
-  () => { toast('Gagal mendapatkan lokasi. Pastikan izin GPS aktif.', 'error'); },
-  { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 });
+  } catch (err) {
+    console.error(err);
+    setMapStatus('<span class="text-danger"><i class="fas fa-exclamation-triangle"></i> Gagal memuat data lokasi. Periksa koneksi internet lalu coba lagi.</span>');
+    toast('Gagal memuat data lokasi. Coba beberapa saat lagi.', 'error');
+  } finally { geo.searching = false; if (btn) btn.disabled = false; }
 }
-  if (!navigator.geolocation) { toast('GPS tidak didukung browser ini', 'error'); return; }
-  toast('Mencari lokasi...', 'info');
-  navigator.geolocation.getCurrentPosition(
-    (pos) => {
-      const lat = pos.coords.latitude, lng = pos.coords.longitude;
-      map.setView([lat, lng], 16);
-      if (currentLocMarker) map.removeLayer(currentLocMarker);
-      currentLocMarker = L.circleMarker([lat, lng], { radius: 8, fillColor: '#1a73e8', color: '#fff', weight: 3, opacity: 1, fillOpacity: 1 }).addTo(map).bindPopup('<b>Lokasi Anda Saat Ini</b>').openPopup();
-      toast('Lokasi ditemukan!', 'success');
-    },
-    () => { toast('Gagal mendapatkan lokasi. Pastikan izin GPS aktif.', 'error'); },
-    { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
-  );
+function researchLast() {
+  if (!map) return;
+  const c = geo.lastSearch ? [geo.lastSearch.lat, geo.lastSearch.lng] : (geo.lat !== null ? [geo.lat, geo.lng] : null);
+  if (!c) { setMapStatus('Tekan <b>Cari SPBU Terdekat</b> untuk memulai.'); return; }
+  geo.lastSearchAt = 0; searchPOI(c[0], c[1], {});
+}
+function refreshMap(btn) { refreshTab('map', btn); researchLast(); }
+
+function findNearbySPBU() {
+  initMap(); geo.follow = true; updateFollowBtn();
+  if (geo.lat !== null) { geo.lastSearchAt = 0; searchPOI(geo.lat, geo.lng, { fit: true }); return; }
+  geo.lastSearch = null; geo.firstFix = false; geo.lastSearchAt = 0;
+  toast('Mencari lokasi Anda…', 'info');
+  if (geo.watchId !== null) { navigator.geolocation.clearWatch(geo.watchId); geo.watchId = null; }
+  startTracking();
+}
+function searchHere() {
+  initMap(); const c = map.getCenter();
+  geo.follow = false; updateFollowBtn(); geo.lastSearchAt = 0;
+  searchPOI(c.lat, c.lng, {});
 }
 
+// ---------- Tampilan marker & daftar ----------
+function renderPOI() {
+  if (!map || !geo.poiLayer) return;
+  geo.poiLayer.clearLayers(); geo.markers = {};
+  const ref = refLL();
+  geo.items.forEach(it => { it.dist = ref ? distM(ref[0], ref[1], it.lat, it.lng) : 0; });
+  geo.items.sort((a, b) => a.dist - b.dist);
+  const nearest = geo.items.find(i => i.type === 'fuel');
+  geo.nearestId = nearest ? nearest.id : null;
+  geo.items.forEach(it => {
+    const t = POI_TYPES[it.type], near = it.id === geo.nearestId;
+    const icon = L.divIcon({ className: 'poi-wrap', html: `<div class="poi-pin${near ? ' nearest' : ''}" style="background:${t.color}"><i class="fas ${t.icon}"></i></div>`, iconSize: near ? [38, 38] : [30, 30], iconAnchor: near ? [19, 19] : [15, 15], popupAnchor: [0, -18] });
+    geo.markers[it.id] = L.marker([it.lat, it.lng], { icon, title: it.name, zIndexOffset: near ? 500 : 0 }).bindPopup(() => poiPopup(it)).addTo(geo.poiLayer);
+  });
+  renderNearbyList();
+}
+function refreshDistances() {
+  const ref = refLL(); if (!ref || !geo.items.length) return;
+  geo.items.forEach(it => { it.dist = distM(ref[0], ref[1], it.lat, it.lng); });
+  geo.items.sort((a, b) => a.dist - b.dist);
+  const nearest = geo.items.find(i => i.type === 'fuel');
+  if ((nearest ? nearest.id : null) !== geo.nearestId) renderPOI(); else renderNearbyList();
+}
+function routeUrl(it) { return `https://www.google.com/maps/dir/?api=1&destination=${it.lat},${it.lng}&travelmode=driving`; }
+function poiSub(it) {
+  const t = it.tags, parts = [POI_TYPES[it.type].label];
+  if (t.brand && t.brand !== it.name) parts.push(t.brand);
+  const addr = [t['addr:street'], t['addr:city'] || t['addr:suburb']].filter(Boolean).join(', ');
+  if (addr) parts.push(addr);
+  if (t.opening_hours === '24/7') parts.push('Buka 24 jam');
+  return parts.join(' · ');
+}
+function renderNearbyList() {
+  const box = el('nearbyList'); if (!box) return;
+  if (!geo.items.length) { box.innerHTML = '<div class="list-group-item text-muted small">Belum ada data lokasi.</div>'; return; }
+  box.innerHTML = geo.items.slice(0, 15).map(it => {
+    const t = POI_TYPES[it.type], near = it.id === geo.nearestId;
+    return `<div class="list-group-item list-group-item-action poi-item d-flex align-items-center gap-2" role="button" tabindex="0" data-id="${esc(it.id)}">
+      <span class="poi-ic" style="background:${t.color}"><i class="fas ${t.icon}"></i></span>
+      <span class="flex-grow-1" style="min-width:0"><strong>${esc(it.name)}</strong>${near ? ' <span class="badge bg-danger">Terdekat</span>' : ''}<br><small class="text-muted">${esc(poiSub(it))}</small></span>
+      <span class="fw-semibold text-nowrap">${esc(fmtDist(it.dist))}</span>
+      <a href="${routeUrl(it)}" target="_blank" rel="noopener" class="btn btn-sm btn-outline-primary" title="Rute di Google Maps"><i class="fas fa-route"></i></a>
+    </div>`;
+  }).join('');
+}
+function poiPopup(it) {
+  const t = it.tags, ty = POI_TYPES[it.type];
+  const fuels = Object.keys(FUEL_TAGS).filter(k => t[k] === 'yes').map(k => FUEL_TAGS[k]);
+  const addr = [t['addr:street'], t['addr:housenumber'], t['addr:suburb'], t['addr:city']].filter(Boolean).join(' ');
+  const ref = refLL(); const d = ref ? distM(ref[0], ref[1], it.lat, it.lng) : null;
+  return `<div style="min-width:180px">
+    <b style="font-size:14px"><i class="fas ${ty.icon}" style="color:${ty.color}"></i> ${esc(it.name)}</b><br>
+    <small class="text-muted">${esc(ty.label)}${t.brand && t.brand !== it.name ? ' · ' + esc(t.brand) : ''}${t.operator && t.operator !== it.name ? ' · ' + esc(t.operator) : ''}</small>
+    ${d !== null ? `<div class="mt-1"><i class="fas fa-location-dot text-danger"></i> ${esc(fmtDist(d))} dari ${geo.lat !== null ? 'Anda' : 'titik pencarian'}</div>` : ''}
+    ${addr ? `<div class="small mt-1">${esc(addr)}</div>` : ''}
+    ${t.opening_hours ? `<div class="small mt-1"><i class="far fa-clock"></i> ${esc(t.opening_hours === '24/7' ? 'Buka 24 jam' : t.opening_hours)}</div>` : ''}
+    ${fuels.length ? `<div class="small mt-1"><i class="fas fa-gas-pump"></i> ${esc(fuels.join(', '))}</div>` : ''}
+    ${t.phone ? `<div class="small mt-1"><i class="fas fa-phone"></i> ${esc(t.phone)}</div>` : ''}
+    <a href="${routeUrl(it)}" target="_blank" rel="noopener" class="btn btn-sm btn-primary mt-2 w-100" style="color:#fff;text-decoration:none"><i class="fas fa-route"></i> Rute Google Maps</a>
+  </div>`;
+}
+function focusPOI(id) {
+  const m = geo.markers[id], it = geo.items.find(i => i.id === id); if (!m || !it) return;
+  geo.follow = false; updateFollowBtn();
+  map.setView([it.lat, it.lng], Math.max(map.getZoom(), 17));
+  m.openPopup();
+  const mp = el('map'); if (mp && mp.scrollIntoView) mp.scrollIntoView({ behavior: 'smooth', block: 'center' });
+}
+
+// ---------- Riwayat isi BBM (data dari spreadsheet) ----------
 function renderMapMarkers() {
   if (!map) initMap();
-  mapMarkers.forEach(m => map.removeLayer(m)); mapMarkers = [];
-  
-  const validLocations = state.fillups.filter(f => { 
-    const lat = Number(f.latitude), lng = Number(f.longitude); 
-    return isFinite(lat) && isFinite(lng) && lat !== 0 && lng !== 0; 
+  geo.histLayer.clearLayers(); mapMarkers = [];
+  const valid = (state.fillups || []).filter(f => { const la = Number(f.latitude), lo = Number(f.longitude); return isFinite(la) && isFinite(lo) && la !== 0 && lo !== 0; });
+  valid.forEach(f => {
+    const c = L.circleMarker([Number(f.latitude), Number(f.longitude)], { radius: 7, fillColor: '#1a73e8', color: '#fff', weight: 1.5, opacity: 1, fillOpacity: 0.85 }).addTo(geo.histLayer);
+    c.bindPopup(`<b>${esc(f.station || 'SPBU')}</b><br><small class="text-muted">Riwayat isi BBM</small><br>${esc(fmtDate(f.date))}<br>${esc(fmtNum(f.fuelAmount))} L`);
+    mapMarkers.push(c);
   });
-  
-  const infoBox = el('mapInfo');
-  if (validLocations.length === 0) {
-    if (infoBox) infoBox.innerHTML = '<div class="alert alert-warning small mb-0"><i class="fas fa-info-circle"></i> Belum ada data pengisian BBM dengan koordinat GPS. Saat mengisi BBM, pastikan Anda menekan tombol <b>GPS</b> di samping nama SPBU agar lokasi tersimpan.</div>';
-    return;
-  }
-  if (infoBox) infoBox.innerHTML = '';
-  
-  const bounds = L.latLngBounds();
-  validLocations.forEach(f => {
-    const lat = Number(f.latitude), lng = Number(f.longitude);
-    bounds.extend([lat, lng]);
-    const circle = L.circleMarker([lat, lng], { radius: 8, fillColor: '#1a73e8', color: '#fff', weight: 1, opacity: 1, fillOpacity: 0.8 }).addTo(map);
-    circle.bindPopup(`<b>${esc(f.station || 'SPBU')}</b><br>${esc(fmtDate(f.date))}<br>${esc(fmtNum(f.fuelAmount))} L`);
-    mapMarkers.push(circle);
-  });
-  map.fitBounds(bounds, { padding: [30, 30] });
+  fitHistoryIfNoGps();
+}
+function fitHistoryIfNoGps() {
+  if (!map || geo.firstFix || !mapMarkers.length || !geo.denied) return;
+  map.fitBounds(L.featureGroup(mapMarkers).getBounds(), { padding: [30, 30], maxZoom: 15 });
 }
 
 function initTheme() { let theme = 'light'; try { theme = localStorage.getItem('enzy_theme') || 'light'; } catch (e) {} document.documentElement.setAttribute('data-bs-theme', theme); updateThemeIcon(theme); }
@@ -2041,11 +2263,16 @@ function confirmDelete(type, id) {
   };
 }
 
-document.querySelector('[data-bs-target="#tabMap"]').addEventListener('shown.bs.tab', () => {
-  if (!map) return;
-  map.invalidateSize();
-  if (mapMarkers.length) map.fitBounds(L.featureGroup(mapMarkers).getBounds(), { padding: [30, 30] });
-});
+(function () {
+  const tabMapBtn = document.querySelector('[data-bs-target="#tabMap"]');
+  tabMapBtn.addEventListener('shown.bs.tab', () => {
+    initMap();
+    map.invalidateSize();
+    setTimeout(() => { if (map) map.invalidateSize(); }, 250);
+    startTracking();
+  });
+  tabMapBtn.addEventListener('hidden.bs.tab', stopTracking);
+})();
 </script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
