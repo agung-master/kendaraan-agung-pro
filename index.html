@@ -819,7 +819,7 @@
 // ║  di antara tanda kutip ' ' pada baris const WEB_APP_URL di bawah.    ║
 // ║  Setiap membuat penerapan BARU, URL-nya berubah → tempel ulang.      ║
 // ╚══════════════════════════════════════════════════════════════════════╝
-const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbzzNFcxDVRmgF8XZBnbsUZcqnSOkDReLAj44ftJXK7wa5oe6LB6d2RD7uKUSUc26UKQpg/exec';
+const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbwxtkSnhmXy0DyWcf-q1p5s1-XEm1W6-V8ND_wqVCR99Kp5ZvhXwq5OEa5NwgADDB7ayQ/exec';
 // ☝️☝️☝️  TEMPEL URL DI ATAS (di antara tanda kutip)  ☝️☝️☝️
 window.addEventListener('load', () => {
   if (!/^https:\/\/script\.google\.com\/macros\/s\/[^\s']+\/exec$/.test(WEB_APP_URL)) toast('URL Web App belum benar. Tempel URL Code.gs di bagian "TEMPEL DISINI" pada kode index.html.', 'error');
@@ -1020,17 +1020,39 @@ function updateFollowBtn() {
 
 function initMap() {
   if (map) return;
-  const osm = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19, attribution: '&copy; OpenStreetMap contributors' });
-  const esriStreet = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}', { maxZoom: 19, attribution: 'Tiles &copy; Esri' });
-  const esriSat = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', { maxZoom: 19, attribution: 'Tiles &copy; Esri' });
+  // Sumber peta. CATATAN: tile.openstreetmap.org TIDAK dipakai karena memblokir aplikasi
+  // (error "403 Access blocked"). Dipakai Esri & CARTO yang boleh dipakai aplikasi web.
+  const esriStreet = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}', { maxZoom: 19, maxNativeZoom: 19, attribution: 'Tiles &copy; Esri &mdash; Esri, HERE, Garmin, OpenStreetMap contributors' });
+  const carto = L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', { subdomains: 'abcd', maxZoom: 20, maxNativeZoom: 20, attribution: '&copy; OpenStreetMap contributors &copy; CARTO' });
+  const sat = L.layerGroup([
+    L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', { maxZoom: 19, maxNativeZoom: 18, attribution: 'Tiles &copy; Esri &mdash; Esri, Maxar, Earthstar Geographics' }),
+    L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Transportation/MapServer/tile/{z}/{y}/{x}', { maxZoom: 19, maxNativeZoom: 18 }),
+    L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}', { maxZoom: 19, maxNativeZoom: 18 })
+  ]);
 
   // Tampilan awal: seluruh Indonesia (otomatis pindah ke lokasi Anda begitu GPS aktif)
-  map = L.map('map', { center: [-2.5, 118], zoom: 5, minZoom: 3, layers: [osm], worldCopyJump: true, maxBounds: [[-85, -180], [85, 180]], maxBoundsViscosity: 1 });
+  map = L.map('map', { center: [-2.5, 118], zoom: 5, minZoom: 3, maxZoom: 19, layers: [esriStreet], worldCopyJump: true, maxBounds: [[-85, -180], [85, 180]], maxBoundsViscosity: 1 });
+
+  // Jika sumber peta gagal (diblokir/koneksi), otomatis pindah ke sumber peta cadangan
+  const streetChain = [esriStreet, carto], failedBase = new Set();
+  streetChain.forEach(lyr => {
+    let ok = 0, err = 0;
+    lyr.on('tileload', () => { ok++; });
+    lyr.on('tileerror', () => {
+      err++;
+      if (ok > 0 || err < 6 || failedBase.has(lyr) || !map.hasLayer(lyr)) return;
+      failedBase.add(lyr);
+      const next = streetChain.find(l => !failedBase.has(l));
+      if (!next) { toast('Peta gagal dimuat. Periksa koneksi internet Anda.', 'error'); return; }
+      map.removeLayer(lyr); map.addLayer(next);
+      toast('Sumber peta dialihkan otomatis ke peta cadangan.', 'info');
+    });
+  });
   geo.poiLayer = L.layerGroup().addTo(map);
   geo.histLayer = L.layerGroup().addTo(map);
 
   L.control.layers(
-    { 'Peta Jalan (detail)': osm, 'Peta Jalan (Esri)': esriStreet, 'Satelit': esriSat },
+    { 'Peta Jalan (Esri)': esriStreet, 'Peta Jalan (CARTO)': carto, 'Satelit + Nama Jalan': sat },
     { 'SPBU & fasilitas': geo.poiLayer, 'Riwayat isi BBM': geo.histLayer },
     { position: 'topright', collapsed: true }
   ).addTo(map);
