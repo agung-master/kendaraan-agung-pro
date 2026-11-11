@@ -819,12 +819,19 @@
 // ║  di antara tanda kutip ' ' pada baris const WEB_APP_URL di bawah.    ║
 // ║  Setiap membuat penerapan BARU, URL-nya berubah → tempel ulang.      ║
 // ╚══════════════════════════════════════════════════════════════════════╝
-const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbw_QhfB3gkdc7ZhAIj-EdlE3Wbw5MkRohF-CbYFVgMH_kc3pLb2-2T57K7weHpkCxdq5w/exec';
+const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbzzNFcxDVRmgF8XZBnbsUZcqnSOkDReLAj44ftJXK7wa5oe6LB6d2RD7uKUSUc26UKQpg/exec';
 // ☝️☝️☝️  TEMPEL URL DI ATAS (di antara tanda kutip)  ☝️☝️☝️
 window.addEventListener('load', () => {
   if (!/^https:\/\/script\.google\.com\/macros\/s\/[^\s']+\/exec$/.test(WEB_APP_URL)) toast('URL Web App belum benar. Tempel URL Code.gs di bagian "TEMPEL DISINI" pada kode index.html.', 'error');
 });
-try { fetch(WEB_APP_URL, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ action: 'apiPing' }) }).catch(() => {}); } catch (e) {}
+// Bangunkan & panaskan server begitu halaman dibuka / kolom login disentuh (maks. 1x per menit)
+let _lastPing = 0;
+function pingServer() {
+  if (Date.now() - _lastPing < 60000) return; _lastPing = Date.now();
+  try { fetch(WEB_APP_URL, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ action: 'apiPing' }) }).catch(() => {}); } catch (e) {}
+}
+pingServer();
+['loginUser', 'loginPass'].forEach(id => { const x = document.getElementById(id); if (x) x.addEventListener('focus', pingServer); });
 
 let _busy = 0;
 function busy(d) { _busy = Math.max(0, _busy + d); const t = document.getElementById('topLoader'); if (t) t.classList.toggle('active', _busy > 0); }
@@ -1387,7 +1394,8 @@ async function doLogin() {
   if (!u || !p) { toast('Isi username dan password', 'error'); return; }
   el('btnLogin').disabled = true; el('loginSpinner').classList.remove('d-none'); el('loginBtnText').textContent = 'Memproses...';
   try {
-    const res = await callApi('apiLogin', u, p);
+    const slowTimer = setTimeout(() => { el('loginBtnText').textContent = 'Menyiapkan server…'; }, 4000);
+    let res; try { res = await callApi('apiLogin', u, p); } finally { clearTimeout(slowTimer); }
     state.user = Object.assign({}, res.user, { token: res.token });
     try { localStorage.setItem('enzy_user', JSON.stringify(state.user)); } catch (e) {}
     if (res.boot) cacheSave('boot', res.boot);
