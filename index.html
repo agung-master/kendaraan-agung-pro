@@ -170,6 +170,19 @@
       input, select, textarea { font-size:16px !important; }
       .app-footer { padding-bottom:80px; }
     }
+
+    /* ===== DAFTAR PERINGKAT (dasbor) ===== */
+    .rank-list { display:flex; flex-direction:column; gap:8px; }
+    .rank-item { display:flex; align-items:center; gap:12px; padding:10px 12px; border:1px solid var(--bs-border-color); border-radius:12px; background:var(--bs-body-bg); }
+    .rank-item.top { border-color:#34a853; background:linear-gradient(to right,#e6f4ea,transparent 70%); }
+    [data-bs-theme="dark"] .rank-item.top { background:linear-gradient(to right,#1b3a1f,transparent 70%); }
+    .rank-no { flex:0 0 28px; width:28px; height:28px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:.8rem; font-weight:700; background:var(--bs-secondary-bg); color:var(--bs-secondary-color); }
+    .rank-item.top .rank-no { background:#34a853; color:#fff; }
+    .rank-main { flex:1; min-width:0; }
+    .rank-name { font-weight:600; font-size:.92rem; line-height:1.25; overflow-wrap:anywhere; }
+    .rank-meta { font-size:.76rem; color:var(--bs-secondary-color); margin-top:2px; }
+    .rank-val { flex:0 0 auto; text-align:right; font-weight:700; font-size:.95rem; line-height:1.2; white-space:nowrap; }
+    .rank-val small { display:block; font-weight:400; font-size:.7rem; color:var(--bs-secondary-color); }
     #bnav, #bmore { display:none; }
     @media (max-width: 767.98px) {
       #bnav { display:flex; position:fixed; left:0; right:0; bottom:0; z-index:1040; background:var(--bs-body-bg); border-top:1px solid var(--bs-border-color); padding:6px 4px calc(6px + env(safe-area-inset-bottom, 0px)); box-shadow:0 -4px 16px rgba(0,0,0,.08); }
@@ -2047,12 +2060,12 @@ function renderAdvancedDashboard(data, filterMonth) {
     wrap.insertAdjacentHTML('beforeend', `<div class="col-12 mt-2"><div class="stat-card purple"><div class="label">Total Biaya Kepemilikan (TCO)</div><div class="value">${fmtRp(t.totalOwnership)}</div><div class="small text-muted">Operasional ${fmtRp(t.operatingCost)} + Beli ${fmtRp(t.purchasePrice)}${t.months > 0 ? ` · ≈ ${fmtRp(t.costPerMonth)}/bln selama ${t.months} bln` : ''} · ${fmtRp(t.costPerKm)}/km</div></div></div>`);
   }
   if (data.fuelTypeComparison && data.fuelTypeComparison.length > 1) {
-    const rows = data.fuelTypeComparison.map((f, i) => `<tr><td>${i === 0 ? '<span class="badge bg-success">Paling hemat</span> ' : ''}${esc(f.fuelType)}</td><td>${fmtRp(f.costPerKm)}/km</td><td>${f.avgConsumption} km/L</td><td>${f.count}×</td></tr>`).join('');
-    wrap.insertAdjacentHTML('beforeend', `<div class="col-12 mt-3"><div class="panel"><h6 class="mb-3"><i class="fas fa-balance-scale text-warning me-1"></i> Perbandingan Nyata per Jenis BBM</h6><div class="table-responsive"><table class="table table-sm"><thead><tr><th>Jenis BBM</th><th>Biaya per KM</th><th>Rata-rata km/L</th><th>Frekuensi</th></tr></thead><tbody>${rows}</tbody></table></div><div class="small text-muted mt-2">Biaya per km = total biaya ÷ jarak tempuh.</div></div></div>`);
+    const rows = data.fuelTypeComparison.map((f, i) => `<div class="rank-item${i === 0 ? ' top' : ''}"><div class="rank-no">${i + 1}</div><div class="rank-main"><div class="rank-name">${esc(f.fuelType)}${i === 0 ? ' <span class="badge bg-success ms-1">Paling hemat</span>' : ''}</div><div class="rank-meta">${f.avgConsumption} km/L · ${f.count}× isi</div></div><div class="rank-val">${fmtRp(f.costPerKm)}<small>per km</small></div></div>`).join('');
+    wrap.insertAdjacentHTML('beforeend', `<div class="col-12 mt-3"><div class="panel"><h6 class="mb-3"><i class="fas fa-balance-scale text-warning me-1"></i> Perbandingan Nyata per Jenis BBM</h6><div class="rank-list">${rows}</div><div class="small text-muted mt-2">Biaya per km = total biaya ÷ jarak tempuh.</div></div></div>`);
   }
   if (data.stationRanking && data.stationRanking.length >= 2) {
-    const rows = data.stationRanking.slice(0, 8).map((st, i) => `<tr><td>${i + 1}. <strong>${esc(st.station)}</strong></td><td>${st.avgConsumption > 0 ? st.avgConsumption + ' km/L' : '-'}</td><td>${st.avgPrice ? fmtRp(st.avgPrice) : '-'}</td><td>${st.visits}×</td></tr>`).join('');
-    wrap.insertAdjacentHTML('beforeend', `<div class="col-12 col-lg-6 mt-3"><div class="panel"><h6 class="mb-3"><i class="fas fa-gas-pump text-primary me-1"></i> Peringkat SPBU (Efisiensi)</h6><div class="table-responsive"><table class="table table-sm mb-0"><thead><tr><th>SPBU</th><th>Rata km/L</th><th>Harga</th><th>Kunjungan</th></tr></thead><tbody>${rows}</tbody></table></div></div></div>`);
+    const rows = data.stationRanking.slice(0, 8).map((st, i) => `<div class="rank-item${i === 0 ? ' top' : ''}"><div class="rank-no">${i + 1}</div><div class="rank-main"><div class="rank-name">${esc(st.station)}</div><div class="rank-meta">${st.avgPrice ? fmtRp(st.avgPrice) + '/L' : 'Harga -'} · ${st.visits}× kunjungan</div></div><div class="rank-val">${st.avgConsumption > 0 ? st.avgConsumption : '-'}<small>km/L</small></div></div>`).join('');
+    wrap.insertAdjacentHTML('beforeend', `<div class="col-12 col-lg-6 mt-3"><div class="panel"><h6 class="mb-3"><i class="fas fa-gas-pump text-primary me-1"></i> Peringkat SPBU (Efisiensi)</h6><div class="rank-list">${rows}</div></div></div>`);
   }
   if (data.categoryBreakdown && Object.keys(data.categoryBreakdown).length > 0) {
     const id = 'chartCategory_' + Date.now();
@@ -2077,6 +2090,7 @@ async function loadMultiSummary() {
     const totalMonth = list.reduce((s, v) => s + (v.monthCost || 0), 0);
     const top = [...list].sort((a, b) => b.monthCost - a.monthCost)[0];
     el('multiSummary').innerHTML = `<div class="panel mb-3"><div class="d-flex justify-content-between align-items-center mb-2"><h6 class="mb-0"><i class="fas fa-th-large text-info me-1"></i> Ringkasan Semua Kendaraan (Bulan Ini)</h6><button class="btn btn-sm btn-link p-0" onclick="el('multiSummary').innerHTML=''">Tutup</button></div><div class="small text-muted mb-2">Total biaya semua kendaraan: <b>${fmtRp(totalMonth)}</b> · Paling boros: <b>${esc(top ? top.name : '-')}</b> (${fmtRp(top ? top.monthCost : 0)})</div><div class="table-responsive"><table class="table table-sm mb-0"><thead><tr><th>Kendaraan</th><th>Biaya Bulan Ini</th><th>Odometer</th><th>Pengingat Mendesak</th></tr></thead><tbody>${list.map(v => `<tr><td><strong>${esc(v.name || '-')}</strong><br><small class="text-muted">${esc(v.licensePlate || '')}</small></td><td>${fmtRp(v.monthCost)}</td><td>${fmtNum(v.latestOdometer)} km</td><td>${v.mostUrgent ? `<span class="badge bg-${v.mostUrgent.daysLeft < 0 ? 'danger' : v.mostUrgent.daysLeft <= 7 ? 'warning' : 'secondary'}">${esc(v.mostUrgent.serviceTypes)} (${v.mostUrgent.daysLeft < 0 ? 'lewat' : v.mostUrgent.daysLeft + ' hr'})</span>` : '<span class="text-muted small">-</span>'}</td></tr>`).join('')}</tbody></table></div></div>`;
+    el('multiSummary').querySelectorAll('.table-responsive').forEach(labelCells);
   } catch (e) { toast('Gagal memuat ringkasan: ' + e.message, 'error'); }
 }
 
