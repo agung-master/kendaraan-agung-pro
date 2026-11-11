@@ -997,7 +997,7 @@ const POI_TYPES = {
   hospital: { label: 'RS',      icon: 'fa-hospital',    color: '#d93025', q: '["amenity"="hospital"]' }
 };
 const FUEL_TAGS = { 'fuel:octane_90': 'RON 90', 'fuel:octane_92': 'RON 92', 'fuel:octane_95': 'RON 95', 'fuel:octane_98': 'RON 98', 'fuel:diesel': 'Solar/Diesel', 'fuel:cng': 'CNG', 'fuel:lpg': 'LPG' };
-const OVERPASS_URLS = ['https://overpass-api.de/api/interpreter', 'https://overpass.kumi.systems/api/interpreter', 'https://overpass.private.coffee/api/interpreter', 'https://overpass.openstreetmap.fr/api/interpreter', 'https://maps.mail.ru/osm/tools/overpass/api/interpreter'];
+const OVERPASS_URLS = ['https://overpass-api.de/api/interpreter', 'https://lz4.overpass-api.de/api/interpreter', 'https://z.overpass-api.de/api/interpreter', 'https://overpass.private.coffee/api/interpreter', 'https://overpass.kumi.systems/api/interpreter', 'https://overpass.openstreetmap.fr/api/interpreter'];
 
 const geo = {
   watchId: null, lat: null, lng: null, acc: null, follow: true, firstFix: false, denied: false,
@@ -1034,9 +1034,11 @@ function updateFollowBtn() {
 function initMap() {
   if (map) return;
   // Sumber peta. CATATAN: tile.openstreetmap.org TIDAK dipakai karena memblokir aplikasi
-  // (error "403 Access blocked"). Dipakai Esri & CARTO yang boleh dipakai aplikasi web.
+  // (error "403 Access blocked"). CARTO juga tidak dipakai lagi (kini wajib API key,
+  // tile tampil watermark "API KEY REQUIRED"). Dipakai Esri yang boleh dipakai aplikasi web.
   const esriStreet = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}', { maxZoom: 19, maxNativeZoom: 19, attribution: 'Tiles &copy; Esri &mdash; Esri, HERE, Garmin, OpenStreetMap contributors' });
-  const carto = L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', { subdomains: 'abcd', maxZoom: 20, maxNativeZoom: 20, attribution: '&copy; OpenStreetMap contributors &copy; CARTO' });
+  const esriLight = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}', { maxZoom: 19, maxNativeZoom: 16, attribution: 'Tiles &copy; Esri &mdash; Esri, HERE, Garmin, OpenStreetMap contributors' });
+  const esriTopo = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}', { maxZoom: 19, maxNativeZoom: 19, attribution: 'Tiles &copy; Esri &mdash; Esri, HERE, Garmin, USGS, OpenStreetMap contributors' });
   const sat = L.layerGroup([
     L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', { maxZoom: 19, maxNativeZoom: 18, attribution: 'Tiles &copy; Esri &mdash; Esri, Maxar, Earthstar Geographics' }),
     L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Transportation/MapServer/tile/{z}/{y}/{x}', { maxZoom: 19, maxNativeZoom: 18 }),
@@ -1047,7 +1049,7 @@ function initMap() {
   map = L.map('map', { center: [-2.5, 118], zoom: 5, minZoom: 3, maxZoom: 19, layers: [esriStreet], worldCopyJump: true, maxBounds: [[-85, -180], [85, 180]], maxBoundsViscosity: 1 });
 
   // Jika sumber peta gagal (diblokir/koneksi), otomatis pindah ke sumber peta cadangan
-  const streetChain = [esriStreet, carto], failedBase = new Set();
+  const streetChain = [esriStreet, esriTopo, esriLight], failedBase = new Set();
   streetChain.forEach(lyr => {
     let ok = 0, err = 0;
     lyr.on('tileload', () => { ok++; });
@@ -1065,7 +1067,7 @@ function initMap() {
   geo.histLayer = L.layerGroup().addTo(map);
 
   L.control.layers(
-    { 'Peta Jalan (Esri)': esriStreet, 'Peta Jalan (CARTO)': carto, 'Satelit + Nama Jalan': sat },
+    { 'Peta Jalan (Esri)': esriStreet, 'Peta Topografi (Esri)': esriTopo, 'Peta Terang (Esri)': esriLight, 'Satelit + Nama Jalan': sat },
     { 'SPBU & fasilitas': geo.poiLayer, 'Riwayat isi BBM': geo.histLayer },
     { position: 'topright', collapsed: true }
   ).addTo(map);
@@ -1103,6 +1105,7 @@ function updatePoiChips() {
 function togglePoi(k) {
   if (geo.active.has(k)) geo.active.delete(k); else geo.active.add(k);
   updatePoiChips();
+  geo.items = geo.items.filter(i => geo.active.has(i.type)); renderPOI();
   if (!geo.active.size) { geo.items = []; renderPOI(); setMapStatus('Pilih minimal satu jenis lokasi.'); return; }
   researchLast();
 }
@@ -1173,23 +1176,35 @@ async function overpassQuery(q) {
   try { return await Promise.any(tasks); }
   finally { ctrls.forEach(c => { try { c.abort(); } catch (e) {} }); }
 }
-// Cadangan bila semua server Overpass gagal: Nominatim (OpenStreetMap), khusus SPBU
-async function nominatimFuel(lat, lng, radius) {
+// Cadangan bila semua server Overpass gagal: Nominatim (OpenStreetMap), untuk semua jenis lokasi
+const NOMINATIM_TERMS = {
+  fuel: ['SPBU', 'gas station'], charging: ['SPKLU', 'charging station'], repair: ['bengkel', 'car repair'],
+  atm: ['ATM'], hospital: ['rumah sakit', 'hospital']
+};
+const NOMINATIM_TAGS = {
+  fuel: { amenity: 'fuel' }, charging: { amenity: 'charging_station' }, repair: { shop: 'car_repair' },
+  atm: { amenity: 'atm' }, hospital: { amenity: 'hospital' }
+};
+async function nominatimPOI(lat, lng, radius, types) {
   const dLat = radius / 111320, dLng = radius / (111320 * Math.cos(lat * Math.PI / 180));
   const vb = [lng - dLng, lat + dLat, lng + dLng, lat - dLat].join(',');
-  const out = new Map();
-  for (const term of ['SPBU', 'gas station']) {
-    try {
-      const url = `https://nominatim.openstreetmap.org/search?format=jsonv2&extratags=1&limit=40&bounded=1&viewbox=${vb}&q=${encodeURIComponent(term)}`;
-      const res = await fetch(url); if (!res.ok) continue;
-      (await res.json()).forEach(r => {
-        const name = r.name || (r.display_name || '').split(',')[0];
-        if (!(r.type === 'fuel' || /spbu|pertamina|shell|vivo|\bbp\b/i.test(name))) return;
-        const id = (r.osm_type || 'n') + '/' + r.osm_id;
-        out.set(id, { type: 'node', id: r.osm_id, _id: id, lat: Number(r.lat), lon: Number(r.lon), tags: Object.assign({}, r.extratags || {}, { amenity: 'fuel', name: name }) });
-      });
-    } catch (e) {}
-    await new Promise(r => setTimeout(r, 1100));
+  const out = new Map(); let first = true;
+  for (const k of types) {
+    for (const term of (NOMINATIM_TERMS[k] || [])) {
+      if (!first) await new Promise(r => setTimeout(r, 1100)); first = false;
+      try {
+        const url = `https://nominatim.openstreetmap.org/search?format=jsonv2&extratags=1&limit=40&bounded=1&accept-language=id&viewbox=${vb}&q=${encodeURIComponent(term)}`;
+        const res = await fetch(url); if (!res.ok) continue;
+        (await res.json()).forEach(r => {
+          const want = NOMINATIM_TAGS[k], wantVal = Object.values(want)[0];
+          const name = r.name || (r.display_name || '').split(',')[0];
+          const okType = r.type === wantVal || (k === 'fuel' && /spbu|pertamina|shell|vivo|\bbp\b/i.test(name));
+          if (!okType) return;
+          const id = (r.osm_type || 'n') + '/' + r.osm_id;
+          out.set(id, { type: 'node', id: r.osm_id, _id: id, lat: Number(r.lat), lon: Number(r.lon), tags: Object.assign({}, r.extratags || {}, want, { name: name }) });
+        });
+      } catch (e) {}
+    }
   }
   return { elements: [...out.values()] };
 }
@@ -1216,10 +1231,14 @@ async function searchPOI(lat, lng, opts) {
     try { data = await overpassQuery(`[out:json][timeout:25];(${body});out center tags 400;`); }
     catch (e1) {
       console.warn('Overpass gagal, memakai Nominatim:', e1);
-      if (!geo.active.has('fuel')) throw e1;
       setMapStatus('<span class="spinner-border spinner-border-sm me-1"></span> Server utama sibuk, mencoba server cadangan…');
-      data = await nominatimFuel(lat, lng, geo.radius);
-      if (!data.elements.length) throw e1;
+      data = await nominatimPOI(lat, lng, geo.radius, types);
+      if (!data.elements.length) {
+        // Server cadangan menjawab tetapi tidak ada data: itu hasil kosong, bukan error koneksi
+        let reachable = true;
+        try { const t = await fetch('https://nominatim.openstreetmap.org/status.php?format=json'); reachable = t.ok; } catch (e) { reachable = false; }
+        if (!reachable) throw e1;
+      }
     }
     const seen = new Set();
     geo.items = (data.elements || []).map(e => {
@@ -1235,7 +1254,7 @@ async function searchPOI(lat, lng, opts) {
     const nFuel = geo.items.filter(i => i.type === 'fuel').length;
     const kmTxt = (geo.radius / 1000) + ' km';
     setMapStatus(geo.items.length
-      ? `<i class="fas fa-check-circle text-success"></i> Ditemukan <b>${geo.items.length}</b> lokasi dalam radius ${kmTxt}${geo.active.has('fuel') ? ` (${nFuel} SPBU)` : ''}. Peta diperbarui otomatis saat Anda berpindah tempat.`
+      ? `<i class="fas fa-check-circle text-success"></i> Ditemukan <b>${geo.items.length}</b> lokasi dalam radius ${kmTxt}${geo.active.has('fuel') && geo.active.size > 1 ? ` (${nFuel} SPBU)` : ''}. Peta diperbarui otomatis saat Anda berpindah tempat.`
       : `Tidak ada lokasi ditemukan dalam radius ${kmTxt}. Coba perbesar radius.`);
     if (opts.fit) {
       const b = L.latLngBounds([[lat, lng]]);
@@ -1244,7 +1263,7 @@ async function searchPOI(lat, lng, opts) {
     }
   } catch (err) {
     console.error(err);
-    setMapStatus('<span class="text-danger"><i class="fas fa-exclamation-triangle"></i> Gagal memuat data SPBU (server peta sibuk atau koneksi terganggu).</span> <a href="#" onclick="researchLast(); return false;">Coba lagi</a>');
+    setMapStatus(`<span class="text-danger"><i class="fas fa-exclamation-triangle"></i> Gagal memuat data ${[...geo.active].map(k => POI_TYPES[k].label).join(', ')} (server peta sibuk atau koneksi terganggu).</span> <a href="#" onclick="researchLast(); return false;">Coba lagi</a>`);
     if (opts.manual) toast('Gagal memuat data lokasi. Coba beberapa saat lagi.', 'error');
   } finally { geo.searching = false; if (btn) btn.disabled = false; }
 }
@@ -1269,7 +1288,7 @@ function renderPOI() {
   const ref = refLL();
   geo.items.forEach(it => { it.dist = ref ? distM(ref[0], ref[1], it.lat, it.lng) : 0; });
   geo.items.sort((a, b) => a.dist - b.dist);
-  const nearest = geo.items.find(i => i.type === 'fuel');
+  const nearest = geo.items.find(i => i.type === 'fuel') || geo.items[0];
   geo.nearestId = nearest ? nearest.id : null;
   geo.items.forEach(it => {
     const t = POI_TYPES[it.type], near = it.id === geo.nearestId;
@@ -1282,7 +1301,7 @@ function refreshDistances() {
   const ref = refLL(); if (!ref || !geo.items.length) return;
   geo.items.forEach(it => { it.dist = distM(ref[0], ref[1], it.lat, it.lng); });
   geo.items.sort((a, b) => a.dist - b.dist);
-  const nearest = geo.items.find(i => i.type === 'fuel');
+  const nearest = geo.items.find(i => i.type === 'fuel') || geo.items[0];
   if ((nearest ? nearest.id : null) !== geo.nearestId) renderPOI(); else renderNearbyList();
 }
 function routeUrl(it) { return `https://www.google.com/maps/dir/?api=1&destination=${it.lat},${it.lng}&travelmode=driving`; }
