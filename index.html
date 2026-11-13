@@ -593,7 +593,18 @@
         <input type="hidden" id="fId">
         <input type="hidden" id="fReceiptUrlOld">
         <div class="row g-3">
-          <div class="col-md-6"><label class="form-label">Tanggal *</label><input type="date" class="form-control" id="fDate"></div>
+          <div class="col-md-6">
+            <div class="d-flex flex-wrap gap-2">
+              <div style="flex:1 1 150px"><label class="form-label">Tanggal *</label><input type="date" class="form-control" id="fDate"></div>
+              <div style="flex:1 1 170px"><label class="form-label">Jam <span class="text-muted small" id="fTimeMode"></span></label>
+                <div class="input-group">
+                  <input type="time" class="form-control" id="fTime" oninput="fTimeManual()">
+                  <button type="button" class="btn btn-outline-primary" title="Isi otomatis jam sekarang" onclick="fTimeAutoOn()"><i class="fas fa-clock"></i></button>
+                  <button type="button" class="btn btn-outline-secondary" title="Kosongkan jam" onclick="fTimeClear()"><i class="fas fa-xmark"></i></button>
+                </div>
+              </div>
+            </div>
+          </div>
           <div class="col-md-6"><label class="form-label">Odometer (km) *</label><input type="number" class="form-control" id="fOdometer"></div>
           <div class="col-md-6">
             <label class="form-label">Jenis BBM *</label>
@@ -832,7 +843,7 @@
 // ║  di antara tanda kutip ' ' pada baris const WEB_APP_URL di bawah.    ║
 // ║  Setiap membuat penerapan BARU, URL-nya berubah → tempel ulang.      ║
 // ╚══════════════════════════════════════════════════════════════════════╝
-const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbwxtkSnhmXy0DyWcf-q1p5s1-XEm1W6-V8ND_wqVCR99Kp5ZvhXwq5OEa5NwgADDB7ayQ/exec';
+const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbxSLDU0nxvxn26FpVH52yBhJBFoDieKfFs-SdSjoxVODtztzQN0Jbj5XnRK8Xn2tcyt/exec';
 // ☝️☝️☝️  TEMPEL URL DI ATAS (di antara tanda kutip)  ☝️☝️☝️
 window.addEventListener('load', () => {
   if (!/^https:\/\/script\.google\.com\/macros\/s\/[^\s']+\/exec$/.test(WEB_APP_URL)) toast('URL Web App belum benar. Tempel URL Code.gs di bagian "TEMPEL DISINI" pada kode index.html.', 'error');
@@ -1228,16 +1239,20 @@ async function searchPOI(lat, lng, opts) {
   try {
     const body = types.map(k => `nwr${POI_TYPES[k].q}(around:${geo.radius},${lat},${lng});`).join('');
     let data;
-    try { data = await overpassQuery(`[out:json][timeout:25];(${body});out center tags 400;`); }
-    catch (e1) {
-      console.warn('Overpass gagal, memakai Nominatim:', e1);
-      setMapStatus('<span class="spinner-border spinner-border-sm me-1"></span> Server utama sibuk, mencoba server cadangan…');
+    // Server utama = Nominatim (selalu berhasil); server cadangan = Overpass (sering sibuk)
+    try {
       data = await nominatimPOI(lat, lng, geo.radius, types);
-      if (!data.elements.length) {
-        // Server cadangan menjawab tetapi tidak ada data: itu hasil kosong, bukan error koneksi
+      if (!data.elements.length) throw new Error('Nominatim kosong');
+    } catch (e1) {
+      console.warn('Server utama (Nominatim) gagal/kosong, memakai Overpass:', e1);
+      setMapStatus('<span class="spinner-border spinner-border-sm me-1"></span> Server utama tidak menemukan data, mencoba server cadangan…');
+      try { data = await overpassQuery(`[out:json][timeout:25];(${body});out center tags 400;`); }
+      catch (e2) {
+        // Overpass gagal: bila Nominatim hanya kosong (server hidup), anggap hasil kosong, bukan error koneksi
         let reachable = true;
         try { const t = await fetch('https://nominatim.openstreetmap.org/status.php?format=json'); reachable = t.ok; } catch (e) { reachable = false; }
-        if (!reachable) throw e1;
+        if (!reachable) throw e2;
+        data = { elements: [] };
       }
     }
     const seen = new Set();
@@ -1961,7 +1976,7 @@ function exportCSV(type) {
   if (end) data = data.filter(d => d.date <= end);
   if (data.length === 0) { toast('Tidak ada data', 'info'); return; }
   let headers, rows;
-  if (type === 'fillup') { headers = ['Tanggal','Odometer','Jarak (km)','Jumlah BBM (L)','Jenis BBM','Harga/L','Total Biaya','SPBU','Catatan']; rows = data.map(f => [f.date, f.odometer, f.distance || '-', f.fuelAmount, f.fuelType, f.fuelPrice, f.totalCost, f.station || '', f.notes || '']); }
+  if (type === 'fillup') { headers = ['Tanggal','Jam','Odometer','Jarak (km)','Jumlah BBM (L)','Jenis BBM','Harga/L','Total Biaya','SPBU','Catatan']; rows = data.map(f => [f.date, f.time || '', f.odometer, f.distance || '-', f.fuelAmount, f.fuelType, f.fuelPrice, f.totalCost, f.station || '', f.notes || '']); }
   else { headers = ['Tanggal','Kategori','Jumlah','Catatan']; rows = data.map(e => [e.date, e.category, e.amount, e.notes || '']); }
   const csvContent = [headers.join(','), ...rows.map(r => r.map(c => { let s = String(c); s = csvSafe(s); return '"' + s.replace(/"/g, '""') + '"'; }).join(','))].join('\n');
   const blob = new Blob(['\uFEFF' + csvContent], { type: 'text/csv;charset=utf-8;' });
@@ -2184,7 +2199,7 @@ function applyFillupFilter() {
   if (end) data = data.filter(f => f.date <= end);
   el('fillupCountInfo').innerHTML = `Menampilkan <b>${data.length}</b> data`;
   if (data.length === 0) { el('fillupTbody').innerHTML = '<tr><td colspan="9" class="text-center py-4 text-muted">Tidak ada data.</td></tr>'; return; }
-  el('fillupTbody').innerHTML = data.map(f => `<tr><td>${esc(fmtDate(f.date))}</td><td>${fmtNum(f.odometer)}</td><td>${f.distance ? `<span class="badge bg-info text-dark">+${fmtNum(f.distance)} km</span>` : '-'}</td><td>${esc(f.fuelAmount)} L <span class="badge bg-secondary text-xs">${esc(f.fuelType || '-')}</span></td><td>${fmtRp(f.fuelPrice)}</td><td class="fw-semibold">${fmtRp(f.totalCost)}</td><td>${esc(f.station || '-')}</td><td>${safeUrl(f.receiptUrl) ? `<a href="${esc(safeUrl(f.receiptUrl))}" target="_blank" rel="noopener" class="btn btn-sm btn-outline-secondary"><i class="fas fa-image"></i></a>` : '-'}</td><td class="text-end"><div class="d-flex justify-content-end gap-1"><button class="btn btn-sm btn-outline-primary icon-btn" onclick="editFillup('${esc(f.id)}')"><i class="fas fa-pen"></i></button><button class="btn btn-sm btn-outline-danger icon-btn" onclick="confirmDelete('fillup','${esc(f.id)}')"><i class="fas fa-trash"></i></button></div></td></tr>`).join('');
+  el('fillupTbody').innerHTML = data.map(f => `<tr><td>${esc(fmtDate(f.date))}${f.time ? ` <span class="text-muted small">${esc(f.time)}</span>` : ''}</td><td>${fmtNum(f.odometer)}</td><td>${f.distance ? `<span class="badge bg-info text-dark">+${fmtNum(f.distance)} km</span>` : '-'}</td><td>${esc(f.fuelAmount)} L <span class="badge bg-secondary text-xs">${esc(f.fuelType || '-')}</span></td><td>${fmtRp(f.fuelPrice)}</td><td class="fw-semibold">${fmtRp(f.totalCost)}</td><td>${esc(f.station || '-')}</td><td>${safeUrl(f.receiptUrl) ? `<a href="${esc(safeUrl(f.receiptUrl))}" target="_blank" rel="noopener" class="btn btn-sm btn-outline-secondary"><i class="fas fa-image"></i></a>` : '-'}</td><td class="text-end"><div class="d-flex justify-content-end gap-1"><button class="btn btn-sm btn-outline-primary icon-btn" onclick="editFillup('${esc(f.id)}')"><i class="fas fa-pen"></i></button><button class="btn btn-sm btn-outline-danger icon-btn" onclick="confirmDelete('fillup','${esc(f.id)}')"><i class="fas fa-trash"></i></button></div></td></tr>`).join('');
 }
 function resetFillupFilter() { el('filterFillupStart').value = ''; el('filterFillupEnd').value = ''; applyFillupFilter(); }
 
@@ -2194,9 +2209,22 @@ document.addEventListener('change', e => {
   const last = Math.max(0, ...state.fillups.map(f => Number(f.odometer) || 0)), d = Number(e.target.value) - last;
   if (last && d > 1500) toast('Jarak ' + fmtNum(d) + ' km sejak isi terakhir, pastikan odometer benar.', 'info');
 });
+// ---------- Jam pengisian: otomatis (realtime) / manual / kosong ----------
+let fTimeTimer = null, fTimeAuto = false;
+function nowHHMM() { const d = new Date(); return String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0'); }
+function fTimeSetMode(mode) {
+  fTimeAuto = mode === 'auto';
+  const lbl = el('fTimeMode'); if (lbl) lbl.textContent = mode === 'auto' ? '(otomatis)' : mode === 'manual' ? '(manual)' : '(dikosongkan)';
+  clearInterval(fTimeTimer); fTimeTimer = null;
+  if (fTimeAuto) { el('fTime').value = nowHHMM(); fTimeTimer = setInterval(() => { if (fTimeAuto) el('fTime').value = nowHHMM(); }, 15000); }
+}
+function fTimeAutoOn() { fTimeSetMode('auto'); }
+function fTimeManual() { fTimeSetMode(el('fTime').value ? 'manual' : 'empty'); }
+function fTimeClear() { fTimeSetMode('empty'); el('fTime').value = ''; }
+document.addEventListener('hidden.bs.modal', e => { if (e.target && e.target.id === 'modalFillup') { clearInterval(fTimeTimer); fTimeTimer = null; fTimeAuto = false; } });
 function _showFillupModal() {
   if (!state.currentVehicleId) { toast('Pilih kendaraan dulu.', 'error'); return; }
-  el('fId').value = ''; el('fReceiptUrlOld').value = ''; el('fDate').value = todayStr();
+  el('fId').value = ''; el('fReceiptUrlOld').value = ''; el('fDate').value = todayStr(); fTimeSetMode('auto');
   selectedFillupFile = null; currentUploadedFileId = null; el('fReceiptPreview').innerHTML = ''; el('btnScanOCR').classList.add('d-none');
   el('fReceiptCamera').value = ''; el('fReceiptGallery').value = '';
   let lastOdo = 0;
@@ -2209,7 +2237,7 @@ function _showFillupModal() {
 }
 function editFillup(id) {
   const f = state.fillups.find(x => String(x.id) === String(id)); if (!f) return;
-  el('fId').value = f.id; el('fDate').value = f.date || ''; el('fOdometer').value = f.odometer || ''; el('fAmount').value = f.fuelAmount || ''; el('fPrice').value = f.fuelPrice || ''; el('fTotal').value = f.totalCost || '';
+  el('fId').value = f.id; el('fDate').value = f.date || ''; el('fTime').value = f.time || ''; fTimeSetMode(f.time ? 'manual' : 'empty'); el('fTime').value = f.time || ''; el('fOdometer').value = f.odometer || ''; el('fAmount').value = f.fuelAmount || ''; el('fPrice').value = f.fuelPrice || ''; el('fTotal').value = f.totalCost || '';
   el('fStation').value = f.station || ''; el('fNotes').value = f.notes || ''; el('fPartial').checked = !!f.partialFill; el('fLat').value = f.latitude || ''; el('fLng').value = f.longitude || ''; el('fReceiptUrlOld').value = f.receiptUrl || '';
   selectedFillupFile = null; currentUploadedFileId = null; el('fReceiptPreview').innerHTML = f.receiptUrl ? '<i class="fas fa-check-circle"></i> Struk sudah ada' : '';
   el('btnScanOCR').classList.add('d-none'); el('fReceiptCamera').value = ''; el('fReceiptGallery').value = '';
@@ -2257,7 +2285,7 @@ async function _executeFillupSave(id, dateVal, odoNum, amountNum, ftName, priceN
   try {
     let receiptUrl = el('fReceiptUrlOld').value;
     if (selectedFillupFile && !currentUploadedFileId) { toast('Mengunggah struk...', 'info'); const upRes = await uploadToDrive(selectedFillupFile, FOLDER_ID_FILLUP); receiptUrl = upRes.url || ''; }
-    const data = { vehicleId: state.currentVehicleId, date: dateVal, odometer: odoNum, fuelAmount: amountNum, fuelType: ftName, fuelPrice: priceNum, totalCost: totalNum, partialFill: el('fPartial').checked, station: el('fStation').value, latitude: el('fLat').value, longitude: el('fLng').value, notes: el('fNotes').value, receiptUrl };
+    const data = { vehicleId: state.currentVehicleId, date: dateVal, time: el('fTime').value || '', odometer: odoNum, fuelAmount: amountNum, fuelType: ftName, fuelPrice: priceNum, totalCost: totalNum, partialFill: el('fPartial').checked, station: el('fStation').value, latitude: el('fLat').value, longitude: el('fLng').value, notes: el('fNotes').value, receiptUrl };
     const res = id ? await callApi('apiUpdateFillup', id, data) : await callApi('apiAddFillup', data);
     closeModal('modalFillup'); toast(res.message);
     await loadVehicles(); state.loadedTabs = resetLoadedTabs(); await loadTabData('fillups'); await loadRemindersForNotif();
