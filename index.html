@@ -248,7 +248,7 @@
       .fb-dash #dashFilterInfo { grid-column: 1 / -1; order: 9; text-align: left !important; margin: 0 !important; }
       .fb-dash #dashFilterInfo:empty { display: none; }
 
-      .tbl-search { margin: 0 0 12px !important; height: 42px; border-radius: 12px; background-color: var(--bs-body-bg); }
+      .tbl-search { display: block; width: 100% !important; max-width: 100% !important; margin: 0 0 12px !important; height: 42px; border-radius: 12px; background-color: var(--bs-body-bg); }
 
       /* ---------- 4. KARTU STATISTIK ---------- */
       .stat-card { padding: 12px 14px; border-left-width: 0; border-top: 3px solid var(--brand); box-shadow: 0 1px 2px rgba(0,0,0,.06); }
@@ -273,7 +273,7 @@
       #fillupTbody tr { grid-template-columns: repeat(4, 1fr); }
       #fillupTbody td[data-label="Tanggal"]  { grid-area: 1 / 1 / 2 / 3; font-weight: 700; font-size: .95rem; }
       #fillupTbody td[data-label="Total"]    { grid-area: 1 / 3 / 2 / 5; text-align: right; font-weight: 800; font-size: 1.05rem; color: var(--brand); }
-      #fillupTbody td[data-label="SPBU"]     { grid-area: 2 / 1 / 3 / 5; font-size: .8rem; color: var(--ink-soft); padding-bottom: 10px !important; border-bottom: 1px dashed var(--bs-border-color) !important; }
+      #fillupTbody td[data-label="SPBU"]     { grid-area: 2 / 1 / 3 / 5; font-size: .8rem; color: var(--ink-soft); padding-bottom: 2px !important; }
       #fillupTbody td[data-label="Odometer"] { grid-area: 3 / 1 / 4 / 3; }
       #fillupTbody td[data-label="Jarak"]    { grid-area: 3 / 3 / 4 / 5; }
       #fillupTbody td[data-label="BBM"]      { grid-area: 4 / 1 / 5 / 3; }
@@ -296,9 +296,15 @@
       #expenseTbody td[data-label="Struk"]::before { display: none; }
       #expenseTbody td[data-label="Catatan"]:empty, #expenseTbody td[data-label="Catatan"] .cell-v:empty { display: none !important; }
 
-      /* area aksi: tanpa garis, tombol ikon rapi */
-      #fillupTbody td.cell-aksi, #expenseTbody td.cell-aksi { border: 0 !important; margin: 0; padding-top: 10px !important; border-top: 1px solid var(--bs-border-color) !important; }
-      #fillupTbody td[data-label="Struk"], #expenseTbody td[data-label="Struk"] { padding-top: 10px !important; border-top: 1px solid var(--bs-border-color) !important; }
+      /* tidak ada abu-abu saat kartu disentuh (hover bawaan Bootstrap menempel di HP) */
+      #fillupTbody tr, #expenseTbody tr, #fillupTbody tr:hover, #expenseTbody tr:hover { --bs-table-bg-state: transparent; --bs-table-hover-bg: transparent; --bs-table-accent-bg: transparent; background: var(--bs-body-bg) !important; }
+      #fillupTbody td, #expenseTbody td, #fillupTbody tr:hover td, #expenseTbody tr:hover td { background: transparent !important; box-shadow: none !important; --bs-table-bg-state: transparent; }
+      #fillupTbody tr:active, #expenseTbody tr:active { transform: scale(.995); transition: transform .1s; }
+
+      /* area aksi, tombol ikon rapi */
+      #fillupTbody td.cell-aksi, #expenseTbody td.cell-aksi { border: 0 !important; margin: 0; padding-top: 6px !important; }
+      #fillupTbody td[data-label="Struk"], #expenseTbody td[data-label="Struk"] { border: 0 !important; padding-top: 6px !important; }
+      #fillupTbody td, #expenseTbody td { border: 0 !important; }
       .icon-btn { width: 38px; height: 38px; border-radius: 10px; }
 
       /* ---------- 6. NAVIGASI BAWAH ---------- */
