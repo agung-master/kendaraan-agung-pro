@@ -197,6 +197,124 @@
     }
     body.viewer #bnav .fabbtn, body.viewer .icon-btn, body.viewer [onclick^="show"][onclick*="Modal"] { display:none !important; }
     .tbl-search { max-width:320px; margin:0 0 .6rem auto; }
+  
+    /* ===================================================================
+       MOBILE POLISH v1  — tampilan rapi & profesional di HP
+       (hanya aktif di layar <= 768px; desktop tidak berubah)
+       =================================================================== */
+    @media (max-width: 768px) {
+      :root { --card-radius: 16px; --ink-soft: var(--bs-secondary-color); }
+      body { font-size: 14px; -webkit-tap-highlight-color: transparent; background: var(--bg); }
+      body { padding-bottom: calc(96px + env(safe-area-inset-bottom, 0px)) !important; }
+
+      /* ---------- 1. HEADER: 2 baris (merek + aksi / pilih kendaraan) ---------- */
+      .app-header { padding: calc(10px + env(safe-area-inset-top, 0px)) 0 12px; margin-bottom: 14px; border-radius: 0 0 20px 20px; }
+      .app-header .container-fluid > .d-flex { flex-wrap: wrap !important; row-gap: 10px; }
+      .app-header .container-fluid > .d-flex > .d-flex.flex-grow-1 { display: contents !important; }
+      .app-header .container-fluid > .d-flex > .d-flex:first-child { order: 1; flex: 1 1 auto !important; }
+      .app-header .container-fluid > .d-flex > .d-flex.flex-grow-1 > .d-flex { order: 2; margin-left: auto; }
+      .app-header .vehicle-selector { order: 3; flex: 0 0 100%; max-width: 100%; width: 100%; height: 40px; font-weight: 600;
+        background-color: rgba(255,255,255,.16); border-radius: 12px; }
+      .header-btn, .notif-btn { width: 36px; height: 36px; padding: 0; border-radius: 10px; background: rgba(255,255,255,.18); color: #fff; box-shadow: none; }
+      .header-btn:hover { background: rgba(255,255,255,.28); color: #fff; transform: none; }
+
+      /* ---------- 2. PANEL: tidak ada "kartu di dalam kartu" ---------- */
+      #tabFillups > .panel, #tabExpenses > .panel, #tabReminders > .panel,
+      #tabVehicles > .panel, #tabSettings > .panel, #tabUsers > .panel { background: transparent; box-shadow: none; padding: 0; }
+      #tabFillups > .panel > .d-flex:first-child, #tabExpenses > .panel > .d-flex:first-child { gap: 10px !important; margin-bottom: 12px !important; }
+      #tabFillups h5, #tabExpenses h5 { font-size: 1.15rem; font-weight: 700; width: 100%; }
+      #tabFillups .btn, #tabExpenses .btn { border-radius: 12px; font-weight: 600; }
+      #tabFillups > .panel > .d-flex:first-child .btn, #tabExpenses > .panel > .d-flex:first-child .btn { height: 42px; padding: 0 14px; }
+      #tabFillups .refresh-btn, #tabExpenses .refresh-btn { flex: 0 0 42px; width: 42px; padding: 0 !important; }
+
+      /* ---------- 3. FILTER: ringkas, 2 kolom, berlabel ---------- */
+      .filter-bar { border-left: 0 !important; border-radius: 14px; padding: 12px; margin-bottom: 10px;
+        box-shadow: 0 1px 2px rgba(0,0,0,.06); background: var(--bs-body-bg); }
+      .filter-bar.fb-range { display: grid !important; grid-template-columns: 1fr 1fr; gap: 10px !important; align-items: end; }
+      .fb-range > .fb-title, .fb-range > .text-muted.d-none { display: none !important; }
+      .fb-range .fb-field { display: flex; flex-direction: column; gap: 4px; margin: 0; min-width: 0; }
+      .fb-range .fb-field small { font-size: .7rem; font-weight: 600; letter-spacing: .4px; text-transform: uppercase; color: var(--ink-soft); }
+      .fb-range input[type=date] { max-width: none !important; width: 100% !important; height: 42px; border-radius: 10px; min-width: 0; }
+      .fb-range .btn { height: 42px; width: 100% !important; border-radius: 10px; font-weight: 600; }
+      .fb-range .btn-warning { background: var(--brand); border-color: var(--brand); color: #fff !important; }   /* tombol cari seragam biru */
+      .fb-range .fb-count { grid-column: 1 / -1; margin: 0 !important; text-align: left !important; font-size: .78rem; color: var(--ink-soft) !important; }
+      .fb-range .fb-count:empty { display: none; }
+
+      /* filter dasbor: [pilih periode ......][⊞][⟳] */
+      .filter-bar.fb-dash { display: grid !important; grid-template-columns: 1fr 42px 42px; gap: 8px !important; align-items: center; }
+      .fb-dash > .fw-bold { display: none; }
+      .fb-dash select { width: 100% !important; max-width: none !important; height: 42px; border-radius: 10px; font-weight: 600; }
+      .fb-dash .btn { height: 42px; width: 42px !important; padding: 0; border-radius: 10px; }
+      .fb-dash #dashFilterInfo { grid-column: 1 / -1; order: 9; text-align: left !important; margin: 0 !important; }
+      .fb-dash #dashFilterInfo:empty { display: none; }
+
+      .tbl-search { margin: 0 0 12px !important; height: 42px; border-radius: 12px; background-color: var(--bs-body-bg); }
+
+      /* ---------- 4. KARTU STATISTIK ---------- */
+      .stat-card { padding: 12px 14px; border-left-width: 0; border-top: 3px solid var(--brand); box-shadow: 0 1px 2px rgba(0,0,0,.06); }
+      .stat-card.success { border-top-color:#34a853; } .stat-card.warning { border-top-color:#fbbc04; }
+      .stat-card.danger  { border-top-color:#ea4335; } .stat-card.info    { border-top-color:#00acc1; }
+      .stat-card.purple  { border-top-color:#9c27b0; } .stat-card.carbon  { border-top-color:#4caf50; }
+      .stat-card .label { letter-spacing: .3px; line-height: 1.2; padding-right: 22px; }
+      .stat-card .value { font-size: 1.05rem; white-space: nowrap; letter-spacing: -.2px; }
+      .stat-card:hover { transform: none; }
+      .ai-insight-box { border-left-width: 0; border-radius: 14px; padding: 12px 14px; font-size: .86rem; }
+
+      /* ---------- 5. DAFTAR RIWAYAT → KARTU RINGKAS ---------- */
+      #fillupTbody tr, #expenseTbody tr { display: grid !important; gap: 6px 12px; padding: 14px; margin-bottom: 10px;
+        border: 0; border-radius: 16px; background: var(--bs-body-bg); box-shadow: 0 1px 3px rgba(0,0,0,.07); }
+      #fillupTbody td, #expenseTbody td { display: block !important; padding: 0 !important; text-align: left; min-width: 0; }
+      #fillupTbody td::before, #expenseTbody td::before { display: block; flex: none; margin-bottom: 2px; font-size: .66rem;
+        font-weight: 600; letter-spacing: .4px; text-transform: uppercase; color: var(--ink-soft); }
+      #fillupTbody .cell-v, #expenseTbody .cell-v { text-align: left; }
+      #fillupTbody td[colspan], #expenseTbody td[colspan] { grid-column: 1 / -1; text-align: center; padding: 22px 0 !important; color: var(--ink-soft); }
+
+      /* Pengisian: [tanggal ........ total] / SPBU / 4 metrik / [struk ... aksi] */
+      #fillupTbody tr { grid-template-columns: repeat(4, 1fr); }
+      #fillupTbody td[data-label="Tanggal"]  { grid-area: 1 / 1 / 2 / 3; font-weight: 700; font-size: .95rem; }
+      #fillupTbody td[data-label="Total"]    { grid-area: 1 / 3 / 2 / 5; text-align: right; font-weight: 800; font-size: 1.05rem; color: var(--brand); }
+      #fillupTbody td[data-label="SPBU"]     { grid-area: 2 / 1 / 3 / 5; font-size: .8rem; color: var(--ink-soft); padding-bottom: 10px !important; border-bottom: 1px dashed var(--bs-border-color) !important; }
+      #fillupTbody td[data-label="Odometer"] { grid-area: 3 / 1 / 4 / 3; }
+      #fillupTbody td[data-label="Jarak"]    { grid-area: 3 / 3 / 4 / 5; }
+      #fillupTbody td[data-label="BBM"]      { grid-area: 4 / 1 / 5 / 3; }
+      #fillupTbody td[data-label="Harga/L"]  { grid-area: 4 / 3 / 5 / 5; }
+      #fillupTbody td[data-label="Struk"]    { grid-area: 5 / 1 / 6 / 3; align-self: center; }
+      #fillupTbody td.cell-aksi              { grid-area: 5 / 3 / 6 / 5; }
+      #fillupTbody td[data-label="Tanggal"]::before, #fillupTbody td[data-label="Total"]::before,
+      #fillupTbody td[data-label="SPBU"]::before, #fillupTbody td[data-label="Struk"]::before { display: none; }
+
+      /* Biaya lain: [tanggal ..... jumlah] / kategori / catatan / [struk ... aksi] */
+      #expenseTbody tr { grid-template-columns: 1fr 1fr; }
+      #expenseTbody td[data-label="Tanggal"]  { grid-area: 1 / 1; font-weight: 700; font-size: .95rem; }
+      #expenseTbody td[data-label="Jumlah"]   { grid-area: 1 / 2; text-align: right; font-weight: 800; font-size: 1.05rem; color: #e37400; }
+      #expenseTbody td[data-label="Kategori"] { grid-area: 2 / 1 / 3 / 3; }
+      #expenseTbody td[data-label="Catatan"]  { grid-area: 3 / 1 / 4 / 3; font-size: .82rem; color: var(--ink-soft); }
+      #expenseTbody td[data-label="Struk"]    { grid-area: 4 / 1; align-self: center; }
+      #expenseTbody td.cell-aksi              { grid-area: 4 / 2; }
+      #expenseTbody td[data-label="Tanggal"]::before, #expenseTbody td[data-label="Jumlah"]::before,
+      #expenseTbody td[data-label="Kategori"]::before, #expenseTbody td[data-label="Catatan"]::before,
+      #expenseTbody td[data-label="Struk"]::before { display: none; }
+      #expenseTbody td[data-label="Catatan"]:empty, #expenseTbody td[data-label="Catatan"] .cell-v:empty { display: none !important; }
+
+      /* area aksi: tanpa garis, tombol ikon rapi */
+      #fillupTbody td.cell-aksi, #expenseTbody td.cell-aksi { border: 0 !important; margin: 0; padding-top: 10px !important; border-top: 1px solid var(--bs-border-color) !important; }
+      #fillupTbody td[data-label="Struk"], #expenseTbody td[data-label="Struk"] { padding-top: 10px !important; border-top: 1px solid var(--bs-border-color) !important; }
+      .icon-btn { width: 38px; height: 38px; border-radius: 10px; }
+
+      /* ---------- 6. NAVIGASI BAWAH ---------- */
+      #bnav { padding-top: 8px; border-radius: 20px 20px 0 0; box-shadow: 0 -6px 20px rgba(0,0,0,.08); }
+      #bnav button { font-size: .66rem; font-weight: 500; position: relative; }
+      #bnav button.on { font-weight: 700; }
+      #bnav button.on:not(.fabbtn)::before { content: ''; position: absolute; top: -8px; width: 22px; height: 3px; border-radius: 0 0 3px 3px; background: var(--brand); }
+      #bnav .fabbtn { margin: -22px 6px; }
+
+      .app-footer { font-size: .78rem; }
+    }
+    /* layar sangat sempit */
+    @media (max-width: 360px) {
+      .stat-card .value { font-size: .95rem; }
+      #fillupTbody td[data-label="Total"], #expenseTbody td[data-label="Jumlah"] { font-size: .95rem; }
+    }
   </style>
 </head>
 <body>
@@ -293,7 +411,7 @@
           <button class="btn btn-primary" onclick="showVehicleModal()">Tambah Kendaraan</button>
         </div>
         <div id="dashContent" class="d-none">
-          <div class="filter-bar d-flex flex-wrap align-items-center gap-2 mb-3" style="border-left-color: #9c27b0;">
+          <div class="filter-bar fb-dash d-flex flex-wrap align-items-center gap-2 mb-3" style="border-left-color: #9c27b0;">
             <span class="fw-bold me-2"><i class="fas fa-filter text-purple"></i> Periode:</span>
             <select id="dashMonthFilter" class="form-select form-select-sm" style="max-width:200px;" onchange="loadDashboard()">
               <option value="">Semua Waktu</option>
@@ -422,14 +540,14 @@
               </button>
             </div>
           </div>
-          <div class="filter-bar d-flex flex-wrap align-items-center gap-2">
-            <span class="fw-bold me-2 w-100 w-md-auto"><i class="fas fa-calendar-alt text-primary"></i> Filter:</span>
-            <input type="date" id="filterFillupStart" class="form-control form-control-sm" style="max-width:140px">
+          <div class="filter-bar fb-range d-flex flex-wrap align-items-center gap-2">
+            <span class="fw-bold me-2 w-100 w-md-auto fb-title"><i class="fas fa-calendar-alt text-primary"></i> Filter:</span>
+            <label class="fb-field"><small>Dari</small><input type="date" id="filterFillupStart" class="form-control form-control-sm" style="max-width:140px"></label>
             <span class="text-muted d-none d-md-inline">s/d</span>
-            <input type="date" id="filterFillupEnd" class="form-control form-control-sm" style="max-width:140px">
-            <button class="btn btn-sm btn-primary" onclick="applyFillupFilter()"><i class="fas fa-search"></i></button>
-            <button class="btn btn-sm btn-outline-secondary" onclick="resetFillupFilter()"><i class="fas fa-undo"></i></button>
-            <span id="fillupCountInfo" class="ms-auto text-muted small"></span>
+            <label class="fb-field"><small>Sampai</small><input type="date" id="filterFillupEnd" class="form-control form-control-sm" style="max-width:140px"></label>
+            <button class="btn btn-sm btn-primary" onclick="applyFillupFilter()"><i class="fas fa-search me-1"></i><span class="d-md-none">Terapkan</span></button>
+            <button class="btn btn-sm btn-outline-secondary" onclick="resetFillupFilter()"><i class="fas fa-undo me-1"></i><span class="d-md-none">Reset</span></button>
+            <span id="fillupCountInfo" class="fb-count ms-auto text-muted small"></span>
           </div>
           <div class="table-responsive">
             <table class="table table-hover align-middle">
@@ -454,14 +572,14 @@
               </button>
             </div>
           </div>
-          <div class="filter-bar d-flex flex-wrap align-items-center gap-2">
-            <span class="fw-bold me-2 w-100 w-md-auto"><i class="fas fa-calendar-alt text-warning"></i> Filter:</span>
-            <input type="date" id="filterExpenseStart" class="form-control form-control-sm" style="max-width:140px">
+          <div class="filter-bar fb-range d-flex flex-wrap align-items-center gap-2">
+            <span class="fw-bold me-2 w-100 w-md-auto fb-title"><i class="fas fa-calendar-alt text-warning"></i> Filter:</span>
+            <label class="fb-field"><small>Dari</small><input type="date" id="filterExpenseStart" class="form-control form-control-sm" style="max-width:140px"></label>
             <span class="text-muted d-none d-md-inline">s/d</span>
-            <input type="date" id="filterExpenseEnd" class="form-control form-control-sm" style="max-width:140px">
-            <button class="btn btn-sm btn-warning text-dark" onclick="applyExpenseFilter()"><i class="fas fa-search"></i></button>
-            <button class="btn btn-sm btn-outline-secondary" onclick="resetExpenseFilter()"><i class="fas fa-undo"></i></button>
-            <span id="expenseCountInfo" class="ms-auto text-muted small"></span>
+            <label class="fb-field"><small>Sampai</small><input type="date" id="filterExpenseEnd" class="form-control form-control-sm" style="max-width:140px"></label>
+            <button class="btn btn-sm btn-warning text-dark" onclick="applyExpenseFilter()"><i class="fas fa-search me-1"></i><span class="d-md-none">Terapkan</span></button>
+            <button class="btn btn-sm btn-outline-secondary" onclick="resetExpenseFilter()"><i class="fas fa-undo me-1"></i><span class="d-md-none">Reset</span></button>
+            <span id="expenseCountInfo" class="fb-count ms-auto text-muted small"></span>
           </div>
           <div class="table-responsive">
             <table class="table table-hover align-middle">
