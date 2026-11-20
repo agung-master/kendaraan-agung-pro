@@ -353,6 +353,24 @@
       .stat-card .value { font-size: .95rem; }
       #fillupTbody td[data-label="Total"], #expenseTbody td[data-label="Jumlah"] { font-size: .95rem; }
     }
+    /* ===== PERBAIKAN v2 ===== */
+    #toastContainer { z-index: 30000; max-width: calc(100vw - 20px); }
+    .row-hide, #fillupTbody tr.row-hide, #expenseTbody tr.row-hide, .table-responsive tr.row-hide { display: none !important; }
+    .modal-header.text-dark .btn-close { filter: none; }
+    #loginView { height: 100vh; height: 100dvh; justify-content: flex-start; }
+    #loginView > :first-child { margin-top: auto; }
+    #loginView > :last-child { margin-bottom: auto; }
+    .login-card { padding: 32px 28px; box-shadow: 0 20px 50px rgba(0,0,0,.28); }
+    .login-card .fa-bolt { display: inline-block; width: 72px; height: 72px; line-height: 72px; border-radius: 50%; background: #e8f0fe; font-size: 2rem; }
+    .stat-card .value { overflow: hidden; text-overflow: ellipsis; }
+    @media (min-width: 1400px) { .app-header > .container-fluid, #appView > .container-fluid { max-width: 1360px; } }
+    @media (max-width: 768px) {
+      #toastContainer { top: calc(12px + env(safe-area-inset-top, 0px)); }
+      body { padding-bottom: 0 !important; }
+      .app-footer { padding-bottom: calc(96px + env(safe-area-inset-bottom, 0px)); }
+      .modal-footer { flex-direction: column-reverse; padding-bottom: calc(15px + env(safe-area-inset-bottom, 0px)); }
+      .dropdown-menu[aria-labelledby="notifDropdown"] { top: calc(64px + env(safe-area-inset-top, 0px)) !important; transform: none !important; }
+    }
   </style>
 </head>
 <body>
@@ -408,7 +426,7 @@
                 <i class="fas fa-bell"></i>
                 <span class="badge bg-danger notif-badge d-none" id="notifBadge">0</span>
               </button>
-              <ul class="dropdown-menu dropdown-menu-end shadow" style="width: 320px; max-height: 400px; overflow-y: auto;" id="notifList"></ul>
+              <ul class="dropdown-menu dropdown-menu-end shadow" style="width: 320px; max-height: 400px; overflow-y: auto;" id="notifList" aria-labelledby="notifDropdown"></ul>
             </div>
             <button class="btn header-btn" onclick="toggleTheme()" title="Ubah Tema">
               <i class="fas fa-moon" id="themeIcon"></i>
@@ -485,6 +503,7 @@
                 <div class="chart-container" style="height:200px"><canvas id="chartMonthly"></canvas></div>
               </div>
             </div>
+            <div class="col-12"><div class="row g-3" id="extraPanels"></div></div>
             <div class="col-12" id="comparisonSection" style="display:none;">
               <div class="panel">
                 <div class="d-flex justify-content-between align-items-center mb-3">
@@ -1002,7 +1021,7 @@
 // ║  di antara tanda kutip ' ' pada baris const WEB_APP_URL di bawah.    ║
 // ║  Setiap membuat penerapan BARU, URL-nya berubah → tempel ulang.      ║
 // ╚══════════════════════════════════════════════════════════════════════╝
-const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbxGWEMsFal0wG1-7h4W13UlKLrHEmZmTzBue5_ZN0XGi5Biku41tVKViAnun6ufA0y07w/exec';
+const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbzq6chofUoS1KIlBR6hmQQbskxQLohC_J4D_8Jm11ixUMeSw1G1oXkT70vnf2FgVzwxiQ/exec';
 // ☝️☝️☝️  TEMPEL URL DI ATAS (di antara tanda kutip)  ☝️☝️☝️
 window.addEventListener('load', () => {
   if (!/^https:\/\/script\.google\.com\/macros\/s\/[^\s']+\/exec$/.test(WEB_APP_URL)) toast('URL Web App belum benar. Tempel URL Code.gs di bagian "TEMPEL DISINI" pada kode index.html.', 'error');
@@ -1619,7 +1638,7 @@ async function uploadToDrive(file, folderId) {
 
 function startInactivityTimer() {
   clearTimeout(inactivityTimer);
-  if (state.user) inactivityTimer = setTimeout(() => { doLogout(); toast('Sesi berakhir otomatis karena tidak ada aktivitas selama 10 menit.', 'info'); }, 600000);
+  if (state.user) { const n = Date.now(); if (n - (window._lm || 0) > 5000) { window._lm = n; try { localStorage.setItem('enzy_last_active', String(n)); } catch (e) {} } inactivityTimer = setTimeout(() => { doLogout(); toast('Sesi berakhir otomatis karena tidak ada aktivitas selama 10 menit.', 'info'); }, 600000); }
 }
 window.addEventListener('mousemove', startInactivityTimer);
 window.addEventListener('keydown', startInactivityTimer);
@@ -1655,6 +1674,7 @@ function doLogout() {
   try { stopTracking(); } catch (e) {}
   document.body.classList.remove('viewer', 'is-admin');
   clearTimeout(inactivityTimer);
+  try { document.querySelectorAll('.modal.show').forEach(m => { const i = bootstrap.Modal.getInstance(m); if (i) i.hide(); }); el('bmore').classList.remove('open'); localStorage.removeItem('enzy_last_active'); } catch (e) {}
   el('appView').style.display = 'none'; el('loginView').style.display = 'flex';
   el('loginPass').value = ''; el('loginUser').value = ''; el('navUserName').textContent = 'User';
   el('notifBadge').classList.add('d-none'); el('notifList').innerHTML = '';
@@ -1777,7 +1797,7 @@ function addTableSearch() {
   document.querySelectorAll('.table-responsive').forEach(w => {
     if (w.previousElementSibling && w.previousElementSibling.classList.contains('tbl-search')) return;
     const i = document.createElement('input'); i.type = 'search'; i.className = 'form-control form-control-sm tbl-search'; i.placeholder = '🔍 Cari data...';
-    i.oninput = () => { const q = i.value.toLowerCase(); w.querySelectorAll('tbody tr').forEach(r => { r.style.display = r.textContent.toLowerCase().includes(q) ? '' : 'none'; }); };
+    i.oninput = () => { const q = i.value.toLowerCase(); w.querySelectorAll('tbody tr').forEach(r => r.classList.toggle('row-hide', !!q && !r.textContent.toLowerCase().includes(q))); }; w._search = i;
     w.parentNode.insertBefore(i, w);
   });
 }
@@ -1800,7 +1820,7 @@ function labelCells(w) {
   });
 }
 function exportTableCSV(w, name) {
-  const rows = [...w.querySelectorAll('tr')].filter(r => r.style.display !== 'none').map(r => [...r.children].slice(0, -1).map(c => '"' + csvSafe(c.textContent.trim()).replace(/"/g, '""') + '"').join(','));
+  const rows = [...w.querySelectorAll('tr')].filter(r => !r.classList.contains('row-hide')).map(r => [...r.children].slice(0, -1).map(c => '"' + csvSafe(c.textContent.trim()).replace(/"/g, '""') + '"').join(';'));
   const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob(['\ufeff' + rows.join('\n')], { type: 'text/csv' }));
   a.download = 'enzy_' + name + '_' + new Date().toISOString().slice(0, 10) + '.csv'; document.body.appendChild(a); a.click(); document.body.removeChild(a);
   setTimeout(() => URL.revokeObjectURL(a.href), 1000);
@@ -1808,7 +1828,7 @@ function exportTableCSV(w, name) {
 function enhanceTables() {
   document.querySelectorAll('.table-responsive').forEach((w, n) => {
     labelCells(w);
-    new MutationObserver(() => labelCells(w)).observe(w.querySelector('tbody'), { childList: true });
+    new MutationObserver(() => { labelCells(w); if (w._search && w._search.value) w._search.oninput(); }).observe(w.querySelector('tbody'), { childList: true });
     if (w.closest('#tabFillups, #tabExpenses')) return;
     const b = document.createElement('div'); b.className = 'd-flex gap-2 justify-content-end mb-2';
     b.innerHTML = '<button class="btn btn-sm btn-outline-success"><i class="fas fa-file-csv"></i> Excel/CSV</button><button class="btn btn-sm btn-outline-secondary"><i class="fas fa-print"></i> Cetak/PDF</button>';
@@ -1816,14 +1836,21 @@ function enhanceTables() {
     w.parentNode.insertBefore(b, w);
   });
 }
-window.addEventListener('load', () => {
+function _appInit() {
   try { buildDocsUI(); buildMobileUI(); addTableSearch(); enhanceTables(); } catch (e) {}
+  try {
+    document.querySelectorAll('.btn-close').forEach(b => b.setAttribute('aria-label', 'Tutup'));
+    document.querySelectorAll('label.form-label:not([for])').forEach(l => { let c = l.nextElementSibling; if (c && !/^(INPUT|SELECT|TEXTAREA)$/.test(c.tagName)) c = c.querySelector('input,select,textarea'); if (c && c.id && c.type !== 'hidden') l.htmlFor = c.id; });
+    document.addEventListener('hidden.bs.modal', e => { if (e.target.id === 'modalAnomaly' && el('modalFillup').classList.contains('show')) document.body.classList.add('modal-open'); });
+  } catch (e) {}
   try { el('fDate').value = todayStr(); el('eDate').value = todayStr(); } catch (e) {}
   let savedUser = null;
   try { const raw = localStorage.getItem('enzy_user'); if (raw) savedUser = JSON.parse(raw); }
   catch (e) { try { localStorage.removeItem('enzy_user'); } catch (x) {} }
+  try { const la = Number(localStorage.getItem('enzy_last_active')) || 0; if (savedUser && la && Date.now() - la > 600000) { localStorage.removeItem('enzy_user'); savedUser = null; } } catch (e) {}
   if (savedUser && savedUser.id && savedUser.token) { state.user = savedUser; const cb = cacheLoad('boot'); initApp(cb); if (cb) syncBoot(); } else { el('loginView').style.display = 'flex'; }
-});
+}
+if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', _appInit); else _appInit();
 
 async function refreshAll(boot) {
   try {
@@ -2148,7 +2175,7 @@ function getGPSLocation() {
     try { const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&zoom=18`); const data = await res.json(); let name = data.address?.amenity || data.address?.road || data.address?.city || `Lat:${lat.toFixed(4)} Lng:${lng.toFixed(4)}`; el('fStation').value = name; toast('Lokasi ditemukan!'); }
     catch (e) { el('fStation').value = `Lat:${lat.toFixed(4)} Lng:${lng.toFixed(4)}`; }
     finally { el('gpsSpinner').classList.add('d-none'); }
-  }, () => { el('gpsSpinner').classList.add('d-none'); toast('Gagal mendapatkan GPS', 'error'); }, { enableHighAccuracy: true });
+  }, err => { el('gpsSpinner').classList.add('d-none'); toast(err && err.code === 1 ? 'Izin lokasi ditolak. Aktifkan izin lokasi di pengaturan browser.' : 'Gagal mendapatkan lokasi. Coba lagi di tempat terbuka.', 'error'); }, { enableHighAccuracy: true, timeout: 15000, maximumAge: 30000 });
 }
 
 el('vehicleSelector').addEventListener('change', e => {
@@ -2183,7 +2210,7 @@ function exportCSV(type) {
   let headers, rows;
   if (type === 'fillup') { headers = ['Tanggal','Jam','Odometer','Jarak (km)','Jumlah BBM (L)','Jenis BBM','Harga/L','Total Biaya','SPBU','Catatan']; rows = data.map(f => [f.date, f.time || '', f.odometer, f.distance || '-', f.fuelAmount, f.fuelType, f.fuelPrice, f.totalCost, f.station || '', f.notes || '']); }
   else { headers = ['Tanggal','Kategori','Jumlah','Catatan']; rows = data.map(e => [e.date, e.category, e.amount, e.notes || '']); }
-  const csvContent = [headers.join(','), ...rows.map(r => r.map(c => { let s = String(c); s = csvSafe(s); return '"' + s.replace(/"/g, '""') + '"'; }).join(','))].join('\n');
+  const num = c => (typeof c === 'number' || (typeof c === 'string' && c !== '' && isFinite(Number(c)))) ? String(c).replace('.', ',') : c; const csvContent = [headers.join(';'), ...rows.map(r => r.map(c => { let s = csvSafe(String(num(c))); return '"' + s.replace(/"/g, '""') + '"'; }).join(';'))].join('\n');
   const blob = new Blob(['\uFEFF' + csvContent], { type: 'text/csv;charset=utf-8;' });
   const link = document.createElement('a'); link.setAttribute('href', URL.createObjectURL(blob)); link.setAttribute('download', `Enzy_Gempa_${type}_${todayStr()}.csv`);
   document.body.appendChild(link); link.click(); document.body.removeChild(link); setTimeout(() => URL.revokeObjectURL(link.href), 1000);
@@ -2293,7 +2320,7 @@ function renderDashboard(data, filterMonth) {
 function renderAdvancedDashboard(data, filterMonth) {
   const s = data.stats || {}; const wrap = el('statCards'); if (!wrap) return;
   // PERBAIKAN: grafik tambahan dulu dibuat ulang tiap kali dashboard dimuat tanpa dihapus (memori bocor, HP makin lambat)
-  destroyExtraCharts();
+  destroyExtraCharts(); const ex = el('extraPanels'); if (ex) ex.innerHTML = '';
   if (data.budget) {
     const b = data.budget;
     const color = b.percent >= 100 ? 'danger' : b.percent >= 80 ? 'warning' : 'success';
@@ -2313,15 +2340,15 @@ function renderAdvancedDashboard(data, filterMonth) {
   }
   if (data.fuelTypeComparison && data.fuelTypeComparison.length > 1) {
     const rows = data.fuelTypeComparison.map((f, i) => `<div class="rank-item${i === 0 ? ' top' : ''}"><div class="rank-no">${i + 1}</div><div class="rank-main"><div class="rank-name">${esc(f.fuelType)}${i === 0 ? ' <span class="badge bg-success ms-1">Paling hemat</span>' : ''}</div><div class="rank-meta">${f.avgConsumption} km/L · ${f.count}× isi</div></div><div class="rank-val">${fmtRp(f.costPerKm)}<small>per km</small></div></div>`).join('');
-    wrap.insertAdjacentHTML('beforeend', `<div class="col-12 mt-3"><div class="panel"><h6 class="mb-3"><i class="fas fa-balance-scale text-warning me-1"></i> Perbandingan Nyata per Jenis BBM</h6><div class="rank-list">${rows}</div><div class="small text-muted mt-2">Biaya per km = total biaya ÷ jarak tempuh.</div></div></div>`);
+    ex.insertAdjacentHTML('beforeend', `<div class="col-12"><div class="panel"><h6 class="mb-3"><i class="fas fa-balance-scale text-warning me-1"></i> Perbandingan Nyata per Jenis BBM</h6><div class="rank-list">${rows}</div><div class="small text-muted mt-2">Biaya per km = total biaya ÷ jarak tempuh.</div></div></div>`);
   }
   if (data.stationRanking && data.stationRanking.length >= 2) {
     const rows = data.stationRanking.slice(0, 8).map((st, i) => `<div class="rank-item${i === 0 ? ' top' : ''}"><div class="rank-no">${i + 1}</div><div class="rank-main"><div class="rank-name">${esc(st.station)}</div><div class="rank-meta">${st.avgPrice ? fmtRp(st.avgPrice) + '/L' : 'Harga -'} · ${st.visits}× kunjungan</div></div><div class="rank-val">${st.avgConsumption > 0 ? st.avgConsumption : '-'}<small>km/L</small></div></div>`).join('');
-    wrap.insertAdjacentHTML('beforeend', `<div class="col-12 col-lg-6 mt-3"><div class="panel"><h6 class="mb-3"><i class="fas fa-gas-pump text-primary me-1"></i> Peringkat SPBU (Efisiensi)</h6><div class="rank-list">${rows}</div></div></div>`);
+    ex.insertAdjacentHTML('beforeend', `<div class="col-12 col-lg-6"><div class="panel"><h6 class="mb-3"><i class="fas fa-gas-pump text-primary me-1"></i> Peringkat SPBU (Efisiensi)</h6><div class="rank-list">${rows}</div></div></div>`);
   }
   if (data.categoryBreakdown && Object.keys(data.categoryBreakdown).length > 0) {
     const id = 'chartCategory_' + Date.now();
-    wrap.insertAdjacentHTML('beforeend', `<div class="col-12 col-lg-6 mt-3"><div class="panel"><h6 class="mb-3"><i class="fas fa-chart-pie text-warning me-1"></i> Biaya per Kategori</h6><div class="chart-container"><canvas id="${id}"></canvas></div></div></div>`);
+    ex.insertAdjacentHTML('beforeend', `<div class="col-12 col-lg-6"><div class="panel"><h6 class="mb-3"><i class="fas fa-chart-pie text-warning me-1"></i> Biaya per Kategori</h6><div class="chart-container"><canvas id="${id}"></canvas></div></div></div>`);
     const cats = Object.keys(data.categoryBreakdown);
     const colors = ['#1a73e8','#34a853','#fbbc04','#ea4335','#9c27b0','#00acc1','#ff7043'];
     applyChartTheme();
@@ -2329,7 +2356,7 @@ function renderAdvancedDashboard(data, filterMonth) {
   }
   if (data.fuelPriceTrend && data.fuelPriceTrend.length >= 2) {
     const id = 'chartFuelPrice_' + Date.now();
-    wrap.insertAdjacentHTML('beforeend', `<div class="col-12 mt-3"><div class="panel"><h6 class="mb-3"><i class="fas fa-chart-line text-danger me-1"></i> Tren Harga BBM per Liter</h6><div class="chart-container" style="height:220px"><canvas id="${id}"></canvas></div></div></div>`);
+    ex.insertAdjacentHTML('beforeend', `<div class="col-12"><div class="panel"><h6 class="mb-3"><i class="fas fa-chart-line text-danger me-1"></i> Tren Harga BBM per Liter</h6><div class="chart-container" style="height:220px"><canvas id="${id}"></canvas></div></div></div>`);
     applyChartTheme();
     extraCharts.push(new Chart(el(id).getContext('2d'), { type: 'line', data: { labels: data.fuelPriceTrend.map(p => fmtDate(p.date)), datasets: [{ label: 'Harga/L', data: data.fuelPriceTrend.map(p => p.price), borderColor: '#ea4335', backgroundColor: '#ea433520', fill: true, tension: 0.3, pointRadius: 3 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: false, ticks: { callback: v => 'Rp ' + fmtNum(v) } } } } }));
   }
