@@ -156,7 +156,6 @@
       .icon-btn { width: 36px; height: 36px; margin-left: 4px; }
       .chart-container { height: 220px !important; }
       #map { height: 58vh; min-height: 340px; }
-      .dropdown-menu[aria-labelledby="notifDropdown"] { position: fixed !important; top: 60px !important; left: 2vw !important; right: 2vw !important; width: 96vw !important; margin: 0 auto; }
       .tbl-search { max-width:100%; }
       .table-responsive thead { display:none; }
       .table-responsive tr { background:var(--bs-body-bg); border:1px solid var(--bs-border-color); border-radius:12px; margin-bottom:10px; padding:6px 12px; box-shadow:0 1px 4px rgba(0,0,0,.05); }
@@ -366,13 +365,34 @@
     .login-card { padding: 32px 28px; box-shadow: 0 20px 50px rgba(0,0,0,.28); }
     .login-card .fa-bolt { display: inline-block; width: 72px; height: 72px; line-height: 72px; border-radius: 50%; background: #e8f0fe; font-size: 2rem; }
     .stat-card .value { overflow: hidden; text-overflow: ellipsis; }
+    /* ===== NOTIFIKASI (dropdown lonceng) =====
+       Penyebab teks terpotong: .dropdown-item bawaan Bootstrap memakai white-space:nowrap.
+       Item notifikasi kini memakai kelas sendiri yang boleh membungkus baris. */
+    .notif-menu { width: min(360px, calc(100vw - 20px)); max-height: min(70vh, 460px); overflow-x: hidden; overflow-y: auto; overscroll-behavior: contain; padding: 0; border-radius: 14px; }
+    .notif-head { position: sticky; top: 0; z-index: 1; display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 10px 14px; background: inherit; border-bottom: 1px solid var(--bs-border-color); font-size: .74rem; font-weight: 700; letter-spacing: .4px; text-transform: uppercase; color: var(--bs-secondary-color); }
+    .notif-head .badge { letter-spacing: 0; }
+    .notif-item { display: flex; align-items: flex-start; gap: 12px; padding: 12px 14px; color: var(--bs-body-color); text-decoration: none; white-space: normal; border-bottom: 1px solid var(--bs-border-color); }
+    .notif-menu li:last-child .notif-item { border-bottom: 0; }
+    .notif-item:hover, .notif-item:focus, .notif-item:active { background: var(--bs-tertiary-bg); color: var(--bs-body-color); }
+    .notif-ic { flex: 0 0 34px; width: 34px; height: 34px; border-radius: 50%; display: flex; align-items: center; justify-content: center; background: #fce8e6; color: #d93025; font-size: .95rem; }
+    [data-bs-theme="dark"] .notif-ic { background: rgba(234,67,53,.2); color: #f28b82; }
+    .notif-body { flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column; gap: 6px; }
+    .notif-veh { font-weight: 700; font-size: .92rem; line-height: 1.25; overflow-wrap: anywhere; }
+    .notif-chips { display: flex; flex-wrap: wrap; gap: 4px; }
+    .notif-chip { font-size: .72rem; font-weight: 600; line-height: 1.25; padding: 3px 8px; border-radius: 999px; background: var(--bs-secondary-bg); color: var(--bs-body-color); overflow-wrap: anywhere; }
+    .notif-reason { display: flex; flex-wrap: wrap; gap: 2px 12px; font-size: .76rem; font-weight: 600; color: #c5221f; }
+    .notif-reason i { margin-right: 4px; }
+    [data-bs-theme="dark"] .notif-reason { color: #f28b82; }
+    .notif-empty { padding: 24px 14px; text-align: center; font-size: .88rem; color: var(--bs-secondary-color); }
     @media (min-width: 1400px) { .app-header > .container-fluid, #appView > .container-fluid { max-width: 1360px; } }
     @media (max-width: 768px) {
       #toastContainer { top: calc(12px + env(safe-area-inset-top, 0px)); }
       body { padding-bottom: 0 !important; }
       .app-footer { padding-bottom: calc(96px + env(safe-area-inset-bottom, 0px)); }
       .modal-footer { flex-direction: column-reverse; padding-bottom: calc(15px + env(safe-area-inset-bottom, 0px)); }
-      .dropdown-menu[aria-labelledby="notifDropdown"] { top: calc(64px + env(safe-area-inset-top, 0px)) !important; transform: none !important; }
+      /* Notifikasi di HP: melayang selebar layar (margin 10px), tepat di bawah tombol lonceng.
+         --notif-top diisi lewat JS (show.bs.dropdown) sesuai posisi lonceng. */
+      .notif-menu { position: fixed !important; top: var(--notif-top, calc(70px + env(safe-area-inset-top, 0px))) !important; left: 10px !important; right: 10px !important; width: auto !important; margin: 0 !important; transform: none !important; max-height: 70vh; max-height: min(70dvh, calc(100dvh - var(--notif-top, 70px) - 16px)); }
     }
   </style>
 </head>
@@ -422,11 +442,11 @@
           </select>
           <div class="d-flex align-items-center gap-1 gap-sm-2 flex-shrink-0">
             <div class="dropdown">
-              <button class="btn header-btn notif-btn" id="notifDropdown" type="button" data-bs-toggle="dropdown" onclick="markNotifsAsRead()" title="Notifikasi">
+              <button class="btn header-btn notif-btn" id="notifDropdown" type="button" data-bs-toggle="dropdown" onclick="markNotifsAsRead()" title="Notifikasi" aria-label="Notifikasi">
                 <i class="fas fa-bell"></i>
                 <span class="badge bg-danger notif-badge d-none" id="notifBadge">0</span>
               </button>
-              <ul class="dropdown-menu dropdown-menu-end shadow" style="width: 320px; max-height: 400px; overflow-y: auto;" id="notifList" aria-labelledby="notifDropdown"></ul>
+              <ul class="dropdown-menu dropdown-menu-end shadow notif-menu" id="notifList" aria-labelledby="notifDropdown"></ul>
             </div>
             <button class="btn header-btn" onclick="toggleTheme()" title="Ubah Tema">
               <i class="fas fa-moon" id="themeIcon"></i>
@@ -1020,7 +1040,7 @@
 // ║  di antara tanda kutip ' ' pada baris const WEB_APP_URL di bawah.    ║
 // ║  Setiap membuat penerapan BARU, URL-nya berubah → tempel ulang.      ║
 // ╚══════════════════════════════════════════════════════════════════════╝
-const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbw6Rxg7XcUT8rFHb5a_kIeyQ-f2q_TRGWGorfEqbIz9IHOePQhvt507yLewNXTVjWrteQ/exec';
+const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbybDSt_Gf3yhIqTVnPTATeJxyxY-KzID41SWWzfwSHrQ7IbyLljaBwGkMtP-VYHhGsJpA/exec';
 // ☝️☝️☝️  TEMPEL URL DI ATAS (di antara tanda kutip)  ☝️☝️☝️
 window.addEventListener('load', () => {
   if (!/^https:\/\/script\.google\.com\/macros\/s\/[^\s']+\/exec$/.test(WEB_APP_URL)) toast('URL Web App belum benar. Tempel URL Code.gs di bagian "TEMPEL DISINI" pada kode index.html.', 'error');
@@ -2067,11 +2087,14 @@ function checkNotifications() {
   const badge = el('notifBadge');
   if (dueReminders.length > 0) { badge.textContent = dueReminders.length; badge.classList.remove('d-none'); } else badge.classList.add('d-none');
   const list = el('notifList');
-  if (dueReminders.length === 0) list.innerHTML = `<li><div class="dropdown-item text-center text-muted py-3">Tidak ada notifikasi baru</div></li>`;
-  else list.innerHTML = `<li><h6 class="dropdown-header">Pengingat Jatuh Tempo</h6></li>` + dueReminders.map(r => {
+  if (dueReminders.length === 0) list.innerHTML = `<li><div class="notif-empty"><i class="far fa-bell-slash fa-lg d-block mb-2 opacity-50"></i>Tidak ada notifikasi baru</div></li>`;
+  else list.innerHTML = `<li class="notif-head"><span>Pengingat Jatuh Tempo</span><span class="badge bg-danger rounded-pill">${dueReminders.length}</span></li>` + dueReminders.map(r => {
     const v = state.vehicles.find(veh => String(veh.id) === String(r.vehicleId));
     const vName = v ? v.name : 'Unknown';
-    return `<li><a class="dropdown-item py-2" href="#" onclick="event.preventDefault(); goToReminder('${esc(r.id)}')"><div class="d-flex w-100 justify-content-between"><h6 class="mb-1 text-danger"><i class="fas fa-exclamation-circle me-1"></i> ${esc(vName)}</h6></div><p class="mb-1 small fw-bold">${esc(r.serviceTypes || r.title || '')}</p><small class="text-muted">${esc(r.reason)}</small></a></li><li><hr class="dropdown-divider"></li>`;
+    // Jenis perawatan jadi "chip" yang boleh turun baris, alasan diberi ikon agar mudah dibaca
+    const chips = String(r.serviceTypes || r.title || 'Perawatan').split(',').map(s => s.trim()).filter(Boolean).map(s => `<span class="notif-chip">${esc(s)}</span>`).join('');
+    const reasons = String(r.reason || '').split(',').map(s => s.trim()).filter(Boolean).map(s => `<span><i class="fas ${/odometer/i.test(s) ? 'fa-tachometer-alt' : 'fa-calendar-check'}"></i>${esc(s)}</span>`).join('');
+    return `<li><a class="notif-item" href="#" onclick="event.preventDefault(); goToReminder('${esc(r.id)}')"><span class="notif-ic"><i class="fas fa-bell"></i></span><span class="notif-body"><span class="notif-veh">${esc(vName)}</span><span class="notif-chips">${chips}</span><span class="notif-reason">${reasons}</span></span></a></li>`;
   }).join('');
 }
 function markNotifsAsRead() {
@@ -2658,6 +2681,15 @@ function confirmDelete(type, id) {
     startTracking();
   });
   tabMapBtn.addEventListener('hidden.bs.tab', stopTracking);
+})();
+
+// Notifikasi di HP: posisikan dropdown tepat di bawah tombol lonceng (dipakai CSS lewat --notif-top)
+(function () {
+  const bell = el('notifDropdown'), menu = el('notifList'); if (!bell || !menu) return;
+  bell.addEventListener('show.bs.dropdown', () => {
+    const r = bell.getBoundingClientRect();
+    menu.style.setProperty('--notif-top', Math.round(r.bottom + 8) + 'px');
+  });
 })();
 </script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
