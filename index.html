@@ -42,6 +42,9 @@
     .input-group-text:hover { color: var(--brand); }
     .form-control.pass-input { border-right: none; }
     .form-control.pass-input:focus { border-right: none; box-shadow: none; }
+    .form-control.pin-input { text-align: center; font-size: 1.35rem; font-weight: 600; letter-spacing: .35em; padding-left: calc(.75rem + .35em); }
+    .form-control.pin-input::placeholder { font-size: 1rem; font-weight: 400; letter-spacing: normal; }
+    #togglePassword:focus-visible { outline: 2px solid var(--brand); outline-offset: -2px; color: var(--brand); }
     .input-group:focus-within { box-shadow: 0 0 0 3px rgba(26,115,232,.15); border-radius: 0.375rem; }
     #appView { display: none; flex-direction: column; flex-grow: 1; }
     .app-header { background: linear-gradient(135deg,#1a73e8 0%,#0d47a1 100%); color:#fff; padding:12px 0; box-shadow: 0 2px 10px rgba(0,0,0,.15); margin-bottom: 20px; }
@@ -383,18 +386,15 @@
       <h2>Enzy_Gempa</h2>
       <p class="text-muted small">Masuk untuk mengelola kendaraan Anda</p>
     </div>
-    <div class="mb-3">
-      <label class="form-label fw-bold">Username</label>
-      <input type="text" id="loginUser" class="form-control" placeholder="Masukkan username" autocomplete="username" autocapitalize="none" onkeydown="if(event.key==='Enter')doLogin()">
-    </div>
     <div class="mb-4">
-      <label class="form-label fw-bold">Password</label>
+      <label class="form-label fw-bold" for="loginPin">PIN</label>
       <div class="input-group">
-        <input type="password" id="loginPass" class="form-control pass-input" placeholder="Masukkan password" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()">
-        <span class="input-group-text" id="togglePassword" onclick="togglePasswordVisibility()" title="Lihat Password">
+        <input type="password" id="loginPin" class="form-control pass-input pin-input" placeholder="Masukkan PIN" inputmode="numeric" pattern="[0-9]*" maxlength="12" autocomplete="off" aria-describedby="loginPinHint" oninput="this.value=this.value.replace(/\D/g,'').slice(0,12)" onkeydown="if(event.key==='Enter')doLogin()">
+        <span class="input-group-text" id="togglePassword" onclick="togglePasswordVisibility()" title="Lihat PIN" role="button" tabindex="0" aria-label="Tampilkan atau sembunyikan PIN" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();togglePasswordVisibility();}">
           <i class="fas fa-eye" id="togglePasswordIcon"></i>
         </span>
       </div>
+      <div class="form-text" id="loginPinHint">4–12 digit angka. PIN diberikan oleh admin.</div>
     </div>
     <button class="btn btn-primary w-100 py-2 fw-bold" id="btnLogin" onclick="doLogin()">
       <span id="loginSpinner" class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
@@ -734,8 +734,7 @@
         <div class="mb-3"><label class="form-label fw-bold">Email</label><input type="email" class="form-control" id="pEmail"></div>
         <div class="mb-3"><label class="form-label fw-bold">Telepon</label><input class="form-control" id="pPhone"></div>
         <hr>
-        <div class="mb-3"><label class="form-label fw-bold">Password Lama (wajib jika ganti password)</label><input type="password" class="form-control" id="pOldPass" autocomplete="current-password"></div>
-        <div class="mb-3"><label class="form-label fw-bold">Password Baru (Kosongkan jika tidak diubah)</label><input type="password" class="form-control" id="pPass" placeholder="******"></div>
+        <div class="small text-muted"><i class="fas fa-key me-1"></i> PIN masuk hanya dapat diubah oleh admin.</div>
       </div>
       <div class="modal-footer"><button class="btn btn-light" data-bs-dismiss="modal">Batal</button><button class="btn btn-primary" id="btnSaveProfile" onclick="saveProfile()">Simpan Perubahan</button></div>
     </div>
@@ -749,8 +748,8 @@
       <div class="modal-body">
         <input type="hidden" id="uId">
         <div class="mb-3"><label class="form-label fw-bold">Nama Lengkap *</label><input class="form-control" id="uName"></div>
-        <div class="mb-3"><label class="form-label fw-bold">Username *</label><input class="form-control" id="uUser"></div>
-        <div class="mb-3"><label class="form-label fw-bold" id="uPassLabel">Password *</label><input type="password" class="form-control" id="uPass" autocomplete="new-password" placeholder="Min. 6 karakter (kosongkan jika tidak diubah)"></div>
+        <div class="mb-3"><label class="form-label fw-bold">Username (opsional)</label><input class="form-control" id="uUser"></div>
+        <div class="mb-3"><label class="form-label fw-bold" id="uPassLabel">PIN *</label><input type="text" class="form-control" id="uPass" inputmode="numeric" pattern="[0-9]*" maxlength="12" autocomplete="off" placeholder="4–12 digit angka" oninput="this.value=this.value.replace(/\D/g,'').slice(0,12)"><div class="form-text">Dipakai pengguna untuk masuk, jadi harus berbeda dengan PIN pengguna lain.</div></div>
         <div class="mb-3"><label class="form-label fw-bold">Email</label><input type="email" class="form-control" id="uEmail"></div>
         <div class="mb-3"><label class="form-label fw-bold">Telepon</label><input class="form-control" id="uPhone"></div>
         <div class="mb-3"><label class="form-label fw-bold">Role</label>
@@ -1021,7 +1020,7 @@
 // ║  di antara tanda kutip ' ' pada baris const WEB_APP_URL di bawah.    ║
 // ║  Setiap membuat penerapan BARU, URL-nya berubah → tempel ulang.      ║
 // ╚══════════════════════════════════════════════════════════════════════╝
-const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbzq6chofUoS1KIlBR6hmQQbskxQLohC_J4D_8Jm11ixUMeSw1G1oXkT70vnf2FgVzwxiQ/exec';
+const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbw6Rxg7XcUT8rFHb5a_kIeyQ-f2q_TRGWGorfEqbIz9IHOePQhvt507yLewNXTVjWrteQ/exec';
 // ☝️☝️☝️  TEMPEL URL DI ATAS (di antara tanda kutip)  ☝️☝️☝️
 window.addEventListener('load', () => {
   if (!/^https:\/\/script\.google\.com\/macros\/s\/[^\s']+\/exec$/.test(WEB_APP_URL)) toast('URL Web App belum benar. Tempel URL Code.gs di bagian "TEMPEL DISINI" pada kode index.html.', 'error');
@@ -1033,7 +1032,7 @@ function pingServer() {
   try { fetch(WEB_APP_URL, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ action: 'apiPing' }) }).catch(() => {}); } catch (e) {}
 }
 pingServer();
-['loginUser', 'loginPass'].forEach(id => { const x = document.getElementById(id); if (x) x.addEventListener('focus', pingServer); });
+['loginPin'].forEach(id => { const x = document.getElementById(id); if (x) x.addEventListener('focus', pingServer); });
 
 let _busy = 0;
 function busy(d) { _busy = Math.max(0, _busy + d); const t = document.getElementById('topLoader'); if (t) t.classList.toggle('active', _busy > 0); }
@@ -1101,7 +1100,7 @@ function notifKey(r) { return `${r.id || ''}|${r.dueDate || ''}|${r.dueOdometer 
 function getSeenNotifs() { try { const raw = localStorage.getItem(seenKey()); return raw ? (JSON.parse(raw) || []) : []; } catch (e) { return []; } }
 
 function togglePasswordVisibility() {
-  const passInput = el('loginPass'), icon = el('togglePasswordIcon');
+  const passInput = el('loginPin'), icon = el('togglePasswordIcon');
   if (!passInput || !icon) return;
   if (passInput.type === 'password') { passInput.type = 'text'; icon.classList.replace('fa-eye', 'fa-eye-slash'); }
   else { passInput.type = 'password'; icon.classList.replace('fa-eye-slash', 'fa-eye'); }
@@ -1588,12 +1587,12 @@ async function callApi(action, ...args) {
     params.vehicleId = args[0];
     if (action === 'apiGetDashboard' || action === 'apiGetVehicleBundle') params.filterMonth = args[1] || '';
   } else if (['apiUpdateVehicle','apiUpdateFillup','apiUpdateExpense','apiUpdateFuelType','apiUpdateUser','apiUpdateReminder','apiUpdateDocument'].includes(action)) {
-    params.id = args[0]; params.data = args[1]; params.currentPassword = args[2];
+    params.id = args[0]; params.data = args[1];
   } else if (['apiDeleteVehicle','apiDeleteFillup','apiDeleteExpense','apiDeleteFuelType','apiDeleteUser','apiDeleteReminder','apiDeleteDocument'].includes(action)) {
     params.id = args[0];
   } else if (['apiAddVehicle','apiAddFillup','apiAddExpense','apiAddFuelType','apiAddUser','apiAddReminder','apiAddDocument'].includes(action)) {
     Object.assign(params, args[0] || {});
-  } else if (action === 'apiLogin') { params.username = args[0]; params.password = args[1]; }
+  } else if (action === 'apiLogin') { params.pin = args[0]; params.deviceId = args[1]; }
   else if (action === 'apiUploadFile' || action === 'apiOCR' || action === 'apiCheckFillupAnomalies' || action === 'apiCompleteReminder') { Object.assign(params, args[0] || {}); }
   else if (action === 'apiUpdateSetting') { params.key = args[0]; params.value = args[1]; }
 
@@ -1646,20 +1645,30 @@ window.addEventListener('touchstart', startInactivityTimer, { passive: true });
 window.addEventListener('scroll', startInactivityTimer);
 window.addEventListener('click', startInactivityTimer);
 
+// ID acak per browser: dipakai server untuk membatasi percobaan PIN salah per perangkat
+function getDeviceId() {
+  try {
+    let d = localStorage.getItem('enzy_device');
+    if (!d) { d = (window.crypto && crypto.randomUUID ? crypto.randomUUID() : Date.now() + Math.random().toString(36).slice(2)).replace(/-/g, ''); localStorage.setItem('enzy_device', d); }
+    return d;
+  } catch (e) { return ''; }
+}
+
 async function doLogin() {
-  const u = el('loginUser').value.trim(), p = el('loginPass').value;
-  if (!u || !p) { toast('Isi username dan password', 'error'); return; }
+  const pin = el('loginPin').value.trim();
+  if (!/^\d{4,12}$/.test(pin)) { toast('PIN harus berupa angka 4–12 digit.', 'error'); el('loginPin').focus(); return; }
   el('btnLogin').disabled = true; el('loginSpinner').classList.remove('d-none'); el('loginBtnText').textContent = 'Memproses...';
   try {
     const slowTimer = setTimeout(() => { el('loginBtnText').textContent = 'Menyiapkan server…'; }, 4000);
-    let res; try { res = await callApi('apiLogin', u, p); } finally { clearTimeout(slowTimer); }
+    let res; try { res = await callApi('apiLogin', pin, getDeviceId()); } finally { clearTimeout(slowTimer); }
     state.user = Object.assign({}, res.user, { token: res.token });
     try { localStorage.setItem('enzy_user', JSON.stringify(state.user)); } catch (e) {}
     if (res.boot) cacheSave('boot', res.boot);
-    el('loginPass').value = ''; initApp(res.boot);
-    if (res.weakPassword) { toast('Password default (admin123). Segera ganti!', 'error'); setTimeout(showProfileModal, 700); }
+    el('loginPin').value = ''; initApp(res.boot);
+    if (res.weakPin) toast('PIN default (123456) masih dipakai. ' + (state.user.role === 'admin' ? 'Segera ganti lewat menu Pengguna.' : 'Minta admin menggantinya.'), 'error');
   } catch (err) {
     toast(err.message, 'error'); el('btnLogin').disabled = false; el('loginSpinner').classList.add('d-none'); el('loginBtnText').textContent = 'Masuk';
+    el('loginPin').value = ''; el('loginPin').focus();
   }
 }
 
@@ -1676,14 +1685,14 @@ function doLogout() {
   clearTimeout(inactivityTimer);
   try { document.querySelectorAll('.modal.show').forEach(m => { const i = bootstrap.Modal.getInstance(m); if (i) i.hide(); }); el('bmore').classList.remove('open'); localStorage.removeItem('enzy_last_active'); } catch (e) {}
   el('appView').style.display = 'none'; el('loginView').style.display = 'flex';
-  el('loginPass').value = ''; el('loginUser').value = ''; el('navUserName').textContent = 'User';
+  el('loginPin').value = ''; el('navUserName').textContent = 'User';
   el('notifBadge').classList.add('d-none'); el('notifList').innerHTML = '';
 }
 
 function initApp(boot) {
   el('loginView').style.display = 'none'; el('appView').style.display = 'flex';
   el('navUserName').textContent = state.user.name || state.user.username;
-  el('btnLogin').disabled = false; el('loginSpinner').classList.add('d-none'); el('loginBtnText').textContent = 'Masuk'; el('loginPass').value = '';
+  el('btnLogin').disabled = false; el('loginSpinner').classList.add('d-none'); el('loginBtnText').textContent = 'Masuk'; el('loginPin').value = '';
   document.body.classList.toggle('viewer', state.user.role === 'viewer');
   document.body.classList.toggle('is-admin', state.user.role === 'admin');
   state.loadedTabs = resetLoadedTabs(); startInactivityTimer();
@@ -1910,22 +1919,18 @@ async function loadTabData(tabName) {
 
 function showProfileModal() {
   el('pId').value = state.user.id; el('pName').value = state.user.name || '';
-  el('pEmail').value = state.user.email || ''; el('pPhone').value = state.user.phone || ''; el('pPass').value = ''; el('pOldPass').value = '';
+  el('pEmail').value = state.user.email || ''; el('pPhone').value = state.user.phone || '';
   getModal('modalProfile').show();
 }
 async function saveProfile() {
   const data = { name: el('pName').value.trim(), email: el('pEmail').value.trim(), phone: el('pPhone').value.trim() };
-  const newPass = el('pPass').value; if (newPass) data.password = newPass;
-  const oldPass = el('pOldPass').value;
-  if (newPass && !oldPass) { toast('Isi password lama.', 'error'); return; }
-  if (newPass && newPass.length < 6) { toast('Password baru minimal 6 karakter.', 'error'); return; }
   if (!data.name) { toast('Nama wajib diisi.', 'error'); return; }
   setBtnLoading('btnSaveProfile', true);
   try {
-    await callApi('apiUpdateUser', state.user.id, data, oldPass); toast('Profil berhasil diperbarui');
+    await callApi('apiUpdateUser', state.user.id, data); toast('Profil berhasil diperbarui');
     state.user.name = data.name; state.user.email = data.email; state.user.phone = data.phone;
     try { localStorage.setItem('enzy_user', JSON.stringify(state.user)); } catch (e) {}
-    el('navUserName').textContent = state.user.name; if (newPass) el('pPass').value = '';
+    el('navUserName').textContent = state.user.name;
     closeModal('modalProfile');
   } catch (err) { toast(err.message, 'error'); } finally { setBtnLoading('btnSaveProfile', false); }
 }
@@ -1934,24 +1939,23 @@ async function loadUsers() {
   el('userTbody').innerHTML = data.length ? data.map(u => {
     const self = state.user && String(u.id) === String(state.user.id);
     const roleCls = u.role === 'admin' ? 'bg-primary' : u.role === 'viewer' ? 'bg-light text-dark border' : 'bg-secondary';
-    return `<tr><td><strong>${esc(u.name || '-')}</strong>${self ? ' <span class="badge bg-success-subtle text-success-emphasis">Anda</span>' : ''}</td><td>${esc(u.username || '')}</td><td>${esc(u.email || '-')}</td><td>${esc(u.phone || '-')}</td><td><span class="badge ${roleCls}">${esc(ROLE_LABELS[u.role] || u.role || 'User')}</span></td><td class="text-end"><div class="d-flex justify-content-end gap-1"><button class="btn btn-sm btn-outline-primary icon-btn" title="Ubah" onclick="editUser('${esc(u.id)}')"><i class="fas fa-pen"></i></button>${self ? '' : `<button class="btn btn-sm btn-outline-danger icon-btn" title="Hapus" onclick="confirmDelete('user','${esc(u.id)}')"><i class="fas fa-trash"></i></button>`}</div></td></tr>`;
+    return `<tr><td><strong>${esc(u.name || '-')}</strong>${self ? ' <span class="badge bg-success-subtle text-success-emphasis">Anda</span>' : ''}</td><td>${esc(u.username || '-')}</td><td>${esc(u.email || '-')}</td><td>${esc(u.phone || '-')}</td><td><span class="badge ${roleCls}">${esc(ROLE_LABELS[u.role] || u.role || 'User')}</span></td><td class="text-end"><div class="d-flex justify-content-end gap-1"><button class="btn btn-sm btn-outline-primary icon-btn" title="Ubah" onclick="editUser('${esc(u.id)}')"><i class="fas fa-pen"></i></button>${self ? '' : `<button class="btn btn-sm btn-outline-danger icon-btn" title="Hapus" onclick="confirmDelete('user','${esc(u.id)}')"><i class="fas fa-trash"></i></button>`}</div></td></tr>`;
   }).join('') : '<tr><td colspan="6" class="text-center py-4 text-muted">Belum ada pengguna.</td></tr>';
 }
-function showUserModal() { el('uId').value = ''; el('uName').value = ''; el('uUser').value = ''; el('uPass').value = ''; el('uEmail').value = ''; el('uPhone').value = ''; el('uRole').value = 'user'; el('uPassLabel').textContent = 'Password *'; el('uPass').placeholder = 'Minimal 6 karakter'; getModal('modalUser').show(); }
+function showUserModal() { el('uId').value = ''; el('uName').value = ''; el('uUser').value = ''; el('uPass').value = ''; el('uEmail').value = ''; el('uPhone').value = ''; el('uRole').value = 'user'; el('uPassLabel').textContent = 'PIN *'; el('uPass').placeholder = '4–12 digit angka'; getModal('modalUser').show(); }
 function editUser(id) {
   const u = state.users.find(x => String(x.id) === String(id)); if (!u) return;
   el('uId').value = u.id; el('uName').value = u.name || ''; el('uUser').value = u.username || ''; el('uPass').value = ''; el('uEmail').value = u.email || ''; el('uPhone').value = u.phone || ''; el('uRole').value = ROLE_LABELS[u.role] ? u.role : 'user';
-  el('uPassLabel').textContent = 'Password Baru'; el('uPass').placeholder = 'Kosongkan jika tidak diubah';
+  el('uPassLabel').textContent = 'PIN Baru'; el('uPass').placeholder = 'Kosongkan jika tidak diubah';
   getModal('modalUser').show();
 }
 async function saveUser() {
   const id = el('uId').value;
   const data = { name: el('uName').value.trim(), username: el('uUser').value.trim(), email: el('uEmail').value.trim(), phone: el('uPhone').value.trim(), role: el('uRole').value };
   if (el('uPass').value) data.password = el('uPass').value;
-  if (!data.name || !data.username) { toast('Lengkapi form', 'error'); return; }
-  if (!id && !data.password) { toast('Password wajib diisi', 'error'); return; }
-  if (data.password && data.password.length < 6) { toast('Password minimal 6 karakter.', 'error'); return; }
-  if (id && data.password && state.user && String(id) === String(state.user.id)) { toast('Untuk mengganti password akun sendiri, gunakan menu Profil.', 'error'); return; }
+  if (!data.name) { toast('Nama lengkap wajib diisi.', 'error'); return; }
+  if (!id && !data.password) { toast('PIN wajib diisi.', 'error'); return; }
+  if (data.password && !/^\d{4,12}$/.test(data.password)) { toast('PIN harus berupa angka 4–12 digit.', 'error'); return; }
   setBtnLoading('btnSaveUser', true);
   try {
     const res = id ? await callApi('apiUpdateUser', id, data) : await callApi('apiAddUser', data); closeModal('modalUser'); toast(res.message);
