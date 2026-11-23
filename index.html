@@ -540,6 +540,69 @@
          --notif-top diisi lewat JS (show.bs.dropdown) sesuai posisi lonceng. */
       .notif-menu { position: fixed !important; top: var(--notif-top, calc(70px + env(safe-area-inset-top, 0px))) !important; left: 10px !important; right: 10px !important; width: auto !important; margin: 0 !important; transform: none !important; max-height: 70vh; max-height: min(70dvh, calc(100dvh - var(--notif-top, 70px) - 16px)); }
     }
+    /* ===== TEMA v4 — navigasi kaca: tab atas dengan pil geser + bar bawah HP melayang =====
+       Gaya mengikuti contoh "Navigation Tabs", tetapi semua warna memakai token tema aplikasi
+       (--brand, --tl-card, --tl-line, --tl-bg), jadi mode terang/gelap ikut otomatis.
+       Tetap ringan untuk HP: tanpa backdrop-filter, gerakan hanya transform/opacity. */
+
+    /* --- Tab atas (laptop/tablet): wadah pil + penggeser biru di belakang tab aktif --- */
+    .nav-tabs.nav-glass { position: relative; isolation: isolate; display: flex; flex-wrap: nowrap; gap: 2px; width: fit-content; max-width: 100%; padding: 5px;
+      border: 1px solid var(--tl-line); border-radius: 18px; background: var(--tl-card);
+      box-shadow: var(--tl-shadow), inset 0 1px 0 rgba(255,255,255,.6); }
+    [data-bs-theme="dark"] .nav-tabs.nav-glass { box-shadow: inset 0 1px 0 rgba(148,180,255,.12); }
+    .nav-tabs.nav-glass .nav-item { flex: 0 0 auto; }
+    .nav-tabs.nav-glass .nav-link { position: relative; z-index: 1; margin: 0; border: 0; border-radius: 14px; padding: 9px 16px; font-size: .9rem; font-weight: 600;
+      color: var(--tl-soft); background: transparent; transition: color .2s, background-color .2s; }
+    .nav-tabs.nav-glass .nav-link:hover:not(.active) { color: var(--tl-ink); background: rgba(31,99,230,.08); }
+    .nav-tabs.nav-glass .nav-link:focus-visible { outline: 2px solid var(--brand); outline-offset: -2px; }
+    /* cadangan bila JS penggeser belum jalan: tab aktif tetap terlihat (teks biru + latar tipis) */
+    .nav-tabs.nav-glass .nav-link.active, [data-bs-theme="dark"] .nav-tabs.nav-glass .nav-link.active { color: var(--brand); background: rgba(31,99,230,.12); border: 0; }
+    .nav-tabs.nav-glass.glided .nav-link.active, [data-bs-theme="dark"] .nav-tabs.nav-glass.glided .nav-link.active { color: #fff; background: transparent; }
+    .nav-glider { position: absolute; z-index: 0; top: 5px; left: 0; height: calc(100% - 10px); width: var(--gw, 0px); border-radius: 14px; pointer-events: none; opacity: 0;
+      transform: translateX(var(--gx, 0px));
+      background: linear-gradient(180deg, #4d90ff 0%, #1f63e6 58%, #1a4fc4 100%);
+      box-shadow: 0 8px 16px -8px rgba(31,99,230,.75), inset 0 1px 0 rgba(255,255,255,.38), inset 0 0 0 1px rgba(255,255,255,.1);
+      transition: transform .4s cubic-bezier(.3,1.2,.5,1), width .4s cubic-bezier(.3,1.2,.5,1), opacity .2s; }
+    .nav-tabs.nav-glass.glided .nav-glider { opacity: 1; }
+    .nav-glider.instant { transition: none; }
+
+    /* --- Bar bawah (HP): melayang, sudut membulat, gelembung ikon aktif bergeser di atas lekukan --- */
+    @media (max-width: 768px) {
+      #bnav { left: 12px; right: 12px; bottom: calc(10px + env(safe-area-inset-bottom, 0px)); height: 66px; padding: 0 6px; align-items: center;
+        border: 1px solid var(--tl-line); border-radius: 26px; background: var(--tl-card);
+        box-shadow: 0 12px 24px -14px rgba(10,26,63,.55), inset 0 1px 0 rgba(255,255,255,.5); }
+      [data-bs-theme="dark"] #bnav { box-shadow: 0 12px 24px -14px rgba(0,0,0,.8), inset 0 1px 0 rgba(148,180,255,.14); }
+      #bnav button:not(.fabbtn) { position: relative; z-index: 2; flex: 1 1 0; min-width: 0; height: 100%; padding: 0; gap: 3px; justify-content: center;
+        font-size: .64rem; font-weight: 600; color: var(--tl-soft); }
+      #bnav button i { line-height: 1; transition: opacity .2s, transform .35s cubic-bezier(.3,1.3,.5,1); }
+      #bnav button.on:not(.fabbtn) { color: var(--brand); font-weight: 700; }
+      #bnav button.on:not(.fabbtn) i { opacity: 0; transform: translateY(-8px) scale(.6); }
+      #bnav button.on:not(.fabbtn)::before { display: none; }
+      /* tombol + (catat isi BBM): bulat di dalam bar, bukan tab, jadi tidak ikut digeser gelembung */
+      #bnav button.fabbtn { flex: 0 0 40px !important; width: 40px; height: 40px; margin: 0 6px !important; padding: 0 !important; border: 0 !important; border-radius: 50%;
+        transform: none !important; align-self: center; z-index: 2; color: #fff !important; background: linear-gradient(180deg, #4d90ff, #1a4fc4);
+        box-shadow: 0 6px 12px -7px rgba(31,99,230,.8), inset 0 1px 0 rgba(255,255,255,.4); transition: transform .15s; }
+      #bnav button.fabbtn:active { transform: scale(.92) !important; }
+      #bnav button.fabbtn i { font-size: 1rem; opacity: 1; transform: none; }
+      /* gelembung + lekukan: satu elemen yang digeser dengan transform */
+      #bnavDot { position: absolute; left: 0; top: 0; width: 0; height: 0; z-index: 1; pointer-events: none; opacity: 0;
+        transform: translate3d(var(--bx, 0px), 0, 0); transition: transform .45s cubic-bezier(.3,1.3,.5,1), opacity .2s; }
+      #bnavDot.show { opacity: 1; }
+      #bnavDot.instant { transition: none; }
+      #bnavDot .scoop { position: absolute; left: -32px; top: -28px; width: 64px; height: 64px; border-radius: 50%; background: var(--tl-bg); box-shadow: inset 0 -1px 0 var(--tl-line); }
+      #bnavDot .bub { position: absolute; left: -23px; top: -19px; width: 46px; height: 46px; border-radius: 50%; display: grid; place-items: center; color: #fff;
+        background: linear-gradient(180deg, #4d90ff, #1a4fc4); box-shadow: 0 8px 16px -6px rgba(31,99,230,.75), inset 0 1px 0 rgba(255,255,255,.4); }
+      #bnavDot .bub i { font-size: 1.1rem; animation: bnavPop .4s cubic-bezier(.3,1.5,.5,1); }
+      /* menu "Lainnya" menyesuaikan bar yang kini melayang */
+      #bmore.open { right: 12px; bottom: calc(106px + env(safe-area-inset-bottom, 0px)); min-width: 200px; padding: 4px; border: 1px solid var(--tl-line); border-radius: 20px; }
+      #bmore button { border-radius: 14px; font-weight: 600; }
+      #bmore button.on { color: var(--brand); background: rgba(31,99,230,.1); }
+      .app-footer { padding-bottom: calc(104px + env(safe-area-inset-bottom, 0px)); }
+    }
+    @keyframes bnavPop { from { transform: scale(.4) rotate(-20deg); opacity: .2; } to { transform: none; opacity: 1; } }
+    @media (prefers-reduced-motion: reduce) {
+      .nav-glider, #bnavDot, #bnavDot .bub i, #bnav button i { transition: none; animation: none; }
+    }
   </style>
 </head>
 <body>
@@ -639,7 +702,8 @@
   </header>
 
   <div class="container-fluid px-3 px-md-4 pb-5">
-    <ul class="nav nav-tabs" role="tablist">
+    <ul class="nav nav-tabs nav-glass" role="tablist">
+      <li class="nav-glider" aria-hidden="true"></li>
       <li class="nav-item"><button class="nav-link active" data-bs-toggle="tab" data-bs-target="#tabDash" onclick="loadTabData('dash')"><i class="fas fa-chart-line me-1"></i> Dashboard</button></li>
       <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#tabFillups" onclick="loadTabData('fillups')"><i class="fas fa-gas-pump me-1"></i> Pengisian</button></li>
       <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#tabExpenses" onclick="loadTabData('expenses')"><i class="fas fa-receipt me-1"></i> Biaya Lain</button></li>
@@ -1213,7 +1277,7 @@
 // ║  di antara tanda kutip ' ' pada baris const WEB_APP_URL di bawah.    ║
 // ║  Setiap membuat penerapan BARU, URL-nya berubah → tempel ulang.      ║
 // ╚══════════════════════════════════════════════════════════════════════╝
-const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbx5qLFQE8uh6JEGAXMiTySEKgAIaBbBzJjwNOMHV8_-JLzlnXi0FhKdD6X_8YVzd2G26Q/exec';
+const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbySxkjV-GGR3oEuObQRLJRUjUFNJnMwu911SUAEPz3vBlqFgFR4bbYfHvQf6EqFMNrhqQ/exec';
 // ☝️☝️☝️  TEMPEL URL DI ATAS (di antara tanda kutip)  ☝️☝️☝️
 window.addEventListener('load', () => {
   if (!/^https:\/\/script\.google\.com\/macros\/s\/[^\s']+\/exec$/.test(WEB_APP_URL)) toast('URL Web App belum benar. Tempel URL Code.gs di bagian "TEMPEL DISINI" pada kode index.html.', 'error');
@@ -2003,19 +2067,67 @@ function buildMobileUI() {
   const items = [['tabDash','fa-chart-pie','Dasbor'],['tabFillups','fa-gas-pump','Pengisian'],null,['tabExpenses','fa-receipt','Biaya']];
   const nav = document.createElement('div'); nav.id = 'bnav';
   nav.innerHTML = items.map(i => i ? `<button data-t="${i[0]}" onclick="goTab('${i[0]}')"><i class="fas ${i[1]}"></i>${i[2]}</button>` : '<button class="fabbtn" aria-label="Catat isi BBM" onclick="showFillupModal()"><i class="fas fa-plus"></i></button>').join('') +
-    '<button onclick="el(\'bmore\').classList.toggle(\'open\')"><i class="fas fa-ellipsis"></i>Lainnya</button>';
+    '<button class="bmore-btn" onclick="el(\'bmore\').classList.toggle(\'open\')"><i class="fas fa-ellipsis"></i>Lainnya</button>' +
+    '<span id="bnavDot" aria-hidden="true"><span class="scoop"></span><span class="bub"></span></span>';
   const more = document.createElement('div'); more.id = 'bmore';
   more.innerHTML = [['tabReminders','fa-bell','Pengingat'],['tabDocs','fa-folder-open','Dokumen'],['tabMap','fa-map-location-dot','Peta SPBU'],['tabVehicles','fa-car','Kendaraan'],['tabSettings','fa-gas-pump','Jenis BBM'],['tabUsers','fa-users','Pengguna']]
     .map(i => `<button data-t="${i[0]}" onclick="goTab('${i[0]}')"><i class="fas ${i[1]} me-2"></i>${i[2]}</button>`).join('');
   document.body.append(nav, more);
+
+  // Gelembung ikon aktif: bergeser (transform) ke tombol yang sedang aktif, ikonnya ikut berganti
+  const dot = nav.querySelector('#bnavDot'), bub = dot.querySelector('.bub'), moreBtn = nav.querySelector('.bmore-btn');
+  let lastCls = '', lastX = null;
+  function placeDot(instant) {
+    const on = nav.querySelector('button.on:not(.fabbtn)');
+    if (!on || !on.offsetWidth) { dot.classList.remove('show'); lastX = null; return; }
+    const ic = on.querySelector('i'), cls = ic ? ic.className : '';
+    if (cls !== lastCls) { lastCls = cls; bub.innerHTML = '<i class="' + cls + '"></i>'; }
+    const x = on.offsetLeft + on.offsetWidth / 2, wasShown = dot.classList.contains('show');
+    if (x === lastX && wasShown) return;
+    lastX = x;
+    if (instant || !wasShown) { dot.classList.add('instant'); dot.style.setProperty('--bx', x + 'px'); void dot.offsetWidth; dot.classList.remove('instant'); }
+    else dot.style.setProperty('--bx', x + 'px');
+    dot.classList.add('show');
+  }
   document.addEventListener('shown.bs.tab', e => {
     const t = (e.target.getAttribute('data-bs-target') || '').slice(1);
-    document.querySelectorAll('#bnav button[data-t]').forEach(b => b.classList.toggle('on', b.dataset.t === t));
-    const inMore = !!document.querySelector('#bmore [data-t="' + t + '"]');
-    nav.lastElementChild.classList.toggle('on', inMore);
+    nav.querySelectorAll('button[data-t]').forEach(b => b.classList.toggle('on', b.dataset.t === t));
+    more.querySelectorAll('button[data-t]').forEach(b => b.classList.toggle('on', b.dataset.t === t));
+    moreBtn.classList.toggle('on', !!more.querySelector('[data-t="' + t + '"]'));
+    placeDot(false);
   });
   document.addEventListener('click', e => { if (!e.target.closest('#bmore') && !e.target.closest('#bnav')) more.classList.remove('open'); });
   nav.querySelector('button[data-t="tabDash"]').classList.add('on');
+  placeDot(true);
+  // Posisi dihitung ulang saat ukuran berubah (putar layar, tombol + disembunyikan untuk akun "lihat saja", font selesai dimuat)
+  if (window.ResizeObserver) { const ro = new ResizeObserver(() => placeDot(true)); nav.querySelectorAll('button').forEach(b => ro.observe(b)); }
+  window.addEventListener('resize', () => placeDot(true));
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => placeDot(true));
+}
+// Tab atas gaya kaca: pil biru bergeser ke tab aktif (laptop/tablet). Warna ikut --brand.
+function initNavGlider() {
+  const ul = document.querySelector('.nav-tabs.nav-glass'), g = ul && ul.querySelector('.nav-glider');
+  if (!ul || !g) return;
+  let lx = null, lw = null, raf = 0;
+  function place(instant) {
+    const a = ul.querySelector('.nav-link.active');
+    if (!a || !a.offsetWidth) { ul.classList.remove('glided'); lx = lw = null; return; }   // tersembunyi (layar login / tampilan HP)
+    const x = a.offsetLeft, w = a.offsetWidth, first = !ul.classList.contains('glided');
+    if (x === lx && w === lw && !first) return;
+    if (instant || first) g.classList.add('instant');
+    g.style.setProperty('--gx', x + 'px'); g.style.setProperty('--gw', w + 'px');
+    ul.classList.add('glided'); lx = x; lw = w;
+    if (g.classList.contains('instant')) { void g.offsetWidth; g.classList.remove('instant'); }
+    if (ul.scrollWidth > ul.clientWidth + 1) ul.scrollTo({ left: Math.max(0, x - (ul.clientWidth - w) / 2), behavior: instant || first ? 'auto' : 'smooth' });
+  }
+  const sched = instant => { cancelAnimationFrame(raf); raf = requestAnimationFrame(() => place(instant)); };
+  document.addEventListener('shown.bs.tab', e => { if (ul.contains(e.target)) place(false); });
+  window.addEventListener('resize', () => sched(true));
+  if (window.ResizeObserver) new ResizeObserver(() => sched(true)).observe(ul);
+  // tab ditambah (Dokumen) atau disembunyikan (Pengguna untuk non-admin) -> hitung ulang; perubahan penggeser sendiri diabaikan
+  new MutationObserver(recs => { if (recs.some(r => r.target !== g)) sched(true); }).observe(ul, { childList: true, subtree: true, attributes: true, attributeFilter: ['style'] });
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => sched(true));
+  sched(true);
 }
 function addTableSearch() {
   document.querySelectorAll('.table-responsive').forEach(w => {
@@ -2062,6 +2174,7 @@ function enhanceTables() {
 }
 function _appInit() {
   try { buildDocsUI(); buildMobileUI(); addTableSearch(); enhanceTables(); } catch (e) {}
+  try { initNavGlider(); } catch (e) {}
   try {
     document.querySelectorAll('.btn-close').forEach(b => b.setAttribute('aria-label', 'Tutup'));
     document.querySelectorAll('label.form-label:not([for])').forEach(l => { let c = l.nextElementSibling; if (c && !/^(INPUT|SELECT|TEXTAREA)$/.test(c.tagName)) c = c.querySelector('input,select,textarea'); if (c && c.id && c.type !== 'hidden') l.htmlFor = c.id; });
