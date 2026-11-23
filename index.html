@@ -32,7 +32,10 @@
     [data-bs-theme="dark"] .dropdown-item:hover { background: #333; }
     [data-bs-theme="dark"] .modal-content { background: #1e1e1e; color: #e0e0e0; }
     .text-purple { color: #9c27b0 !important; }
-    .svc-row { display:flex; justify-content:space-between; align-items:center; padding:8px 0; border-bottom:1px solid var(--bs-border-color); font-size:.9rem; }
+    .svc-row { display:flex; justify-content:space-between; align-items:center; gap:10px; padding:8px 0; border-bottom:1px solid var(--bs-border-color); font-size:.9rem; }
+    /* Nama servis panjang harus membungkus baris, dan badge status tidak boleh terhimpit / menimpa teks */
+    .svc-row > span:first-child { flex:1 1 auto; min-width:0; overflow-wrap:anywhere; word-break:break-word; }
+    .svc-row > .badge { flex:0 0 auto; white-space:nowrap; }
     #topLoader { position: fixed; top: 0; left: 0; height: 3px; width: 0; z-index: 20000; background: linear-gradient(90deg,#34a853,#1a73e8); opacity: 0; transition: opacity .2s; pointer-events: none; }
     #topLoader.active { opacity: 1; width: 85%; transition: width 8s cubic-bezier(.1,.7,.2,1), opacity .2s; }
     #loginView { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(135deg, #1a73e8 0%, #0d47a1 100%); z-index: 10000; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 15px; overflow-y:auto; }
@@ -1040,7 +1043,7 @@
 // ║  di antara tanda kutip ' ' pada baris const WEB_APP_URL di bawah.    ║
 // ║  Setiap membuat penerapan BARU, URL-nya berubah → tempel ulang.      ║
 // ╚══════════════════════════════════════════════════════════════════════╝
-const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbybDSt_Gf3yhIqTVnPTATeJxyxY-KzID41SWWzfwSHrQ7IbyLljaBwGkMtP-VYHhGsJpA/exec';
+const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbx5qLFQE8uh6JEGAXMiTySEKgAIaBbBzJjwNOMHV8_-JLzlnXi0FhKdD6X_8YVzd2G26Q/exec';
 // ☝️☝️☝️  TEMPEL URL DI ATAS (di antara tanda kutip)  ☝️☝️☝️
 window.addEventListener('load', () => {
   if (!/^https:\/\/script\.google\.com\/macros\/s\/[^\s']+\/exec$/.test(WEB_APP_URL)) toast('URL Web App belum benar. Tempel URL Code.gs di bagian "TEMPEL DISINI" pada kode index.html.', 'error');
@@ -1470,7 +1473,9 @@ async function searchPOI(lat, lng, opts) {
       const id = e._id || (e.type + '/' + e.id); if (seen.has(id)) return null; seen.add(id);
       const t = e.tags || {};
       return { id, type, lat: la, lng: lo, tags: t, name: t.name || t.brand || t.operator || POI_TYPES[type].label, dist: 0 };
-    }).filter(Boolean);
+    }).filter(Boolean)
+      // Nominatim mencari di kotak persegi (sudut lebih jauh dari radius); buang yang di luar radius pilihan
+      .filter(i => distM(lat, lng, i.lat, i.lng) <= geo.radius * 1.1);
     geo.lastSearch = { lat, lng };
     renderPOI();
     const nFuel = geo.items.filter(i => i.type === 'fuel').length;
@@ -1649,7 +1654,10 @@ function readAsDataURL(file) { return new Promise((resolve, reject) => { const r
 async function uploadToDrive(file, folderId) {
   let dataUrl = null, mime = file.type || 'image/jpeg', name = file.name;
   if (/^image\//.test(mime) && file.size > 400 * 1024) { try { dataUrl = await compressImage(file); mime = 'image/jpeg'; name = name.replace(/\.[^.]+$/, '') + '.jpg'; } catch (e) { dataUrl = null; } }
-  if (!dataUrl) dataUrl = await readAsDataURL(file);
+  if (!dataUrl) {
+    if (file.size > 10 * 1024 * 1024) throw new Error('Ukuran file terlalu besar (maks 10 MB).');
+    dataUrl = await readAsDataURL(file);
+  }
   const res = await callApi('apiUploadFile', { base64Data: dataUrl, fileName: name, mimeType: mime, folderId });
   if (res && res.success) return res;
   throw new Error((res && res.error) || 'Gagal upload file.');
@@ -1980,6 +1988,8 @@ async function saveUser() {
   try {
     const res = id ? await callApi('apiUpdateUser', id, data) : await callApi('apiAddUser', data); closeModal('modalUser'); toast(res.message);
     // Jika admin mengubah datanya sendiri, perbarui nama di header & sesi tersimpan
+    // Admin mengubah role dirinya sendiri: hak akses di layar jadi tidak sesuai sampai masuk ulang
+    if (id && state.user && String(id) === String(state.user.id) && data.role !== state.user.role) { doLogout(); toast('Role Anda diubah. Silakan masuk ulang.', 'info'); return; }
     if (id && state.user && String(id) === String(state.user.id)) { Object.assign(state.user, { name: data.name, username: data.username, email: data.email, phone: data.phone }); try { localStorage.setItem('enzy_user', JSON.stringify(state.user)); } catch (e) {} el('navUserName').textContent = state.user.name || state.user.username; }
     state.loadedTabs.users = false; await loadUsers(); state.loadedTabs.users = true;
   }
@@ -2013,13 +2023,14 @@ function renderReminderTable() {
     if (r.dueOdometer) targetText.push(`<i class="fas fa-tachometer-alt me-1"></i> ${fmtNum(r.dueOdometer)} km`);
     if (r.dueDate) targetText.push(`<i class="fas fa-calendar-alt me-1"></i> ${esc(fmtDate(r.dueDate))}`);
     const remainingText = []; let isUrgent = false;
-    if (r.dueOdometer && vOdo > 0) {
+    // Pengingat yang sudah selesai tidak lagi menampilkan "Lewat ... km/hari" berwarna merah
+    if (!isDone(r) && r.dueOdometer && vOdo > 0) {
       const sisaKm = Number(r.dueOdometer) - vOdo;
       if (sisaKm <= 0) { remainingText.push(`<span class="text-danger fw-bold"><i class="fas fa-exclamation-circle"></i> Lewat ${fmtNum(Math.abs(sisaKm))} km</span>`); isUrgent = true; }
       else if (sisaKm <= 500) { remainingText.push(`<span class="text-warning fw-bold">Sisa ${fmtNum(sisaKm)} km</span>`); isUrgent = true; }
       else { remainingText.push(`Sisa ${fmtNum(sisaKm)} km`); }
     }
-    if (r.dueDate) {
+    if (!isDone(r) && r.dueDate) {
       const dDate = new Date(r.dueDate + 'T00:00:00');
       if (!isNaN(dDate.getTime())) {
         dDate.setHours(0, 0, 0, 0);
@@ -2206,14 +2217,17 @@ function getGPSLocation() {
 }
 
 el('vehicleSelector').addEventListener('change', e => {
-  const newId = e.target.value; if (newId === state.currentVehicleId) return;
+  const newId = e.target.value;
+  // Memilih "-- Pilih Kendaraan --" dulu mengosongkan kendaraan aktif sehingga semua tab berhenti memuat data; kembalikan pilihan
+  if (!newId) { e.target.value = state.currentVehicleId; return; }
+  if (newId === state.currentVehicleId) return;
   state.currentVehicleId = newId;
-  if (state.currentVehicleId) {
-    // Filter bulan milik kendaraan sebelumnya belum tentu ada di kendaraan baru
-    el('dashMonthFilter').value = '';
-    state.loadedTabs = resetLoadedTabs();
-    loadTabData(activeTabName());
-  }
+  // Data kendaraan sebelumnya dibuang agar tidak dipakai (validasi odometer, ekspor, dsb.) untuk kendaraan baru
+  state.fillups = []; state.expenses = [];
+  // Filter bulan milik kendaraan sebelumnya belum tentu ada di kendaraan baru
+  el('dashMonthFilter').value = '';
+  state.loadedTabs = resetLoadedTabs();
+  loadTabData(activeTabName());
 });
 
 function generateDashboardFilterOptions() {
@@ -2278,7 +2292,10 @@ async function loadVehicles(pre) {
     return;
   }
   el('dashEmpty').classList.add('d-none'); el('dashContent').classList.remove('d-none');
-  state.currentVehicleId = (prev && state.vehicles.some(v => String(v.id) === prev)) ? prev : state.vehicles[0].id;
+  const keepId = (prev && state.vehicles.some(v => String(v.id) === String(prev))) ? prev : state.vehicles[0].id;
+  // Kendaraan aktif berganti (mis. yang lama dihapus): data pengisian/biaya milik kendaraan lama harus dibuang
+  if (String(keepId) !== String(prev)) { state.fillups = []; state.expenses = []; state.loadedTabs.fillups = false; state.loadedTabs.expenses = false; state.loadedTabs.dash = false; state.loadedTabs.map = false; }
+  state.currentVehicleId = keepId;
   sel.value = state.currentVehicleId;
 }
 
@@ -2286,7 +2303,7 @@ async function loadVehicleTable() {
   if (state.vehicles.length === 0) { el('vehicleTbody').innerHTML = '<tr><td colspan="6" class="text-center py-4 text-muted">Belum ada kendaraan.</td></tr>'; return; }
   el('vehicleTbody').innerHTML = state.vehicles.map(v => `<tr><td><strong>${esc(v.name || '-')}</strong>${String(v.id) === String(state.currentVehicleId) ? ' <span class="badge bg-primary">Aktif</span>' : ''}</td><td>${esc([v.make, v.model].filter(Boolean).join(' ') || '-')}</td><td>${esc(v.licensePlate || '-')}</td><td>${esc(v.fuelType || '-')}</td><td>${fmtNum(v.initialOdometer)} km</td><td class="text-end"><div class="d-flex justify-content-end gap-1"><button class="btn btn-sm btn-outline-success icon-btn view-ok" title="Pilih kendaraan ini" onclick="selectVehicle('${esc(v.id)}')"><i class="fas fa-check"></i></button><button class="btn btn-sm btn-outline-primary icon-btn" title="Ubah" onclick="editVehicle('${esc(v.id)}')"><i class="fas fa-pen"></i></button><button class="btn btn-sm btn-outline-danger icon-btn admin-only" title="Hapus" onclick="confirmDelete('vehicle','${esc(v.id)}')"><i class="fas fa-trash"></i></button></div></td></tr>`).join('');
 }
-function selectVehicle(id) { state.currentVehicleId = id; el('vehicleSelector').value = id; el('dashMonthFilter').value = ''; state.loadedTabs = resetLoadedTabs(); loadTabData('dash'); const tabBtn = document.querySelector('[data-bs-target="#tabDash"]'); if (tabBtn) bootstrap.Tab.getOrCreateInstance(tabBtn).show(); }
+function selectVehicle(id) { state.currentVehicleId = id; state.fillups = []; state.expenses = []; el('vehicleSelector').value = id; el('dashMonthFilter').value = ''; state.loadedTabs = resetLoadedTabs(); loadTabData('dash'); const tabBtn = document.querySelector('[data-bs-target="#tabDash"]'); if (tabBtn) bootstrap.Tab.getOrCreateInstance(tabBtn).show(); }
 
 async function loadDashboard() {
   if (!state.currentVehicleId) return;
@@ -2490,7 +2507,13 @@ function applyFillupFilter() {
 }
 function resetFillupFilter() { el('filterFillupStart').value = ''; el('filterFillupEnd').value = ''; applyFillupFilter(); }
 
-function showFillupModal() { _showFillupModal(); try { const m = JSON.parse(localStorage.getItem('enzy_last_fill') || '{}'); if (m.st) el('fStation').value = m.st; if (m.ft && state.fuelTypes.some(f => String(f.id) === m.ft)) { el('fFuelTypeSelect').value = m.ft; onFuelTypeChange(); } else if (m.price) el('fPrice').value = m.price; } catch (e) {} }
+// Pastikan riwayat pengisian milik kendaraan AKTIF sudah dimuat sebelum form dibuka (tombol + bisa ditekan dari tab mana pun,
+// padahal validasi odometer & odometer awal memakai riwayat ini). Dulu bisa memakai data kendaraan lain / kosong.
+async function ensureFillupsLoaded() {
+  if (!state.currentVehicleId || state.loadedTabs.fillups) return;
+  await loadFillups(); state.loadedTabs.fillups = true;
+}
+async function showFillupModal() { try { await ensureFillupsLoaded(); } catch (e) {} _showFillupModal(); try { const m = JSON.parse(localStorage.getItem('enzy_last_fill') || '{}'); if (m.st) el('fStation').value = m.st; if (m.ft && state.fuelTypes.some(f => String(f.id) === m.ft)) { el('fFuelTypeSelect').value = m.ft; onFuelTypeChange(); } else if (m.price) el('fPrice').value = m.price; } catch (e) {} }
 document.addEventListener('change', e => {
   if (!e.target || e.target.id !== 'fOdometer') return;
   const last = Math.max(0, ...state.fillups.map(f => Number(f.odometer) || 0)), d = Number(e.target.value) - last;
@@ -2511,7 +2534,7 @@ function fTimeClear() { fTimeSetMode('empty'); el('fTime').value = ''; }
 document.addEventListener('hidden.bs.modal', e => { if (e.target && e.target.id === 'modalFillup') { clearInterval(fTimeTimer); fTimeTimer = null; fTimeAuto = false; } });
 function _showFillupModal() {
   if (!state.currentVehicleId) { toast('Pilih kendaraan dulu.', 'error'); return; }
-  el('fId').value = ''; el('fReceiptUrlOld').value = ''; el('fDate').value = todayStr(); fTimeSetMode('auto');
+  el('fId').value = ''; el('fillupModalTitle').textContent = 'Isi BBM'; el('fReceiptUrlOld').value = ''; el('fDate').value = todayStr(); fTimeSetMode('auto');
   selectedFillupFile = null; currentUploadedFileId = null; el('fReceiptPreview').innerHTML = ''; el('btnScanOCR').classList.add('d-none');
   el('fReceiptCamera').value = ''; el('fReceiptGallery').value = '';
   let lastOdo = 0;
@@ -2524,7 +2547,7 @@ function _showFillupModal() {
 }
 function editFillup(id) {
   const f = state.fillups.find(x => String(x.id) === String(id)); if (!f) return;
-  el('fId').value = f.id; el('fDate').value = f.date || ''; el('fTime').value = f.time || ''; fTimeSetMode(f.time ? 'manual' : 'empty'); el('fTime').value = f.time || ''; el('fOdometer').value = f.odometer || ''; el('fAmount').value = f.fuelAmount || ''; el('fPrice').value = f.fuelPrice || ''; el('fTotal').value = f.totalCost || '';
+  el('fId').value = f.id; el('fillupModalTitle').textContent = 'Ubah Pengisian BBM'; el('fDate').value = f.date || ''; el('fTime').value = f.time || ''; fTimeSetMode(f.time ? 'manual' : 'empty'); el('fTime').value = f.time || ''; el('fOdometer').value = f.odometer || ''; el('fAmount').value = f.fuelAmount || ''; el('fPrice').value = f.fuelPrice || ''; el('fTotal').value = f.totalCost || '';
   el('fStation').value = f.station || ''; el('fNotes').value = f.notes || ''; el('fPartial').checked = !!f.partialFill; el('fLat').value = f.latitude || ''; el('fLng').value = f.longitude || ''; el('fReceiptUrlOld').value = f.receiptUrl || '';
   selectedFillupFile = null; currentUploadedFileId = null; el('fReceiptPreview').innerHTML = f.receiptUrl ? '<i class="fas fa-check-circle"></i> Struk sudah ada' : '';
   el('btnScanOCR').classList.add('d-none'); el('fReceiptCamera').value = ''; el('fReceiptGallery').value = '';
@@ -2533,28 +2556,35 @@ function editFillup(id) {
 }
 
 async function saveFillup() {
+  if (el('btnSaveFillup').disabled) return; // cegah simpan ganda (ketuk dua kali saat pemeriksaan anomali berjalan)
   try { localStorage.setItem('enzy_last_fill', JSON.stringify({ st: el('fStation').value, ft: el('fFuelTypeSelect').value, price: el('fPrice').value })); } catch (e) {}
   const id = el('fId').value;
   const ftSelect = el('fFuelTypeSelect'), ftId = ftSelect.value;
   const ftName = ftId ? ftSelect.options[ftSelect.selectedIndex].text : ((state.fillups.find(x => String(x.id) === String(id)) || {}).fuelType || '');
-  const dateVal = el('fDate').value, odoNum = Number(el('fOdometer').value);
+  const odoRaw = el('fOdometer').value.trim();
+  const dateVal = el('fDate').value, odoNum = Number(odoRaw);
   const amountNum = Number(el('fAmount').value), priceNum = Number(el('fPrice').value);
-  const totalNum = Number(el('fTotal').value) || (amountNum * priceNum);
-  if (!dateVal || !isFinite(odoNum) || odoNum < 0 || !isFinite(amountNum) || amountNum <= 0 || !isFinite(priceNum) || priceNum <= 0) { toast('Lengkapi form dengan benar.', 'error'); return; }
+  const totalNum = Math.round(Number(el('fTotal').value) || (amountNum * priceNum));
+  // odometer kosong dulu lolos (Number('') = 0) dan tersimpan sebagai 0 → jarak tempuh pengisian berikutnya membengkak
+  if (!dateVal || odoRaw === '' || !isFinite(odoNum) || odoNum < 0 || !isFinite(amountNum) || amountNum <= 0 || !isFinite(priceNum) || priceNum <= 0) { toast('Lengkapi form dengan benar.', 'error'); return; }
   const others = state.fillups.filter(f => String(f.id) !== String(id));
   // PERBAIKAN: dua pengisian di hari yang sama dulu salah ditolak. Sekarang hanya tanggal yang benar-benar lebih awal/lebih akhir yang dibandingkan.
   const prevF = others.filter(f => f.date < dateVal).sort((a, b) => Number(b.odometer) - Number(a.odometer))[0];
   const nextF = others.filter(f => f.date > dateVal).sort((a, b) => Number(a.odometer) - Number(b.odometer))[0];
   if (prevF && odoNum < Number(prevF.odometer)) { toast('Odometer lebih kecil dari pengisian sebelumnya (' + fmtNum(prevF.odometer) + ' km).', 'error'); return; }
   if (nextF && odoNum > Number(nextF.odometer)) { toast('Odometer lebih besar dari pengisian sesudahnya (' + fmtNum(nextF.odometer) + ' km).', 'error'); return; }
+  let warnings = [];
+  setBtnLoading('btnSaveFillup', true, 'Memeriksa…');
   try {
     const chk = await callApi('apiCheckFillupAnomalies', { id, vehicleId: state.currentVehicleId, date: dateVal, odometer: odoNum, fuelAmount: amountNum, fuelPrice: priceNum, fuelType: ftName });
-    if (chk && chk.warnings && chk.warnings.length > 0) {
-      el('anomalyList').innerHTML = chk.warnings.map(w => `<li>${esc(w.message)}</li>`).join('');
-      getModal('modalAnomaly').show();
-      return;
-    }
+    if (chk && Array.isArray(chk.warnings)) warnings = chk.warnings;
   } catch (e) { /* lanjut simpan kalau cek gagal */ }
+  finally { setBtnLoading('btnSaveFillup', false); }
+  if (warnings.length > 0) {
+    el('anomalyList').innerHTML = warnings.map(w => `<li>${esc(w.message)}</li>`).join('');
+    getModal('modalAnomaly').show();
+    return;
+  }
   await _executeFillupSave(id, dateVal, odoNum, amountNum, ftName, priceNum, totalNum);
 }
 
@@ -2564,11 +2594,12 @@ async function saveFillupSkipCheck() {
   const ftSelect = el('fFuelTypeSelect'), ftId = ftSelect.value;
   const ftName = ftId ? ftSelect.options[ftSelect.selectedIndex].text : ((state.fillups.find(x => String(x.id) === String(id)) || {}).fuelType || '');
   const dateVal = el('fDate').value, odoNum = Number(el('fOdometer').value), amountNum = Number(el('fAmount').value), priceNum = Number(el('fPrice').value);
-  const totalNum = Number(el('fTotal').value) || (amountNum * priceNum);
+  const totalNum = Math.round(Number(el('fTotal').value) || (amountNum * priceNum));
   await _executeFillupSave(id, dateVal, odoNum, amountNum, ftName, priceNum, totalNum);
 }
 
 async function _executeFillupSave(id, dateVal, odoNum, amountNum, ftName, priceNum, totalNum) {
+  if (el('btnSaveFillup').disabled) return; // sedang menyimpan: abaikan ketukan ganda pada "Ya, Tetap Simpan"
   setBtnLoading('btnSaveFillup', true);
   try {
     let receiptUrl = el('fReceiptUrlOld').value;
@@ -2638,8 +2669,8 @@ async function saveVehicle() {
   try {
     const res = id ? await callApi('apiUpdateVehicle', id, data) : await callApi('apiAddVehicle', data);
     closeModal('modalVehicle'); toast(res.message);
-    if (!id && res.id) state.currentVehicleId = res.id;
-    state.loadedTabs = resetLoadedTabs(); await refreshAll();
+    if (!id && res.id) { state.currentVehicleId = res.id; state.fillups = []; state.expenses = []; el('dashMonthFilter').value = ''; }
+    state.loadedTabs = resetLoadedTabs(); state.warm = {}; await refreshAll();
   } catch (err) { toast(err.message, 'error'); } finally { setBtnLoading('btnSaveVehicle', false); }
 }
 
