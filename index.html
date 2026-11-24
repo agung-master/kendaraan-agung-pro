@@ -906,6 +906,14 @@
     body { min-height: 100vh; min-height: 100dvh; max-width: 100%; overflow-x: hidden; }
     @media (max-width: 768px) {
       #appView, #appView .container-fluid, .tab-content, .tab-pane, .panel { min-width: 0; max-width: 100%; }
+      /* 0) Panel transparan tanpa padding: hapus garis pinggir & sudut membulat agar ikon/judul tidak menabrak tepi */
+      #tabFillups > .panel, #tabExpenses > .panel, #tabReminders > .panel, #tabVehicles > .panel, #tabUsers > .panel, #tabDocs > .panel,
+      #tabFillups > .panel:hover, #tabExpenses > .panel:hover, #tabReminders > .panel:hover, #tabVehicles > .panel:hover, #tabUsers > .panel:hover, #tabDocs > .panel:hover
+        { border: 0 !important; border-radius: 0 !important; box-shadow: none !important; background: transparent !important; padding: 0 !important; }
+      /* panel lain yang tetap berkotak: beri ruang dalam yang cukup */
+      .panel:not(#tabFillups > .panel):not(#tabExpenses > .panel):not(#tabReminders > .panel):not(#tabVehicles > .panel):not(#tabUsers > .panel):not(#tabDocs > .panel) { padding: 16px !important; }
+      .panel > h5:first-child, .panel > h6:first-child, .panel > .d-flex:first-child > h5, .panel > .d-flex:first-child > h6 { margin-left: 0; }
+      h5 > i.fas:first-child, h6 > i.fas:first-child, h5 > i.fa-solid:first-child { flex: 0 0 auto; margin-left: 0; }
       body { padding-bottom: calc(118px + env(safe-area-inset-bottom, 0px)) !important; }
       .app-footer { padding-bottom: calc(118px + env(safe-area-inset-bottom, 0px)); }
 
