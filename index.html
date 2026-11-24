@@ -900,6 +900,63 @@
       *, *::before, *::after { animation-duration:.01ms !important; animation-delay:0ms !important; animation-iteration-count:1 !important; transition-duration:.01ms !important; }
       .page-hero h1 .w { opacity:1; filter:none; transform:none; }
     }
+
+    /* ===== PERBAIKAN TAMPILAN HP v3 (rapi, tanpa konten bocor / terpotong) ===== */
+    html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+    body { min-height: 100vh; min-height: 100dvh; max-width: 100%; overflow-x: hidden; }
+    @media (max-width: 768px) {
+      #appView, #appView .container-fluid, .tab-content, .tab-pane, .panel { min-width: 0; max-width: 100%; }
+      body { padding-bottom: calc(118px + env(safe-area-inset-bottom, 0px)) !important; }
+      .app-footer { padding-bottom: calc(118px + env(safe-area-inset-bottom, 0px)); }
+
+      /* 1) Selubung di belakang bar bawah: konten tidak lagi terlihat di sela/bawah bar & lekukan */
+      body::after { content: ""; position: fixed; left: 0; right: 0; bottom: 0; z-index: 1030; pointer-events: none;
+        height: calc(142px + env(safe-area-inset-bottom, 0px));
+        background: linear-gradient(to top, var(--tl-bg) 0, var(--tl-bg) 74%, transparent 100%); }
+      #bnav { z-index: 1040; }
+      #bnavDot .scoop { background: var(--tl-bg); box-shadow: none; }
+      #bnav button:not(.fabbtn) { white-space: nowrap; }
+      #bnav button:not(.fabbtn) span, #bnav button:not(.fabbtn) small { overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
+
+      /* 2) Judul & tombol aksi tab Pengisian / Biaya */
+      #tabFillups > .panel > .d-flex:first-child, #tabExpenses > .panel > .d-flex:first-child { flex-wrap: nowrap !important; flex-direction: column; align-items: stretch !important; }
+      #tabFillups > .panel > .d-flex:first-child > div, #tabExpenses > .panel > .d-flex:first-child > div { width: 100% !important; margin-top: 0 !important; flex-wrap: nowrap; }
+      #tabFillups h5, #tabExpenses h5 { display: flex; align-items: center; gap: 8px; margin: 0; line-height: 1.3; }
+      #tabFillups h5 i, #tabExpenses h5 i { margin: 0 !important; flex: 0 0 auto; }
+      #tabFillups > .panel > .d-flex:first-child .btn, #tabExpenses > .panel > .d-flex:first-child .btn { display: inline-flex; align-items: center; justify-content: center; gap: 6px; white-space: nowrap; min-width: 0; }
+      #tabFillups > .panel > .d-flex:first-child .btn i, #tabExpenses > .panel > .d-flex:first-child .btn i { margin: 0 !important; }
+
+      /* 3) Filter tanggal: tinggi seragam, kotak kosong tetap terlihat jelas + ikon kalender */
+      .fb-range input[type=date] { -webkit-appearance: none; appearance: none; display: block; position: relative; box-sizing: border-box;
+        height: 42px; min-height: 42px; padding: 0 38px 0 12px; line-height: 40px; font-size: .9rem; text-align: left; color: var(--tl-ink);
+        background-color: var(--tl-card-2, #f6f5f1); border: 1px solid var(--tl-line); border-radius: 12px; overflow: hidden;
+        background-repeat: no-repeat; background-position: right 12px center; background-size: 16px 16px;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%238a8f98' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='3' y='4' width='18' height='18' rx='3'/%3E%3Cpath d='M16 2v4M8 2v4M3 10h18'/%3E%3C/svg%3E"); }
+      .fb-range input[type=date]::-webkit-date-and-time-value { text-align: left; min-height: 1.2em; margin: 0; }
+      .fb-range input[type=date]::-webkit-datetime-edit { padding: 0; }
+      .fb-range input[type=date]::-webkit-calendar-picker-indicator { position: absolute; inset: 0; width: 100%; height: 100%; margin: 0; padding: 0; opacity: 0; cursor: pointer; }
+      .fb-range .btn { display: inline-flex; align-items: center; justify-content: center; gap: 6px; border-radius: 12px; }
+      .fb-range .btn span.d-md-none { display: inline !important; }
+      .fb-range .btn i.me-1 { margin-right: 0 !important; }
+      .filter-bar.fb-range { border-radius: 18px; padding: 14px; }
+      .fb-range .fb-field small { line-height: 1; }
+
+      /* 4) Ringkasan: dua kolom sama lebar, angka tidak meluber */
+      .sum-bar { grid-template-columns: 1fr 1fr; gap: 10px; }
+      .sum-item { min-width: 0; padding: 12px 14px; }
+      .sum-item .sum-v { overflow-wrap: anywhere; word-break: break-word; }
+
+      /* 5) Kartu riwayat: teks panjang membungkus, tidak merusak grid */
+      #fillupTbody td, #expenseTbody td { min-width: 0; overflow-wrap: anywhere; word-break: break-word; }
+      #fillupTbody td[data-label="Total"], #expenseTbody td[data-label="Jumlah"] { white-space: nowrap; overflow-wrap: normal; word-break: normal; }
+      #fillupTbody tr, #expenseTbody tr { margin-bottom: 12px; overflow: hidden; }
+    }
+    @media (max-width: 360px) {
+      #bnav { left: 8px; right: 8px; padding: 0 2px; }
+      #bnav button:not(.fabbtn) { font-size: .58rem; }
+      #bnav button.fabbtn { flex-basis: 36px !important; width: 36px; height: 36px; margin: 0 3px !important; }
+      #tabFillups > .panel > .d-flex:first-child .btn, #tabExpenses > .panel > .d-flex:first-child .btn { padding: 0 10px; font-size: .86rem; }
+    }
   </style>
 </head>
 <body>
