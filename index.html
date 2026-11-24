@@ -1648,7 +1648,7 @@
 // ║  di antara tanda kutip ' ' pada baris const WEB_APP_URL di bawah.    ║
 // ║  Setiap membuat penerapan BARU, URL-nya berubah → tempel ulang.      ║
 // ╚══════════════════════════════════════════════════════════════════════╝
-const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbx0JMcxPhQ7ihZNxEIeU-EHbdS1sIJ-QvexkaDpuExoEHASVs0ssuruLyERlhrMsyBsJg/exec';
+const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbxFr0-sq9X2yCDm43_14Uof-a6-ld2vXcHrG0Xkom5v6YdxUUjQNKRolEguGWd4aVod8g/exec';
 // ☝️☝️☝️  TEMPEL URL DI ATAS (di antara tanda kutip)  ☝️☝️☝️
 window.addEventListener('load', () => {
   if (!/^https:\/\/script\.google\.com\/macros\/s\/[^\s']+\/exec$/.test(WEB_APP_URL)) toast('URL Web App belum benar. Tempel URL Code.gs di bagian "TEMPEL DISINI" pada kode index.html.', 'error');
@@ -2354,7 +2354,7 @@ function initApp(boot) {
 }
 
 async function syncBoot() {
-  try { const b = await callApi('apiBootstrap'); cacheSave('boot', b); await loadVehicles(b.vehicles); await loadFuelTypes(b.fuelTypes); state.allReminders = b.reminders || []; checkNotifications(); } catch (e) {}
+  try { const old = cacheLoad('boot'); const b = await callApi('apiBootstrap'); cacheSave('boot', b); if (old && JSON.stringify(old) === JSON.stringify(b)) return; await loadVehicles(b.vehicles); await loadFuelTypes(b.fuelTypes); state.allReminders = b.reminders || []; checkNotifications(); } catch (e) {}
 }
 
 function goTab(id) { const b = document.querySelector('[data-bs-target="#' + id + '"]'); if (b) b.click(); el('bmore').classList.remove('open'); }
@@ -2981,14 +2981,19 @@ async function loadDashboard() {
   const vid = state.currentVehicleId, fm0 = el('dashMonthFilter').value || '';
   const ck = 'bundle_' + vid + '_' + fm0;
   state.warm = state.warm || {};
-  let shownCache = false;
-  if (!state.warm[vid]) { const cached = cacheLoad(ck); if (cached) { try { await applyBundle(cached, fm0); shownCache = true; } catch (e) {} } }
+  let shownCache = false, cachedStr = null;
+  if (!state.warm[vid]) { const cached = cacheLoad(ck); if (cached) { try { cachedStr = JSON.stringify(cached); await applyBundle(cached, fm0); shownCache = true; } catch (e) {} } }
   let b;
   try { b = await callApi('apiGetVehicleBundle', vid, fm0); } catch (err) { if (!shownCache) throw err; toast('Offline: menampilkan data tersimpan terakhir.', 'info'); return; }
   if (!b || b.error) { toast((b && b.error) || 'Data dashboard tidak valid.', 'error'); return; }
   if (state.currentVehicleId !== vid) return;
   state.warm[vid] = true; cacheSave(ck, b);
-  await applyBundle(b, fm0);
+  // Data cache sudah tampil: kalau data segar identik, tidak perlu render ulang (penyebab "refresh 2x")
+  if (shownCache && cachedStr === JSON.stringify(b)) return;
+  // Kalau berbeda, perbarui diam-diam tanpa animasi hitung-naik / grafik ulang
+  if (shownCache) window._noAnim = true;
+  try { await applyBundle(b, fm0); }
+  finally { if (shownCache) setTimeout(() => { window._noAnim = false; }, 400); }
 }
 
 async function applyBundle(b, fm0) {
@@ -3182,7 +3187,7 @@ function renderChart(canvasId, dataPoints, type, label, color) {
   const config = { type, data: { labels, datasets: [{ label, data: values, borderColor: color, backgroundColor: grad, fill: type === 'line', tension: 0.4,
     borderWidth: type === 'line' ? 2.5 : 0, borderRadius: type === 'bar' ? 10 : 0, borderSkipped: false, maxBarThickness: 44,
     pointRadius: type === 'line' ? 3 : 0, pointHoverRadius: 6, pointBackgroundColor: color, pointBorderColor: dark ? '#131416' : '#ffffff', pointBorderWidth: 2 }] },
-    options: { responsive: true, maintainAspectRatio: false, interaction: { intersect: false, mode: 'index' }, plugins: { legend: { display: false } }, scales: { x: { grid: { display: false } }, y: { border: { display: false } } } } };
+    options: { animation: window._noAnim ? false : undefined, responsive: true, maintainAspectRatio: false, interaction: { intersect: false, mode: 'index' }, plugins: { legend: { display: false } }, scales: { x: { grid: { display: false } }, y: { border: { display: false } } } } };
   if (canvasId === 'chartConsumption') chartC = new Chart(ctx, config); else if (canvasId === 'chartMonthly') chartM = new Chart(ctx, config);
 }
 
@@ -3502,7 +3507,7 @@ function confirmDelete(type, id) {
     return v.toLocaleString('id-ID', { minimumFractionDigits: o.dec, maximumFractionDigits: o.dec, useGrouping: o.group });
   }
   function countUp(root) {
-    if (reduce) return;
+    if (reduce || window._noAnim) return;
     var w = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, null), jobs = [], nd;
     while ((nd = w.nextNode())) {
       var m = /\d[\d.,]*/.exec(nd.nodeValue); if (!m) continue;
