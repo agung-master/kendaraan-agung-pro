@@ -230,7 +230,7 @@
     .fb-range .btn i.me-1 { margin-right: 0 !important; }
     .fb-range > .text-muted.d-none, .fb-range .fb-count { padding-bottom: .3rem; }
     /* ===================================================================
-       MOBILE POLISH v1  — tampilan rapi & profesional di HP
+       MOBILE POLISH v1  â€” tampilan rapi & profesional di HP
        (hanya aktif di layar <= 768px; desktop tidak berubah)
        =================================================================== */
     @media (max-width: 768px) {
@@ -277,7 +277,7 @@
       .fb-range .fb-count { padding: 0 !important; grid-column: 1 / -1; margin: 0 !important; text-align: left !important; font-size: .78rem; color: var(--ink-soft) !important; }
       .fb-range .fb-count:empty { display: none; }
 
-      /* filter dasbor: [pilih periode ......][⊞][⟳] */
+      /* filter dasbor: [pilih periode ......][âŠž][âŸ³] */
       .filter-bar.fb-dash { display: grid !important; grid-template-columns: 1fr 42px 42px; gap: 8px !important; align-items: center; }
       .fb-dash > .fw-bold { display: none; }
       .fb-dash select { width: 100% !important; max-width: none !important; height: 42px; border-radius: 10px; font-weight: 600; }
@@ -297,7 +297,7 @@
       .stat-card:hover { transform: none; }
       .ai-insight-box { border-left-width: 0; border-radius: 14px; padding: 12px 14px; font-size: .86rem; }
 
-      /* ---------- 5. DAFTAR RIWAYAT → KARTU RINGKAS ---------- */
+      /* ---------- 5. DAFTAR RIWAYAT â†’ KARTU RINGKAS ---------- */
       #fillupTbody tr, #expenseTbody tr { display: grid !important; gap: 6px 12px; padding: 14px; margin-bottom: 10px;
         border: 0; border-radius: 16px; background: var(--card-bg); box-shadow: 0 1px 3px rgba(0,0,0,.07); }
       #fillupTbody td, #expenseTbody td { display: block !important; padding: 0 !important; text-align: left; min-width: 0; }
@@ -445,7 +445,7 @@
       #loginView .lg-gauge .needle, #loginView .lg-input, #loginView .lg-btn { transition: none; }
     }
     .stat-card .value { overflow: hidden; text-overflow: ellipsis; }
-    /* ===== TEMA v3 — nuansa navy + biru, ringan untuk HP =====
+    /* ===== TEMA v3 â€” nuansa navy + biru, ringan untuk HP =====
        Aturan: tanpa blur/backdrop-filter, tanpa animasi box-shadow, bayangan di HP diganti garis tipis,
        gerakan hanya transform/opacity. Warna login & aplikasi kini satu keluarga. */
     :root { --brand:#1f63e6; --brand-dark:#1a4fc4; --card-radius:16px; --tl-bg:#eef2f9; --tl-card:#fff; --tl-line:#dfe6f3; --tl-ink:#0f1b3a; --tl-soft:#5b6b8c;
@@ -541,7 +541,7 @@
          --notif-top diisi lewat JS (show.bs.dropdown) sesuai posisi lonceng. */
       .notif-menu { position: fixed !important; top: var(--notif-top, calc(70px + env(safe-area-inset-top, 0px))) !important; left: 10px !important; right: 10px !important; width: auto !important; margin: 0 !important; transform: none !important; max-height: 70vh; max-height: min(70dvh, calc(100dvh - var(--notif-top, 70px) - 16px)); }
     }
-    /* ===== TEMA v4 — navigasi kaca: tab atas dengan pil geser + bar bawah HP melayang =====
+    /* ===== TEMA v4 â€” navigasi kaca: tab atas dengan pil geser + bar bawah HP melayang =====
        Gaya mengikuti contoh "Navigation Tabs", tetapi semua warna memakai token tema aplikasi
        (--brand, --tl-card, --tl-line, --tl-bg), jadi mode terang/gelap ikut otomatis.
        Tetap ringan untuk HP: tanpa backdrop-filter, gerakan hanya transform/opacity. */
@@ -605,7 +605,7 @@
       .nav-glider, #bnavDot, #bnavDot .bub i, #bnav button i { transition: none; animation: none; }
     }
     /* =====================================================================
-       TEMA v5 — "Obsidian & Amber"
+       TEMA v5 â€” "Obsidian & Amber"
        Mengikuti contoh Management Dashboard: latar hitam pekat, kartu membulat,
        aksen amber, menu aktif berupa pil putih yang bergeser, sidebar bisa dilipat.
        Semua warna lewat token, jadi mode gelap (utama) dan terang sama-sama rapi.
@@ -916,7 +916,7 @@
       #tabFillups > .panel:hover, #tabExpenses > .panel:hover, #tabReminders > .panel:hover, #tabVehicles > .panel:hover, #tabUsers > .panel:hover, #tabDocs > .panel:hover
         { border: 0 !important; border-radius: 0 !important; box-shadow: none !important; background: transparent !important; padding: 0 !important; }
       /* panel lain yang tetap berkotak: beri ruang dalam yang cukup */
-      .panel:not(#tabFillups > .panel):not(#tabExpenses > .panel):not(#tabReminders > .panel):not(#tabVehicles > .panel):not(#tabUsers > .panel):not(#tabDocs > .panel) { padding: 16px !important; }
+      .panel:not(#tabFillups > .panel):not(#tabExpenses > .panel):not(#tabReminders > .panel):not(#tabVehicles > .panel):not(#tabUsers > .panel):not(#tabDocs > .panel):not(#tabSettings > .panel) { padding: 16px !important; }
       .panel > h5:first-child, .panel > h6:first-child, .panel > .d-flex:first-child > h5, .panel > .d-flex:first-child > h6 { margin-left: 0; }
       h5 > i.fas:first-child, h6 > i.fas:first-child, h5 > i.fa-solid:first-child { flex: 0 0 auto; margin-left: 0; }
       body { padding-bottom: calc(118px + env(safe-area-inset-bottom, 0px)) !important; }
@@ -970,6 +970,40 @@
       #bnav button.fabbtn { flex-basis: 36px !important; width: 36px; height: 36px; margin: 0 3px !important; }
       #tabFillups > .panel > .d-flex:first-child .btn, #tabExpenses > .panel > .d-flex:first-child .btn { padding: 0 10px; font-size: .86rem; }
     }
+    /* ===== PERBAIKAN TAMPILAN HP v4 (tanggal terpotong, kartu, teks panjang) ===== */
+    @media (max-width: 768px) {
+      /* 1) Kolom tanggal filter: teks tanggal tidak lagi terpotong di bawah (iPhone/Android) */
+      .filter-bar.fb-range .fb-field { width: 100%; }
+      .filter-bar.fb-range input[type=date], .filter-bar.fb-range input[type=date].form-control-sm {
+        height: 44px !important; min-height: 44px !important; padding: 0 32px 0 10px !important; line-height: normal !important;
+        font-size: 16px !important; display: flex !important; align-items: center; width: 100% !important; max-width: 100% !important; }
+      .filter-bar.fb-range input[type=date]::-webkit-date-and-time-value { text-align: left; line-height: 1.25; min-height: 0; margin: 0; padding: 0; }
+      .filter-bar.fb-range input[type=date]::-webkit-datetime-edit { padding: 0; line-height: 1.25; }
+      .filter-bar.fb-range input[type=date]::-webkit-datetime-edit-fields-wrapper { padding: 0; }
+      .filter-bar.fb-range .btn { height: 44px !important; }
+
+      /* 2) Kartu riwayat: sembunyikan tanda "-" bila tidak ada foto struk */
+      #fillupTbody td[data-label="Struk"], #expenseTbody td[data-label="Struk"] { font-size: 0; line-height: 0; }
+      #fillupTbody td[data-label="Struk"] .btn, #expenseTbody td[data-label="Struk"] .btn { font-size: .875rem; line-height: 1.5; }
+      /* Biaya tanpa catatan: baris catatan disembunyikan (bukan tanda "-") */
+      #expenseTbody td.no-note { display: none !important; }
+
+      /* 3) Halaman Jenis BBM: tanpa kotak di dalam kotak */
+      #tabSettings > .panel, #tabSettings > .panel:hover { border: 0 !important; border-radius: 0 !important; box-shadow: none !important; background: transparent !important; padding: 0 !important; }
+
+      /* 4) Kartu tabel: teks panjang (email, nama) membungkus, tidak terpotong */
+      .table-responsive td { min-width: 0; overflow-wrap: anywhere; word-break: break-word; }
+      .table-responsive td::before { overflow-wrap: normal; word-break: normal; }
+      .table-responsive td .badge { white-space: normal; text-align: right; }
+
+      /* 5) Judul panel + tombol di sebelahnya tidak saling menghimpit */
+      .panel > .d-flex:first-child > h5, .panel > .d-flex:first-child > h6 { min-width: 0; }
+      #multiSummary .panel > .d-flex:first-child { gap: 10px; align-items: flex-start !important; }
+      #multiSummary .panel > .d-flex:first-child .btn { flex: 0 0 auto; white-space: nowrap; }
+
+      /* 6) Peta: pilihan radius selebar layar, tidak menggantung sendiri di kanan */
+      #poiRadius { width: 100% !important; margin-left: 0 !important; }
+    }
   </style>
 </head>
 <body>
@@ -1016,7 +1050,7 @@
           <input type="password" id="loginPin" class="lg-input" placeholder="Masukkan PIN" inputmode="numeric" pattern="[0-9]*" maxlength="12" autocomplete="off" enterkeyhint="go" aria-describedby="loginPinHint" oninput="this.value=this.value.replace(/\D/g,'').slice(0,12)" onkeydown="if(event.key==='Enter')doLogin()">
           <button type="button" class="lg-eye" id="togglePassword" onclick="togglePasswordVisibility()" title="Lihat PIN" aria-label="Tampilkan PIN" aria-pressed="false"><i class="fas fa-eye" id="togglePasswordIcon"></i></button>
         </div>
-        <p class="lg-hint" id="loginPinHint">4–12 digit angka. PIN diberikan oleh admin.</p>
+        <p class="lg-hint" id="loginPinHint">4â€“12 digit angka. PIN diberikan oleh admin.</p>
         <button type="button" class="lg-btn" id="btnLogin" onclick="doLogin()">
           <span id="loginSpinner" class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
           <span id="loginBtnText">Masuk</span> <i class="fas fa-lock-open" aria-hidden="true"></i>
@@ -1040,7 +1074,7 @@
         </div>
         <div class="d-flex flex-row flex-wrap align-items-center gap-1 gap-sm-2 flex-grow-1 justify-content-end" style="min-width: 0;">
           <select id="vehicleSelector" class="form-select vehicle-selector shadow-sm text-truncate">
-            <option value="">Memuat kendaraan…</option>
+            <option value="">Memuat kendaraanâ€¦</option>
           </select>
           <div class="d-flex align-items-center gap-1 gap-sm-2 flex-shrink-0">
             <div class="dropdown">
@@ -1382,7 +1416,7 @@
         <input type="hidden" id="uId">
         <div class="mb-3"><label class="form-label fw-bold">Nama Lengkap *</label><input class="form-control" id="uName"></div>
         <div class="mb-3"><label class="form-label fw-bold">Username (opsional)</label><input class="form-control" id="uUser"></div>
-        <div class="mb-3"><label class="form-label fw-bold" id="uPassLabel">PIN *</label><input type="text" class="form-control" id="uPass" inputmode="numeric" pattern="[0-9]*" maxlength="12" autocomplete="off" placeholder="4–12 digit angka" oninput="this.value=this.value.replace(/\D/g,'').slice(0,12)"><div class="form-text">Dipakai pengguna untuk masuk, jadi harus berbeda dengan PIN pengguna lain.</div></div>
+        <div class="mb-3"><label class="form-label fw-bold" id="uPassLabel">PIN *</label><input type="text" class="form-control" id="uPass" inputmode="numeric" pattern="[0-9]*" maxlength="12" autocomplete="off" placeholder="4â€“12 digit angka" oninput="this.value=this.value.replace(/\D/g,'').slice(0,12)"><div class="form-text">Dipakai pengguna untuk masuk, jadi harus berbeda dengan PIN pengguna lain.</div></div>
         <div class="mb-3"><label class="form-label fw-bold">Email</label><input type="email" class="form-control" id="uEmail"></div>
         <div class="mb-3"><label class="form-label fw-bold">Telepon</label><input class="form-control" id="uPhone"></div>
         <div class="mb-3"><label class="form-label fw-bold">Role</label>
@@ -1644,17 +1678,17 @@
 <div id="toastContainer"></div>
 
 <script>
-// ╔══════════════════════════════════════════════════════════════════════╗
-// ║  👇👇👇  TEMPEL DISINI  (URL Web App dari Code.gs)  👇👇👇            ║
-// ║                                                                      ║
-// ║  Cara mendapatkan URL:                                               ║
-// ║  Apps Script → Terapkan/Deploy → Kelola penerapan → salin "URL       ║
-// ║  aplikasi web" (berakhiran /exec), lalu tempel MENGGANTIKAN teks     ║
-// ║  di antara tanda kutip ' ' pada baris const WEB_APP_URL di bawah.    ║
-// ║  Setiap membuat penerapan BARU, URL-nya berubah → tempel ulang.      ║
-// ╚══════════════════════════════════════════════════════════════════════╝
+// â•”â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•—
+// â•‘  ðŸ‘‡ðŸ‘‡ðŸ‘‡  TEMPEL DISINI  (URL Web App dari Code.gs)  ðŸ‘‡ðŸ‘‡ðŸ‘‡            â•‘
+// â•‘                                                                      â•‘
+// â•‘  Cara mendapatkan URL:                                               â•‘
+// â•‘  Apps Script â†’ Terapkan/Deploy â†’ Kelola penerapan â†’ salin "URL       â•‘
+// â•‘  aplikasi web" (berakhiran /exec), lalu tempel MENGGANTIKAN teks     â•‘
+// â•‘  di antara tanda kutip ' ' pada baris const WEB_APP_URL di bawah.    â•‘
+// â•‘  Setiap membuat penerapan BARU, URL-nya berubah â†’ tempel ulang.      â•‘
+// â•šâ•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbx4igZI8oZP99cT7KXsaCCOgSpOvUbx9fVAXGGgjAZFxnJDkZBkzb3oHMpNM4XNKeirbw/exec';
-// ☝️☝️☝️  TEMPEL URL DI ATAS (di antara tanda kutip)  ☝️☝️☝️
+// â˜ï¸â˜ï¸â˜ï¸  TEMPEL URL DI ATAS (di antara tanda kutip)  â˜ï¸â˜ï¸â˜ï¸
 window.addEventListener('load', () => {
   if (!/^https:\/\/script\.google\.com\/macros\/s\/[^\s']+\/exec$/.test(WEB_APP_URL)) toast('URL Web App belum benar. Tempel URL Code.gs di bagian "TEMPEL DISINI" pada kode index.html.', 'error');
 });
@@ -1766,7 +1800,7 @@ function toast(msg, type = 'success') {
   setTimeout(() => { div.style.opacity = 0; div.style.transform = 'translateX(120%)'; setTimeout(() => div.remove(), 250); }, 3500);
 }
 
-function setBtnLoading(btnId, loading, text = 'Proses…') {
+function setBtnLoading(btnId, loading, text = 'Prosesâ€¦') {
   const btn = el(btnId); if (!btn) return;
   if (loading) { if (!btn.dataset.html) btn.dataset.html = btn.innerHTML; btn.disabled = true; btn.innerHTML = `<span class="spinner-border spinner-border-sm"></span> ${esc(text)}`; }
   else { btn.disabled = false; if (btn.dataset.html) { btn.innerHTML = btn.dataset.html; delete btn.dataset.html; } }
@@ -1835,7 +1869,7 @@ async function scanReceipt() {
 }
 
 // ============================================================
-// PETA SPBU — GPS realtime + pencarian SPBU/fasilitas (OpenStreetMap / Overpass)
+// PETA SPBU â€” GPS realtime + pencarian SPBU/fasilitas (OpenStreetMap / Overpass)
 // ============================================================
 const POI_TYPES = {
   fuel:     { label: 'SPBU',    icon: 'fa-gas-pump',    color: '#e8710a', q: '["amenity"="fuel"]' },
@@ -1971,7 +2005,7 @@ function locateMe() {
 function startTracking() {
   if (!navigator.geolocation) { setGps('err', 'GPS tidak didukung'); toast('Fitur GPS tidak didukung browser ini.', 'error'); return; }
   if (geo.watchId !== null) return;
-  setGps('wait', 'Mencari lokasi…');
+  setGps('wait', 'Mencari lokasiâ€¦');
   geo.watchId = navigator.geolocation.watchPosition(onGeoPos, onGeoErr, { enableHighAccuracy: true, maximumAge: 5000, timeout: 20000 });
 }
 function stopTracking() {
@@ -1988,7 +2022,7 @@ function onGeoPos(pos) {
   } else {
     geo.userMarker.setLatLng(ll); geo.accCircle.setLatLng(ll).setRadius(acc);
   }
-  setGps('on', 'GPS aktif · ±' + Math.round(acc) + ' m');
+  setGps('on', 'GPS aktif Â· Â±' + Math.round(acc) + ' m');
   if (!geo.firstFix) { geo.firstFix = true; map.setView(ll, 15); }
   else if (geo.follow) map.panTo(ll, { animate: true });
 
@@ -2003,7 +2037,7 @@ function onGeoErr(err) {
     setMapStatus('<span class="text-danger"><i class="fas fa-ban"></i> Izin lokasi ditolak.</span> Aktifkan izin lokasi untuk situs ini di pengaturan browser lalu muat ulang halaman. Anda tetap bisa menggeser peta lalu menekan <b>Cari SPBU di area ini</b>.');
     fitHistoryIfNoGps();
   } else if (err.code === 2) { setGps('err', 'Lokasi tidak tersedia'); setMapStatus('Sinyal GPS belum tersedia. Coba pindah ke tempat terbuka.'); }
-  else { setGps('wait', 'Menunggu sinyal GPS…'); }
+  else { setGps('wait', 'Menunggu sinyal GPSâ€¦'); }
 }
 
 // ---------- Pencarian lokasi (Overpass API) ----------
@@ -2072,7 +2106,7 @@ async function searchPOI(lat, lng, opts) {
   if (!types.length) return;
   geo.searching = true; geo.lastSearchAt = Date.now();
   const btn = el('btnHere'); if (btn) btn.disabled = true;
-  setMapStatus('<span class="spinner-border spinner-border-sm me-1"></span> Mencari lokasi di sekitar…');
+  setMapStatus('<span class="spinner-border spinner-border-sm me-1"></span> Mencari lokasi di sekitarâ€¦');
   try {
     const body = types.map(k => `nwr${POI_TYPES[k].q}(around:${geo.radius},${lat},${lng});`).join('');
     let data;
@@ -2082,7 +2116,7 @@ async function searchPOI(lat, lng, opts) {
       if (!data.elements.length) throw new Error('Nominatim kosong');
     } catch (e1) {
       console.warn('Server utama (Nominatim) gagal/kosong, memakai Overpass:', e1);
-      setMapStatus('<span class="spinner-border spinner-border-sm me-1"></span> Server utama tidak menemukan data, mencoba server cadangan…');
+      setMapStatus('<span class="spinner-border spinner-border-sm me-1"></span> Server utama tidak menemukan data, mencoba server cadanganâ€¦');
       try { data = await overpassQuery(`[out:json][timeout:25];(${body});out center tags 400;`); }
       catch (e2) {
         // Overpass gagal: bila Nominatim hanya kosong (server hidup), anggap hasil kosong, bukan error koneksi
@@ -2165,7 +2199,7 @@ function poiSub(it) {
   const addr = [t['addr:street'], t['addr:city'] || t['addr:suburb']].filter(Boolean).join(', ');
   if (addr) parts.push(addr);
   if (t.opening_hours === '24/7') parts.push('Buka 24 jam');
-  return parts.join(' · ');
+  return parts.join(' Â· ');
 }
 function renderNearbyList() {
   const box = el('nearbyList'); if (!box) return;
@@ -2187,7 +2221,7 @@ function poiPopup(it) {
   const ref = refLL(); const d = ref ? distM(ref[0], ref[1], it.lat, it.lng) : null;
   return `<div style="min-width:180px">
     <b style="font-size:14px"><i class="fas ${ty.icon}" style="color:${ty.color}"></i> ${esc(it.name)}</b><br>
-    <small class="text-muted">${esc(ty.label)}${t.brand && t.brand !== it.name ? ' · ' + esc(t.brand) : ''}${t.operator && t.operator !== it.name ? ' · ' + esc(t.operator) : ''}</small>
+    <small class="text-muted">${esc(ty.label)}${t.brand && t.brand !== it.name ? ' Â· ' + esc(t.brand) : ''}${t.operator && t.operator !== it.name ? ' Â· ' + esc(t.operator) : ''}</small>
     ${d !== null ? `<div class="mt-1"><i class="fas fa-location-dot text-danger"></i> ${esc(fmtDist(d))} dari ${geo.lat !== null ? 'Anda' : 'titik pencarian'}</div>` : ''}
     ${addr ? `<div class="small mt-1">${esc(addr)}</div>` : ''}
     ${t.opening_hours ? `<div class="small mt-1"><i class="far fa-clock"></i> ${esc(t.opening_hours === '24/7' ? 'Buka 24 jam' : t.opening_hours)}</div>` : ''}
@@ -2311,10 +2345,10 @@ function getDeviceId() {
 
 async function doLogin() {
   const pin = el('loginPin').value.trim();
-  if (!/^\d{4,12}$/.test(pin)) { toast('PIN harus berupa angka 4–12 digit.', 'error'); loginShake(); el('loginPin').focus(); return; }
+  if (!/^\d{4,12}$/.test(pin)) { toast('PIN harus berupa angka 4â€“12 digit.', 'error'); loginShake(); el('loginPin').focus(); return; }
   el('btnLogin').disabled = true; el('loginSpinner').classList.remove('d-none'); el('loginBtnText').textContent = 'Memproses...';
   try {
-    const slowTimer = setTimeout(() => { el('loginBtnText').textContent = 'Menyiapkan server…'; }, 4000);
+    const slowTimer = setTimeout(() => { el('loginBtnText').textContent = 'Menyiapkan serverâ€¦'; }, 4000);
     let res; try { res = await callApi('apiLogin', pin, getDeviceId()); } finally { clearTimeout(slowTimer); }
     state.user = Object.assign({}, res.user, { token: res.token });
     try { localStorage.setItem('enzy_user', JSON.stringify(state.user)); } catch (e) {}
@@ -2508,7 +2542,7 @@ function initNavGlider() {
 function addTableSearch() {
   document.querySelectorAll('.table-responsive').forEach(w => {
     if (w.previousElementSibling && w.previousElementSibling.classList.contains('tbl-search')) return;
-    const i = document.createElement('input'); i.type = 'search'; i.className = 'form-control form-control-sm tbl-search'; i.placeholder = '🔍 Cari data...';
+    const i = document.createElement('input'); i.type = 'search'; i.className = 'form-control form-control-sm tbl-search'; i.placeholder = 'ðŸ” Cari data...';
     i.oninput = () => { const q = i.value.toLowerCase(); w.querySelectorAll('tbody tr').forEach(r => r.classList.toggle('row-hide', !!q && !r.textContent.toLowerCase().includes(q))); }; w._search = i;
     w.parentNode.insertBefore(i, w);
   });
@@ -2646,7 +2680,7 @@ async function loadUsers() {
     return `<tr><td><strong>${esc(u.name || '-')}</strong>${self ? ' <span class="badge bg-success-subtle text-success-emphasis">Anda</span>' : ''}</td><td>${esc(u.username || '-')}</td><td>${esc(u.email || '-')}</td><td>${esc(u.phone || '-')}</td><td><span class="badge ${roleCls}">${esc(ROLE_LABELS[u.role] || u.role || 'User')}</span></td><td class="text-end"><div class="d-flex justify-content-end gap-1"><button class="btn btn-sm btn-outline-primary icon-btn" title="Ubah" onclick="editUser('${esc(u.id)}')"><i class="fas fa-pen"></i></button>${self ? '' : `<button class="btn btn-sm btn-outline-danger icon-btn" title="Hapus" onclick="confirmDelete('user','${esc(u.id)}')"><i class="fas fa-trash"></i></button>`}</div></td></tr>`;
   }).join('') : '<tr><td colspan="6" class="text-center py-4 text-muted">Belum ada pengguna.</td></tr>';
 }
-function showUserModal() { el('uId').value = ''; el('uName').value = ''; el('uUser').value = ''; el('uPass').value = ''; el('uEmail').value = ''; el('uPhone').value = ''; el('uRole').value = 'user'; el('uPassLabel').textContent = 'PIN *'; el('uPass').placeholder = '4–12 digit angka'; getModal('modalUser').show(); }
+function showUserModal() { el('uId').value = ''; el('uName').value = ''; el('uUser').value = ''; el('uPass').value = ''; el('uEmail').value = ''; el('uPhone').value = ''; el('uRole').value = 'user'; el('uPassLabel').textContent = 'PIN *'; el('uPass').placeholder = '4â€“12 digit angka'; getModal('modalUser').show(); }
 function editUser(id) {
   const u = state.users.find(x => String(x.id) === String(id)); if (!u) return;
   el('uId').value = u.id; el('uName').value = u.name || ''; el('uUser').value = u.username || ''; el('uPass').value = ''; el('uEmail').value = u.email || ''; el('uPhone').value = u.phone || ''; el('uRole').value = ROLE_LABELS[u.role] ? u.role : 'user';
@@ -2659,7 +2693,7 @@ async function saveUser() {
   if (el('uPass').value) data.password = el('uPass').value;
   if (!data.name) { toast('Nama lengkap wajib diisi.', 'error'); return; }
   if (!id && !data.password) { toast('PIN wajib diisi.', 'error'); return; }
-  if (data.password && !/^\d{4,12}$/.test(data.password)) { toast('PIN harus berupa angka 4–12 digit.', 'error'); return; }
+  if (data.password && !/^\d{4,12}$/.test(data.password)) { toast('PIN harus berupa angka 4â€“12 digit.', 'error'); return; }
   setBtnLoading('btnSaveUser', true);
   try {
     const res = id ? await callApi('apiUpdateUser', id, data) : await callApi('apiAddUser', data); closeModal('modalUser'); toast(res.message);
@@ -2745,7 +2779,7 @@ function showCompleteReminder(id) {
   let info = '';
   if (iKm > 0) info += `Pengingat berikutnya: +${fmtNum(iKm)} km. `;
   if (iBl > 0) info += `Atau +${iBl} bulan. `;
-  el('crNextInfo').innerHTML = info ? `<i class="fas fa-info-circle"></i> ${info}` : 'Belum ada interval tersimpan. Pengingat berikut tidak dibuat otomatis — atur saat edit pengingat.';
+  el('crNextInfo').innerHTML = info ? `<i class="fas fa-info-circle"></i> ${info}` : 'Belum ada interval tersimpan. Pengingat berikut tidak dibuat otomatis â€” atur saat edit pengingat.';
   getModal('modalComplete').show();
 }
 async function saveCompleteReminder() {
@@ -3026,7 +3060,7 @@ function renderDashboard(data, filterMonth) {
     <div class="col-6 col-md-6 col-lg-4"><div class="stat-card info"><i class="fas fa-road icon"></i><div class="label">Odometer ${filterMonth ? 'Akhir Bulan' : 'Terakhir'}</div><div class="value">${fmtNum(s.lastOdometer)} <small class="text-muted">km</small></div></div></div>
     <div class="col-6 col-md-6 col-lg-4"><div class="stat-card purple"><i class="fas fa-coins icon"></i><div class="label">Biaya per KM</div><div class="value">${fmtRp(s.costPerKm)}</div></div></div>
     <div class="col-12 mt-2 mt-md-3"><div class="stat-card carbon d-flex align-items-center justify-content-between">
-      <div><div class="label text-success">Jejak Karbon (Carbon Footprint)</div><div class="value text-success">${s.carbonEmission} kg CO2</div><div class="small text-muted mt-1"><i class="fas fa-tree text-success"></i> Butuh ± ${s.treesNeeded} pohon untuk menyerapnya selama setahun.</div></div>
+      <div><div class="label text-success">Jejak Karbon (Carbon Footprint)</div><div class="value text-success">${s.carbonEmission} kg CO2</div><div class="small text-muted mt-1"><i class="fas fa-tree text-success"></i> Butuh Â± ${s.treesNeeded} pohon untuk menyerapnya selama setahun.</div></div>
       <i class="fas fa-leaf fa-3x text-success opacity-50"></i></div></div>`;
   el('detailStats').innerHTML = `
     <li class="list-group-item d-flex justify-content-between align-items-center"><span><i class="fas fa-arrow-up text-success me-2"></i>Konsumsi Terbaik</span><span class="badge bg-success">${s.bestCons} km/L</span></li>
@@ -3053,22 +3087,22 @@ function renderAdvancedDashboard(data, filterMonth) {
   }
   if (data.remainingTank) {
     const rt = data.remainingTank;
-    wrap.insertAdjacentHTML('beforeend', `<div class="col-12 col-md-6 col-lg-4 mt-2"><div class="stat-card info"><i class="fas fa-gas-pump icon"></i><div class="label">Estimasi Sisa Tangki</div><div class="value">${fmtNum(rt.estKm)} <small>km</small></div><div class="small text-muted">±${rt.remainingLiters} L · ${rt.estDays !== null ? `isi lagi ~${rt.estDays} hari (${fmtDate(rt.estDate)})` : 'belum cukup data'}</div></div></div>`);
+    wrap.insertAdjacentHTML('beforeend', `<div class="col-12 col-md-6 col-lg-4 mt-2"><div class="stat-card info"><i class="fas fa-gas-pump icon"></i><div class="label">Estimasi Sisa Tangki</div><div class="value">${fmtNum(rt.estKm)} <small>km</small></div><div class="small text-muted">Â±${rt.remainingLiters} L Â· ${rt.estDays !== null ? `isi lagi ~${rt.estDays} hari (${fmtDate(rt.estDate)})` : 'belum cukup data'}</div></div></div>`);
   }
   if (data.carbonComparison) {
     const c = data.carbonComparison; const up = c.diff > 0;
-    wrap.insertAdjacentHTML('beforeend', `<div class="col-12 col-md-6 col-lg-8 mt-2"><div class="stat-card carbon"><i class="fas fa-leaf icon text-success"></i><div class="label">Jejak Karbon Bulan Ini vs Bulan Lalu</div><div class="value text-success">${c.thisMonth} kg <small class="text-muted">vs ${c.lastMonth} kg</small></div><div class="small ${up ? 'text-danger' : 'text-success'}"><i class="fas fa-arrow-${up ? 'up' : 'down'}"></i> ${Math.abs(c.diff).toFixed(2)} kg CO₂ ${up ? 'lebih banyak' : 'lebih sedikit'}</div></div></div>`);
+    wrap.insertAdjacentHTML('beforeend', `<div class="col-12 col-md-6 col-lg-8 mt-2"><div class="stat-card carbon"><i class="fas fa-leaf icon text-success"></i><div class="label">Jejak Karbon Bulan Ini vs Bulan Lalu</div><div class="value text-success">${c.thisMonth} kg <small class="text-muted">vs ${c.lastMonth} kg</small></div><div class="small ${up ? 'text-danger' : 'text-success'}"><i class="fas fa-arrow-${up ? 'up' : 'down'}"></i> ${Math.abs(c.diff).toFixed(2)} kg COâ‚‚ ${up ? 'lebih banyak' : 'lebih sedikit'}</div></div></div>`);
   }
   if (data.tco && (data.tco.purchasePrice > 0 || data.tco.totalOwnership > 0)) {
     const t = data.tco;
-    wrap.insertAdjacentHTML('beforeend', `<div class="col-12 mt-2"><div class="stat-card purple"><div class="label">Total Biaya Kepemilikan (TCO)</div><div class="value">${fmtRp(t.totalOwnership)}</div><div class="small text-muted">Operasional ${fmtRp(t.operatingCost)} + Beli ${fmtRp(t.purchasePrice)}${t.months > 0 ? ` · ≈ ${fmtRp(t.costPerMonth)}/bln selama ${t.months} bln` : ''} · ${fmtRp(t.costPerKm)}/km</div></div></div>`);
+    wrap.insertAdjacentHTML('beforeend', `<div class="col-12 mt-2"><div class="stat-card purple"><div class="label">Total Biaya Kepemilikan (TCO)</div><div class="value">${fmtRp(t.totalOwnership)}</div><div class="small text-muted">Operasional ${fmtRp(t.operatingCost)} + Beli ${fmtRp(t.purchasePrice)}${t.months > 0 ? ` Â· â‰ˆ ${fmtRp(t.costPerMonth)}/bln selama ${t.months} bln` : ''} Â· ${fmtRp(t.costPerKm)}/km</div></div></div>`);
   }
   if (data.fuelTypeComparison && data.fuelTypeComparison.length > 1) {
-    const rows = data.fuelTypeComparison.map((f, i) => `<div class="rank-item${i === 0 ? ' top' : ''}"><div class="rank-no">${i + 1}</div><div class="rank-main"><div class="rank-name">${esc(f.fuelType)}${i === 0 ? ' <span class="badge bg-success ms-1">Paling hemat</span>' : ''}</div><div class="rank-meta">${f.avgConsumption} km/L · ${f.count}× isi</div></div><div class="rank-val">${fmtRp(f.costPerKm)}<small>per km</small></div></div>`).join('');
-    ex.insertAdjacentHTML('beforeend', `<div class="col-12"><div class="panel"><h6 class="mb-3"><i class="fas fa-balance-scale text-warning me-1"></i> Perbandingan Nyata per Jenis BBM</h6><div class="rank-list">${rows}</div><div class="small text-muted mt-2">Biaya per km = total biaya ÷ jarak tempuh.</div></div></div>`);
+    const rows = data.fuelTypeComparison.map((f, i) => `<div class="rank-item${i === 0 ? ' top' : ''}"><div class="rank-no">${i + 1}</div><div class="rank-main"><div class="rank-name">${esc(f.fuelType)}${i === 0 ? ' <span class="badge bg-success ms-1">Paling hemat</span>' : ''}</div><div class="rank-meta">${f.avgConsumption} km/L Â· ${f.count}Ã— isi</div></div><div class="rank-val">${fmtRp(f.costPerKm)}<small>per km</small></div></div>`).join('');
+    ex.insertAdjacentHTML('beforeend', `<div class="col-12"><div class="panel"><h6 class="mb-3"><i class="fas fa-balance-scale text-warning me-1"></i> Perbandingan Nyata per Jenis BBM</h6><div class="rank-list">${rows}</div><div class="small text-muted mt-2">Biaya per km = total biaya Ã· jarak tempuh.</div></div></div>`);
   }
   if (data.stationRanking && data.stationRanking.length >= 2) {
-    const rows = data.stationRanking.slice(0, 8).map((st, i) => `<div class="rank-item${i === 0 ? ' top' : ''}"><div class="rank-no">${i + 1}</div><div class="rank-main"><div class="rank-name">${esc(st.station)}</div><div class="rank-meta">${st.avgPrice ? fmtRp(st.avgPrice) + '/L' : 'Harga -'} · ${st.visits}× kunjungan</div></div><div class="rank-val">${st.avgConsumption > 0 ? st.avgConsumption : '-'}<small>km/L</small></div></div>`).join('');
+    const rows = data.stationRanking.slice(0, 8).map((st, i) => `<div class="rank-item${i === 0 ? ' top' : ''}"><div class="rank-no">${i + 1}</div><div class="rank-main"><div class="rank-name">${esc(st.station)}</div><div class="rank-meta">${st.avgPrice ? fmtRp(st.avgPrice) + '/L' : 'Harga -'} Â· ${st.visits}Ã— kunjungan</div></div><div class="rank-val">${st.avgConsumption > 0 ? st.avgConsumption : '-'}<small>km/L</small></div></div>`).join('');
     ex.insertAdjacentHTML('beforeend', `<div class="col-12 col-lg-6"><div class="panel"><h6 class="mb-3"><i class="fas fa-gas-pump text-primary me-1"></i> Peringkat SPBU (Efisiensi)</h6><div class="rank-list">${rows}</div></div></div>`);
   }
   if (data.categoryBreakdown && Object.keys(data.categoryBreakdown).length > 0) {
@@ -3102,7 +3136,7 @@ async function loadMultiSummary() {
       const soon = (u.daysLeft !== null && u.daysLeft <= 7) || (u.kmLeft !== null && u.kmLeft <= 500);
       return `<span class="badge bg-${late ? 'danger' : soon ? 'warning text-dark' : 'secondary'}">${esc(u.serviceTypes || 'Servis')}</span><br><small class="text-muted">${esc(parts.join(' / '))}</small>`;
     };
-    el('multiSummary').innerHTML = `<div class="panel mb-3"><div class="d-flex justify-content-between align-items-center mb-2"><h6 class="mb-0"><i class="fas fa-th-large text-info me-1"></i> Ringkasan Semua Kendaraan (Bulan Ini)</h6><button class="btn btn-sm btn-light" onclick="el('multiSummary').innerHTML=''"><i class="fas fa-xmark me-1"></i>Tutup</button></div><div class="small text-muted mb-2">Total biaya semua kendaraan: <b>${fmtRp(totalMonth)}</b> · Paling boros: <b>${esc(top && top.monthCost > 0 ? top.name : '-')}</b>${top && top.monthCost > 0 ? ` (${fmtRp(top.monthCost)})` : ''}</div><div class="table-responsive"><table class="table table-sm mb-0"><thead><tr><th>Kendaraan</th><th>Biaya Bulan Ini</th><th>Odometer</th><th>Pengingat Mendesak</th></tr></thead><tbody>${list.map(v => `<tr><td><strong>${esc(v.name || '-')}</strong><br><small class="text-muted">${esc(v.licensePlate || '')}</small></td><td>${fmtRp(v.monthCost)}</td><td>${fmtNum(v.latestOdometer)} km</td><td>${urgentBadge(v.mostUrgent)}</td></tr>`).join('')}</tbody></table></div></div>`;
+    el('multiSummary').innerHTML = `<div class="panel mb-3"><div class="d-flex justify-content-between align-items-center mb-2"><h6 class="mb-0"><i class="fas fa-th-large text-info me-1"></i> Ringkasan Semua Kendaraan (Bulan Ini)</h6><button class="btn btn-sm btn-light" onclick="el('multiSummary').innerHTML=''"><i class="fas fa-xmark me-1"></i>Tutup</button></div><div class="small text-muted mb-2">Total biaya semua kendaraan: <b>${fmtRp(totalMonth)}</b> Â· Paling boros: <b>${esc(top && top.monthCost > 0 ? top.name : '-')}</b>${top && top.monthCost > 0 ? ` (${fmtRp(top.monthCost)})` : ''}</div><div class="table-responsive"><table class="table table-sm mb-0"><thead><tr><th>Kendaraan</th><th>Biaya Bulan Ini</th><th>Odometer</th><th>Pengingat Mendesak</th></tr></thead><tbody>${list.map(v => `<tr><td><strong>${esc(v.name || '-')}</strong><br><small class="text-muted">${esc(v.licensePlate || '')}</small></td><td>${fmtRp(v.monthCost)}</td><td>${fmtNum(v.latestOdometer)} km</td><td>${urgentBadge(v.mostUrgent)}</td></tr>`).join('')}</tbody></table></div></div>`;
     el('multiSummary').querySelectorAll('.table-responsive').forEach(labelCells);
   } catch (e) { toast('Gagal memuat ringkasan: ' + e.message, 'error'); }
 }
@@ -3270,7 +3304,7 @@ async function saveFillup() {
   const dateVal = el('fDate').value, odoNum = Number(odoRaw);
   const amountNum = Number(el('fAmount').value), priceNum = Number(el('fPrice').value);
   const totalNum = Math.round(Number(el('fTotal').value) || (amountNum * priceNum));
-  // odometer kosong dulu lolos (Number('') = 0) dan tersimpan sebagai 0 → jarak tempuh pengisian berikutnya membengkak
+  // odometer kosong dulu lolos (Number('') = 0) dan tersimpan sebagai 0 â†’ jarak tempuh pengisian berikutnya membengkak
   if (!dateVal || odoRaw === '' || !isFinite(odoNum) || odoNum < 0 || !isFinite(amountNum) || amountNum <= 0 || !isFinite(priceNum) || priceNum <= 0) { toast('Lengkapi form dengan benar.', 'error'); return; }
   const others = state.fillups.filter(f => String(f.id) !== String(id));
   // PERBAIKAN: dua pengisian di hari yang sama dulu salah ditolak. Sekarang hanya tanggal yang benar-benar lebih awal/lebih akhir yang dibandingkan.
@@ -3279,7 +3313,7 @@ async function saveFillup() {
   if (prevF && odoNum < Number(prevF.odometer)) { toast('Odometer lebih kecil dari pengisian sebelumnya (' + fmtNum(prevF.odometer) + ' km).', 'error'); return; }
   if (nextF && odoNum > Number(nextF.odometer)) { toast('Odometer lebih besar dari pengisian sesudahnya (' + fmtNum(nextF.odometer) + ' km).', 'error'); return; }
   let warnings = [];
-  setBtnLoading('btnSaveFillup', true, 'Memeriksa…');
+  setBtnLoading('btnSaveFillup', true, 'Memeriksaâ€¦');
   try {
     const chk = await callApi('apiCheckFillupAnomalies', { id, vehicleId: state.currentVehicleId, date: dateVal, odometer: odoNum, fuelAmount: amountNum, fuelPrice: priceNum, fuelType: ftName });
     if (chk && Array.isArray(chk.warnings)) warnings = chk.warnings;
@@ -3326,7 +3360,7 @@ function applyExpenseFilter() {
   el('expenseCountInfo').innerHTML = `Menampilkan <b>${data.length}</b> data`;
   el('expenseSummary').innerHTML = `<div class="sum-item main"><div class="sum-l">Total Biaya Lain</div><div class="sum-v">${fmtRp(data.reduce((s, e) => s + (Number(e.amount) || 0), 0))}</div></div>`;
   if (data.length === 0) { el('expenseTbody').innerHTML = '<tr><td colspan="6" class="text-center py-4 text-muted">Tidak ada data.</td></tr>'; return; }
-  el('expenseTbody').innerHTML = data.map(e => `<tr><td>${esc(fmtDate(e.date))}</td><td><span class="badge bg-secondary">${esc(e.category || '-')}</span></td><td class="fw-semibold">${fmtRp(e.amount)}</td><td>${esc(e.notes || '-')}</td><td>${safeUrl(e.receiptUrl) ? `<a href="${esc(safeUrl(e.receiptUrl))}" target="_blank" rel="noopener" class="btn btn-sm btn-outline-secondary"><i class="fas fa-image"></i></a>` : '-'}</td><td class="text-end"><div class="d-flex justify-content-end gap-1"><button class="btn btn-sm btn-outline-primary icon-btn" onclick="editExpense('${esc(e.id)}')"><i class="fas fa-pen"></i></button><button class="btn btn-sm btn-outline-danger icon-btn" onclick="confirmDelete('expense','${esc(e.id)}')"><i class="fas fa-trash"></i></button></div></td></tr>`).join('');
+  el('expenseTbody').innerHTML = data.map(e => `<tr><td>${esc(fmtDate(e.date))}</td><td><span class="badge bg-secondary">${esc(e.category || '-')}</span></td><td class="fw-semibold">${fmtRp(e.amount)}</td><td${e.notes ? '' : ' class="no-note"'}>${esc(e.notes || '-')}</td><td>${safeUrl(e.receiptUrl) ? `<a href="${esc(safeUrl(e.receiptUrl))}" target="_blank" rel="noopener" class="btn btn-sm btn-outline-secondary"><i class="fas fa-image"></i></a>` : '-'}</td><td class="text-end"><div class="d-flex justify-content-end gap-1"><button class="btn btn-sm btn-outline-primary icon-btn" onclick="editExpense('${esc(e.id)}')"><i class="fas fa-pen"></i></button><button class="btn btn-sm btn-outline-danger icon-btn" onclick="confirmDelete('expense','${esc(e.id)}')"><i class="fas fa-trash"></i></button></div></td></tr>`).join('');
 }
 function resetExpenseFilter() { el('filterExpenseStart').value = ''; el('filterExpenseEnd').value = ''; applyExpenseFilter(); }
 function showExpenseModal() {
@@ -3431,7 +3465,7 @@ function confirmDelete(type, id) {
 </script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 <script>
-/* ===== TEMA v5 — perilaku tampilan saja (tidak menyentuh logika data) =====
+/* ===== TEMA v5 â€” perilaku tampilan saja (tidak menyentuh logika data) =====
    Semua blok dibungkus try/catch: bila ada yang gagal, aplikasi tetap berjalan normal. */
 (function () {
   'use strict';
