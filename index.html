@@ -1043,10 +1043,58 @@
       .table-responsive { overflow: visible; }
       .table-responsive tbody tr { margin-bottom: 12px; }
     }
+
+    /* ===== v6: skeleton, tarik-untuk-muat-ulang, geser kartu, progres pengingat, status offline ===== */
+    .skel { position: relative; overflow: hidden; border-radius: 8px; background: var(--tl-line, rgba(128,128,128,.18)); }
+    .skel::after { content: ""; position: absolute; inset: 0; transform: translateX(-100%); background: linear-gradient(90deg, transparent, rgba(255,255,255,.35), transparent); animation: skelSlide 1.3s infinite; }
+    [data-bs-theme="dark"] .skel::after { background: linear-gradient(90deg, transparent, rgba(148,180,255,.14), transparent); }
+    @keyframes skelSlide { to { transform: translateX(100%); } }
+    .skel-card { background: var(--tl-card, #fff); border: 1px solid var(--tl-line, #e5e7eb); border-radius: 16px; padding: 14px 16px; }
+    .skel-l { height: 10px; width: 55%; margin-bottom: 12px; } .skel-v { height: 22px; width: 80%; }
+    .skel-rows { display: grid; gap: 10px; padding: 6px 0; }
+    .skel-line { height: 14px; width: 100%; } .skel-line.short { width: 60%; }
+    .skel-tr > td { border: 0 !important; }
+
+    .rem-prog { position: relative; height: 16px; margin-top: 8px; border-radius: 999px; background: rgba(128,140,170,.22); overflow: hidden; }
+    .rem-prog-bar { height: 100%; border-radius: 999px; transition: width .6s cubic-bezier(.3,1,.4,1); }
+    .rem-prog.ok .rem-prog-bar { background: linear-gradient(90deg, #22c55e, #16a34a); }
+    .rem-prog.warn .rem-prog-bar { background: linear-gradient(90deg, #fbbf24, #f59e0b); }
+    .rem-prog.bad .rem-prog-bar { background: linear-gradient(90deg, #f87171, #dc2626); }
+    .rem-prog-txt { position: absolute; inset: 0; display: grid; place-items: center; font-size: .66rem; font-weight: 800; letter-spacing: .3px; color: #0f1b3a; mix-blend-mode: normal; text-shadow: 0 0 3px rgba(255,255,255,.7); }
+    .rem-done .rem-prog { display: none; }
+    .rem-prog { width: 100%; min-width: 140px; max-width: 240px; }
+    @media (max-width: 768px) { .rem-prog { width: 200px; margin-left: auto; } }
+
+    #netBar { position: fixed; z-index: 1056; left: 50%; transform: translateX(-50%); top: calc(8px + env(safe-area-inset-top, 0px)); border: 0; border-radius: 999px; padding: 6px 14px;
+      font-size: .76rem; font-weight: 700; color: #fff; background: #1f63e6; box-shadow: 0 8px 18px -8px rgba(0,0,0,.5); white-space: nowrap; max-width: calc(100vw - 24px); }
+    #netBar.is-off { background: #b45309; }
+    .q-item { display: flex; align-items: center; gap: 10px; padding: 10px 0; border-bottom: 1px solid var(--tl-line, #e5e7eb); }
+    .q-item:last-child { border-bottom: 0; } .q-item .q-t { flex: 1 1 auto; min-width: 0; overflow-wrap: anywhere; font-size: .9rem; } .q-item small { display: block; color: var(--tl-soft, #6b7280); }
+
+    #ptr { position: fixed; z-index: 1500; left: 50%; top: calc(env(safe-area-inset-top, 0px) + 6px); width: 40px; height: 40px; margin-left: -20px; display: none; place-items: center; border-radius: 50%;
+      background: var(--tl-card, #fff); color: var(--brand, #1f63e6); border: 1px solid var(--tl-line, #e5e7eb); box-shadow: 0 10px 22px -10px rgba(0,0,0,.55); pointer-events: none; will-change: transform, opacity; }
+    #ptr.show { display: grid; } #ptr i { transition: transform .2s; } #ptr.ready i { transform: rotate(180deg); } #ptr.spin i { animation: ptrSpin .8s linear infinite; transform: none; }
+    @keyframes ptrSpin { to { transform: rotate(360deg); } }
+
+    .pdf-btn { flex-shrink: 0; display: inline-flex; align-items: center; justify-content: center; gap: 6px; }
+    .swipe-hintline { display: none; }
+    @media (max-width: 768px) {
+      html, body { overscroll-behavior-y: contain; }
+      .swipe-hintline { display: inline; } body.viewer .swipe-hintline { display: none; }
+      #tabFillups .pdf-btn, #tabExpenses .pdf-btn { flex: 0 0 42px; width: 42px; padding: 0 !important; }
+      /* geser kartu: Tandai Selesai / Ubah (kanan), Hapus (kiri) */
+      tr.swiping { position: relative; z-index: 2; user-select: none; -webkit-user-select: none; will-change: transform; }
+      tr.sw-back { transition: transform .22s cubic-bezier(.3,1.2,.5,1); }
+      tr[data-sw]::after { content: attr(data-swl); position: absolute; top: 50%; transform: translateY(-50%); padding: 6px 14px; border-radius: 999px; font-size: .8rem; font-weight: 800; color: #fff; opacity: .55; pointer-events: none; z-index: 3; }
+      tr[data-sw="right"]::after { left: 12px; background: #16a34a; } tr[data-sw="right"][data-swlabel="Ubah"]::after { background: #2563eb; }
+      tr[data-sw="left"]::after { right: 12px; background: #dc2626; }
+      tr[data-sw][data-ready]::after { opacity: 1; box-shadow: 0 6px 14px -6px rgba(0,0,0,.6); }
+    }
   </style>
 </head>
 <body>
 <div id="topLoader"></div>
+<button type="button" id="netBar" class="d-none" onclick="showQueueModal()" aria-live="polite"></button>
 
 <div id="loginView" data-bs-theme="dark">
   <div class="lg-shell">
@@ -1280,7 +1328,7 @@
           </div>
           <div class="d-flex justify-content-between align-items-center mb-2 flex-wrap gap-2 rem-opts">
             <div class="form-check form-switch mb-0"><input class="form-check-input" type="checkbox" id="reminderShowDone" onchange="renderReminderTable()"><label class="form-check-label small" for="reminderShowDone">Tampilkan riwayat selesai</label></div>
-            <div class="small text-muted">Jadwal berikutnya dibuat otomatis setelah perawatan ditandai selesai.</div>
+            <div class="small text-muted">Jadwal berikutnya dibuat otomatis setelah perawatan ditandai selesai.<span class="swipe-hintline d-md-none"> Geser kartu ke kanan untuk menandai selesai, ke kiri untuk menghapus.</span></div>
           </div>
           <div class="table-responsive">
             <table class="table table-hover align-middle">
@@ -1299,6 +1347,7 @@
             <h5 class="mb-0"><i class="fas fa-gas-pump text-primary me-2"></i>Riwayat Pengisian</h5>
             <div class="d-flex gap-2 w-100 w-md-auto mt-2 mt-md-0">
               <button class="btn btn-outline-success flex-grow-1" onclick="exportCSV('fillup')"><i class="fas fa-file-csv me-1"></i> Ekspor</button>
+              <button class="btn btn-outline-danger pdf-btn" onclick="exportPagePDF('fillups')" title="Ekspor PDF" aria-label="Ekspor PDF"><i class="fas fa-file-pdf"></i></button>
               <button class="btn btn-primary flex-grow-1" onclick="showFillupModal()"><i class="fas fa-plus me-1"></i> Isi BBM</button>
               <button class="btn btn-outline-primary refresh-btn" onclick="refreshTab('fillups', this)" title="Muat ulang data pengisian">
                 <i class="fas fa-sync-alt"></i>
@@ -1332,6 +1381,7 @@
             <h5 class="mb-0"><i class="fas fa-receipt text-warning me-2"></i>Biaya Lain-lain</h5>
             <div class="d-flex gap-2 w-100 w-md-auto mt-2 mt-md-0">
               <button class="btn btn-outline-success flex-grow-1" onclick="exportCSV('expense')"><i class="fas fa-file-csv me-1"></i> Ekspor</button>
+              <button class="btn btn-outline-danger pdf-btn" onclick="exportPagePDF('expenses')" title="Ekspor PDF" aria-label="Ekspor PDF"><i class="fas fa-file-pdf"></i></button>
               <button class="btn btn-primary flex-grow-1" onclick="showExpenseModal()"><i class="fas fa-plus me-1"></i> Tambah</button>
               <button class="btn btn-outline-primary refresh-btn" onclick="refreshTab('expenses', this)" title="Muat ulang data biaya">
                 <i class="fas fa-sync-alt"></i>
@@ -1434,6 +1484,32 @@
 </div>
 
 <!-- ================= MODALS ================= -->
+<div class="modal fade" id="modalPin" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false" aria-labelledby="modalPinTitle">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header bg-warning"><h5 class="modal-title text-dark" id="modalPinTitle"><i class="fas fa-shield-halved me-2"></i>Ganti PIN Default</h5></div>
+      <div class="modal-body">
+        <p class="small mb-3">Akun Anda masih memakai PIN default <b>123456</b> yang mudah ditebak. Demi keamanan data, ganti dengan PIN baru sebelum melanjutkan.</p>
+        <div class="mb-3"><label class="form-label fw-bold" for="pinCur">PIN saat ini</label><input type="password" class="form-control" id="pinCur" inputmode="numeric" maxlength="12" autocomplete="current-password"></div>
+        <div class="mb-3"><label class="form-label fw-bold" for="pinNew">PIN baru (4–12 digit angka)</label><input type="password" class="form-control" id="pinNew" inputmode="numeric" maxlength="12" autocomplete="new-password"></div>
+        <div class="mb-1"><label class="form-label fw-bold" for="pinNew2">Ulangi PIN baru</label><input type="password" class="form-control" id="pinNew2" inputmode="numeric" maxlength="12" autocomplete="new-password"></div>
+        <div class="small text-danger mt-2" id="pinErr" role="alert"></div>
+      </div>
+      <div class="modal-footer"><button class="btn btn-light" onclick="doLogout()">Keluar</button><button class="btn btn-primary" id="btnSavePin" onclick="savePin()">Simpan PIN Baru</button></div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="modalQueue" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header bg-primary text-white"><h5 class="modal-title"><i class="fas fa-cloud-arrow-up me-2"></i>Menunggu Sinkron</h5><button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Tutup"></button></div>
+      <div class="modal-body"><div class="small text-muted mb-2">Data ini tersimpan di perangkat dan dikirim otomatis saat sinyal tersedia.</div><div id="queueList"></div></div>
+      <div class="modal-footer"><button class="btn btn-light" data-bs-dismiss="modal">Tutup</button><button class="btn btn-primary" id="btnFlushNow" onclick="flushQueue(true)"><i class="fas fa-rotate me-1"></i> Sinkronkan sekarang</button></div>
+    </div>
+  </div>
+</div>
+
 <div class="modal fade" id="modalProfile" tabindex="-1">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">
@@ -1724,7 +1800,7 @@
 // ║  di antara tanda kutip ' ' pada baris const WEB_APP_URL di bawah.    ║
 // ║  Setiap membuat penerapan BARU, URL-nya berubah → tempel ulang.      ║
 // ╚══════════════════════════════════════════════════════════════════════╝
-const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycby8nQp-qWBP2AcCwJMg2vOLt_6JFidWzyHO3zaB-IP0QoLjmWEUc4ieRPpUfTuotVAx1Q/exec';
+const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbx7OiPsxN496hJCbqEJAOl9pCGv8u0x8Iv2X6x8JmQwbYymElz3TspGecmAURJy2FLL7A/exec';
 // ☝️☝️☝️  TEMPEL URL DI ATAS (di antara tanda kutip)  ☝️☝️☝️
 window.addEventListener('load', () => {
   if (!/^https:\/\/script\.google\.com\/macros\/s\/[^\s']+\/exec$/.test(WEB_APP_URL)) toast('URL Web App belum benar. Tempel URL Code.gs di bagian "TEMPEL DISINI" pada kode index.html.', 'error');
@@ -2316,7 +2392,7 @@ async function callApi(action, ...args) {
   } else if (['apiAddVehicle','apiAddFillup','apiAddExpense','apiAddFuelType','apiAddUser','apiAddReminder','apiAddDocument'].includes(action)) {
     Object.assign(params, args[0] || {});
   } else if (action === 'apiLogin') { params.pin = args[0]; params.deviceId = args[1]; }
-  else if (action === 'apiUploadFile' || action === 'apiOCR' || action === 'apiCheckFillupAnomalies' || action === 'apiCompleteReminder' || action === 'apiAddReminderBatch' || action === 'apiUpdateSplitReminders') { Object.assign(params, args[0] || {}); }
+  else if (action === 'apiUploadFile' || action === 'apiOCR' || action === 'apiCheckFillupAnomalies' || action === 'apiChangePin' || action === 'apiCompleteReminder' || action === 'apiAddReminderBatch' || action === 'apiUpdateSplitReminders') { Object.assign(params, args[0] || {}); }
   else if (action === 'apiUpdateSetting') { params.key = args[0]; params.value = args[1]; }
 
   busy(1);
@@ -2329,15 +2405,16 @@ async function callApi(action, ...args) {
         body: JSON.stringify({ action, params, token: state.user && state.user.token }), signal: ctrl.signal
       });
     } catch (e) {
-      if (e.name === 'AbortError') throw new Error('Server tidak merespons (lebih dari 30 detik). Coba lagi.');
-      throw e;
+      // retryable = gagal di jaringan (bukan ditolak server); uncertain = permintaan mungkin sudah sampai ke server
+      if (e.name === 'AbortError') { const te = new Error('Server tidak merespons (lebih dari 30 detik). Coba lagi.'); te.retryable = true; te.uncertain = true; throw te; }
+      const ne = new Error(navigator.onLine === false ? 'Tidak ada koneksi internet.' : 'Gagal terhubung ke server.'); ne.retryable = true; throw ne;
     } finally { clearTimeout(timer); }
     const textData = await response.text();
     if (/^\s*<(!doctype|html)/i.test(textData)) throw new Error('URL Web App tidak valid atau terjadi kesalahan pada server.');
     let data; try { data = JSON.parse(textData); } catch (e) { throw new Error('Respons server tidak valid.'); }
     if (data && data.error) { if (/^Sesi/.test(data.error) && state.user) doLogout(); throw new Error(data.error); }
     return data;
-  } catch (err) { throw new Error(err.message || 'Gagal terhubung ke server.'); }
+  } catch (err) { const oe = new Error(err.message || 'Gagal terhubung ke server.'); oe.retryable = !!err.retryable; oe.uncertain = !!err.uncertain; throw oe; }
   finally { busy(-1); }
 }
 
@@ -2387,11 +2464,10 @@ async function doLogin() {
   try {
     const slowTimer = setTimeout(() => { el('loginBtnText').textContent = 'Menyiapkan server…'; }, 4000);
     let res; try { res = await callApi('apiLogin', pin, getDeviceId()); } finally { clearTimeout(slowTimer); }
-    state.user = Object.assign({}, res.user, { token: res.token });
+    state.user = Object.assign({}, res.user, { token: res.token, weakPin: !!res.weakPin });
     try { localStorage.setItem('enzy_user', JSON.stringify(state.user)); } catch (e) {}
     if (res.boot) cacheSave('boot', res.boot);
     el('loginPin').value = ''; initApp(res.boot);
-    if (res.weakPin) toast('PIN default (123456) masih dipakai. ' + (state.user.role === 'admin' ? 'Segera ganti lewat menu Pengguna.' : 'Minta admin menggantinya.'), 'error');
   } catch (err) {
     toast(err.message, 'error'); el('btnLogin').disabled = false; el('loginSpinner').classList.add('d-none'); el('loginBtnText').textContent = 'Masuk';
     el('loginPin').value = ''; loginSync(); loginShake(); el('loginPin').focus();
@@ -2413,6 +2489,7 @@ function doLogout() {
   el('appView').style.display = 'none'; el('loginView').style.display = 'flex';
   el('loginPin').value = ''; loginSync(); el('navUserName').textContent = 'User';
   el('notifBadge').classList.add('d-none'); el('notifList').innerHTML = '';
+  try { updateNetBar(); } catch (e) {}
 }
 
 function initApp(boot) {
@@ -2427,6 +2504,7 @@ function initApp(boot) {
   if (usersTabBtn) usersTabBtn.parentElement.style.display = state.user.role === 'admin' ? 'block' : 'none';
   const mu = document.querySelector('#bmore [data-t="tabUsers"]'); if (mu) mu.style.display = state.user.role === 'admin' ? 'block' : 'none';
   refreshAll(boot);
+  try { updateNetBar(); setTimeout(maybeForcePin, 600); setTimeout(flushQueue, 2000); } catch (e) {}
 }
 
 async function syncBoot() {
@@ -2615,7 +2693,7 @@ function enhanceTables() {
     if (w.closest('#tabFillups, #tabExpenses')) return;
     const b = document.createElement('div'); b.className = 'd-flex gap-2 justify-content-end mb-2 tbl-export';
     b.innerHTML = '<button class="btn btn-sm btn-outline-success"><i class="fas fa-file-csv"></i> Excel/CSV</button><button class="btn btn-sm btn-outline-secondary"><i class="fas fa-print"></i> Cetak/PDF</button>';
-    b.children[0].onclick = () => exportTableCSV(w, 'tabel' + (n + 1)); b.children[1].onclick = () => window.print();
+    b.children[0].onclick = () => exportTableCSV(w, 'tabel' + (n + 1)); b.children[1].onclick = () => exportTablePDF(w);
     w.parentNode.insertBefore(b, w);
   });
 }
@@ -2674,6 +2752,7 @@ async function refreshTab(tabName, btnEl) {
 
 async function loadTabData(tabName) {
   if (!state.currentVehicleId && tabName !== 'vehicles' && tabName !== 'settings' && tabName !== 'users' && tabName !== 'reminders' && tabName !== 'documents') return;
+  skelOn(tabName);
   try {
     if (tabName === 'dash') { if (!state.loadedTabs.dash) { await loadDashboard(); state.loadedTabs.dash = true; } }
     else if (tabName === 'fillups') { if (!state.loadedTabs.fillups) { await loadFillups(); state.loadedTabs.fillups = true; } }
@@ -2690,6 +2769,7 @@ async function loadTabData(tabName) {
     else if (tabName === 'documents') { if (!state.loadedTabs.documents) { await loadDocuments(); state.loadedTabs.documents = true; } }
     else if (tabName === 'users') { if (!state.loadedTabs.users && state.user.role === 'admin') { await loadUsers(); state.loadedTabs.users = true; } }
   } catch (err) { console.error('Gagal load tab', tabName, err); toast(err.message || 'Gagal memuat data. Coba refresh.', 'error'); }
+  finally { skelOff(tabName); }
 }
 
 function showProfileModal() {
@@ -2841,11 +2921,18 @@ function renderReminderTable() {
         else { remainingText.push(`Sisa ${diffDays} hari`); }
       }
     }
+    const prog = isDone(r) ? null : reminderProgress(r, vOdo, last, today);
+    let progHtml = '';
+    if (prog !== null || isLate) {
+      const pct = isLate ? 100 : Math.round(prog * 100);
+      const cls = isLate ? 'bad' : (isUrgent || pct >= 85 ? 'warn' : 'ok');
+      progHtml = `<div class="rem-prog ${cls}" role="progressbar" aria-label="Progres menuju jadwal" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${pct}"><div class="rem-prog-bar" style="width:${pct}%"></div><span class="rem-prog-txt">${pct}%</span></div>`;
+    }
     const statusBadge = isDone(r) ? '<span class="badge bg-success">Selesai</span>' : (isLate ? '<span class="badge badge-soft-danger">Terlambat</span>' : (isUrgent ? '<span class="badge badge-soft-warning">Mendesak</span>' : '<span class="badge bg-primary-subtle text-primary-emphasis">Aktif</span>'));
     return `
     <tr class="${isDone(r) ? 'rem-done' : ''}">
       <td><strong>${esc(vName)}</strong></td>
-      <td><div class="reminder-title">${serviceHtml}</div>${intervalTxt ? `<div class="rem-interval"><i class="fas fa-rotate me-1"></i>${esc(intervalTxt)}</div>` : ''}<div class="reminder-services">${esc(r.notes || '')}</div></td>
+      <td><div class="reminder-title">${serviceHtml}</div>${intervalTxt ? `<div class="rem-interval"><i class="fas fa-rotate me-1"></i>${esc(intervalTxt)}</div>` : ''}${progHtml}<div class="reminder-services">${esc(r.notes || '')}</div></td>
       <td>${lastText.join('<br>') || '-'}</td>
       <td>${targetText.join('<br>') || '-'}</td>
       <td>${remainingText.join('<br>') || '-'}</td>
@@ -3525,15 +3612,26 @@ async function saveFillupSkipCheck() {
 async function _executeFillupSave(id, dateVal, odoNum, amountNum, ftName, priceNum, totalNum) {
   if (el('btnSaveFillup').disabled) return; // sedang menyimpan: abaikan ketukan ganda pada "Ya, Tetap Simpan"
   setBtnLoading('btnSaveFillup', true);
+  let data = null, noReceipt = false;
   try {
     let receiptUrl = el('fReceiptUrlOld').value;
-    if (selectedFillupFile && !currentUploadedFileId) { toast('Mengunggah struk...', 'info'); const upRes = await uploadToDrive(selectedFillupFile, FOLDER_ID_FILLUP); receiptUrl = upRes.url || ''; }
-    const data = { vehicleId: state.currentVehicleId, date: dateVal, time: el('fTime').value || '', odometer: odoNum, fuelAmount: amountNum, fuelType: ftName, fuelPrice: priceNum, totalCost: totalNum, partialFill: el('fPartial').checked, station: el('fStation').value, latitude: el('fLat').value, longitude: el('fLng').value, notes: el('fNotes').value, receiptUrl };
+    if (selectedFillupFile && !currentUploadedFileId) {
+      toast('Mengunggah struk...', 'info');
+      try { const upRes = await uploadToDrive(selectedFillupFile, FOLDER_ID_FILLUP); receiptUrl = upRes.url || ''; }
+      catch (ue) { if (!id && ue.retryable) noReceipt = true; else throw ue; }   // offline: tetap simpan datanya, foto struk dilewati
+    }
+    data = { vehicleId: state.currentVehicleId, date: dateVal, time: el('fTime').value || '', odometer: odoNum, fuelAmount: amountNum, fuelType: ftName, fuelPrice: priceNum, totalCost: totalNum, partialFill: el('fPartial').checked, station: el('fStation').value, latitude: el('fLat').value, longitude: el('fLng').value, notes: el('fNotes').value, receiptUrl };
     const res = id ? await callApi('apiUpdateFillup', id, data) : await callApi('apiAddFillup', data);
     closeModal('modalFillup'); toast(res.message);
+    if (noReceipt) toast('Data tersimpan, tetapi foto struk gagal diunggah. Tambahkan lagi lewat tombol ubah.', 'info');
     // PERBAIKAN: dulu hanya tab Pengisian yang dimuat ulang, jadi dashboard tidak berubah setelah isi BBM lewat tombol (+)
     await loadVehicles(); state.loadedTabs = resetLoadedTabs(); state.warm = {}; await loadTabData(activeTabName()); await loadRemindersForNotif();
-  } catch (err) { toast(err.message, 'error'); } finally { setBtnLoading('btnSaveFillup', false); }
+  } catch (err) {
+    if (!id && data && err.retryable && enqueueOffline('apiAddFillup', data, err.uncertain)) {
+      closeModal('modalFillup');
+      toast('Tidak ada sinyal. Pengisian disimpan di perangkat dan dikirim otomatis saat online.' + (noReceipt ? ' Foto struk tidak ikut tersimpan.' : ''), 'info');
+    } else toast(err.message, 'error');
+  } finally { setBtnLoading('btnSaveFillup', false); }
 }
 
 async function loadExpenses() { state.expenses = await callApi('apiGetExpenses', state.currentVehicleId) || []; applyExpenseFilter(); }
@@ -3567,14 +3665,25 @@ async function saveExpense() {
   const id = el('eId').value, dateVal = el('eDate').value, amountNum = Number(el('eAmount').value);
   if (!dateVal || !isFinite(amountNum) || amountNum <= 0) { toast('Lengkapi form dengan benar.', 'error'); return; }
   setBtnLoading('btnSaveExpense', true);
+  let data = null, noReceipt = false;
   try {
     let receiptUrl = el('eReceiptUrlOld').value;
-    if (selectedExpenseFile) { toast('Mengunggah struk biaya...', 'info'); const upRes = await uploadToDrive(selectedExpenseFile, FOLDER_ID_EXPENSE); receiptUrl = upRes.url || ''; }
-    const data = { vehicleId: state.currentVehicleId, date: dateVal, category: el('eCategory').value, amount: amountNum, notes: el('eNotes').value, receiptUrl };
+    if (selectedExpenseFile) {
+      toast('Mengunggah struk biaya...', 'info');
+      try { const upRes = await uploadToDrive(selectedExpenseFile, FOLDER_ID_EXPENSE); receiptUrl = upRes.url || ''; }
+      catch (ue) { if (!id && ue.retryable) noReceipt = true; else throw ue; }
+    }
+    data = { vehicleId: state.currentVehicleId, date: dateVal, category: el('eCategory').value, amount: amountNum, notes: el('eNotes').value, receiptUrl };
     const res = id ? await callApi('apiUpdateExpense', id, data) : await callApi('apiAddExpense', data);
     closeModal('modalExpense'); toast(res.message);
+    if (noReceipt) toast('Data tersimpan, tetapi foto struk gagal diunggah. Tambahkan lagi lewat tombol ubah.', 'info');
     state.loadedTabs = resetLoadedTabs(); state.warm = {}; await loadTabData(activeTabName());
-  } catch (err) { toast(err.message, 'error'); } finally { setBtnLoading('btnSaveExpense', false); }
+  } catch (err) {
+    if (!id && data && err.retryable && enqueueOffline('apiAddExpense', data, err.uncertain)) {
+      closeModal('modalExpense');
+      toast('Tidak ada sinyal. Biaya disimpan di perangkat dan dikirim otomatis saat online.' + (noReceipt ? ' Foto struk tidak ikut tersimpan.' : ''), 'info');
+    } else toast(err.message, 'error');
+  } finally { setBtnLoading('btnSaveExpense', false); }
 }
 
 function showVehicleModal() { el('vId').value = ''; el('vehicleModalTitle').textContent = 'Tambah Kendaraan'; ['vName','vPlate','vMake','vModel','vYear','vFuelType','vTank','vOdo','vPurchasePrice','vPurchaseDate','vTargetKmL'].forEach(id => el(id).value = ''); getModal('modalVehicle').show(); }
@@ -3808,6 +3917,375 @@ function confirmDelete(type, id) {
   }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot); else boot();
 })();
+
+/* =====================================================================
+   v6: skeleton loading, tarik-untuk-muat-ulang, geser kartu, PDF, mode offline, ganti PIN
+   ===================================================================== */
+const pesc = s => String(s === null || s === undefined ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+
+/* ---------- 1) Skeleton loading ---------- */
+const SKEL_TARGETS = { dash: ['statCards', 'cards'], fillups: ['fillupTbody', 'rows'], expenses: ['expenseTbody', 'rows'], reminders: ['reminderTbody', 'rows'], vehicles: ['vehicleTbody', 'rows'], users: ['userTbody', 'rows'], documents: ['docTbody', 'rows'] };
+function skelHtml(kind) {
+  if (kind === 'cards') return Array.from({ length: 6 }, () => '<div class="col-6 col-lg-4 skel-wrap"><div class="skel-card"><div class="skel skel-l"></div><div class="skel skel-v"></div></div></div>').join('');
+  const lines = Array.from({ length: 3 }, () => '<div class="skel skel-line"></div><div class="skel skel-line short"></div>').join('');
+  return '<tr class="skel-tr"><td colspan="9"><div class="skel-rows" aria-hidden="true">' + lines + '</div></td></tr>';
+}
+function skelOn(tab) {
+  try {
+    const t = SKEL_TARGETS[tab]; if (!t || (state.loadedTabs && state.loadedTabs[tab])) return;
+    if (tab === 'users' && !isAdmin()) return;
+    const n = el(t[0]); if (!n || n.children.length) return;   // sudah ada isi: jangan ditimpa
+    n.innerHTML = skelHtml(t[1]);
+  } catch (e) {}
+}
+function skelOff(tab) {
+  try {   // dipanggil di akhir pemuatan: kalau skeleton masih tersisa (gagal memuat), ganti dengan pesan, jangan dibiarkan berkedip selamanya
+    const t = SKEL_TARGETS[tab]; if (!t) return;
+    const n = el(t[0]); if (!n || !n.querySelector('.skel-tr, .skel-wrap')) return;
+    n.innerHTML = t[1] === 'rows' ? '<tr><td colspan="9" class="text-center py-4 text-muted"><i class="fas fa-cloud-arrow-down me-1"></i> Data belum bisa dimuat. Tarik layar ke bawah atau tekan tombol muat ulang.</td></tr>' : '';
+  } catch (e) {}
+}
+
+/* ---------- 2) Progres pengingat (0..1) ---------- */
+function reminderProgress(r, vOdo, last, today) {
+  const ps = [];
+  const dueKm = Number(r.dueOdometer);
+  if (r.dueOdometer !== '' && r.dueOdometer !== null && r.dueOdometer !== undefined && isFinite(dueKm) && dueKm > 0 && vOdo > 0) {
+    let start = (last && last.km !== '' && isFinite(last.km)) ? Number(last.km) : NaN;
+    const iKm = Number(r.intervalKm) || 0;
+    if (!(start < dueKm)) start = iKm > 0 ? dueKm - iKm : NaN;
+    if (isFinite(start) && dueKm > start) ps.push((vOdo - start) / (dueKm - start));
+  }
+  if (r.dueDate) {
+    const due = new Date(r.dueDate + 'T00:00:00');
+    if (!isNaN(due.getTime())) {
+      let start = last && last.dt ? new Date(last.dt + 'T00:00:00') : null;
+      if (!start || isNaN(start.getTime()) || start >= due) {
+        const iB = Number(r.intervalBulan) || 0;
+        start = iB > 0 ? new Date(addMonthsYmd(r.dueDate, -iB) + 'T00:00:00') : null;
+      }
+      if (start && !isNaN(start.getTime()) && due > start) ps.push((today - start) / (due - start));
+    }
+  }
+  if (!ps.length) return null;
+  return Math.max(0, Math.min(1, Math.max.apply(null, ps)));
+}
+
+/* ---------- 3) Mode offline: antrean input ---------- */
+function qKey(uid) { return 'enzy_q_' + uid; }
+function qLoad(uid) { try { const r = localStorage.getItem(qKey(uid)); const a = r ? JSON.parse(r) : []; return Array.isArray(a) ? a : []; } catch (e) { return []; } }
+function qSave(uid, arr) { try { localStorage.setItem(qKey(uid), JSON.stringify(arr)); return true; } catch (e) { return false; } }
+function enqueueOffline(action, data, uncertain) {
+  if (!state.user) return false;
+  const uid = state.user.id, items = qLoad(uid);
+  items.push({ qid: 'q' + Date.now() + Math.random().toString(36).slice(2, 6), action: action, data: data, uncertain: !!uncertain, ts: Date.now() });
+  if (!qSave(uid, items)) return false;
+  updateNetBar(); return true;
+}
+function qLabel(it) {
+  const d = it.data || {};
+  if (it.action === 'apiAddFillup') return 'Isi BBM · ' + fmtDate(d.date) + ' · ' + fmtNum(d.odometer) + ' km · ' + (+Number(d.fuelAmount).toFixed(2)).toLocaleString('id-ID') + ' L';
+  if (it.action === 'apiAddExpense') return 'Biaya ' + (d.category || '') + ' · ' + fmtDate(d.date) + ' · ' + fmtRp(d.amount);
+  return it.action;
+}
+function updateNetBar() {
+  const b = el('netBar'); if (!b) return;
+  const n = state.user ? qLoad(state.user.id).length : 0, off = navigator.onLine === false;
+  if (!state.user || (!off && n === 0)) { b.classList.add('d-none'); return; }
+  b.classList.remove('d-none'); b.classList.toggle('is-off', off);
+  b.innerHTML = off ? '<i class="fas fa-triangle-exclamation me-1"></i>Offline' + (n ? ' · ' + n + ' menunggu' : '') : '<i class="fas fa-cloud-arrow-up me-1"></i>' + n + ' data menunggu sinkron';
+}
+function renderQueueList() {
+  const box = el('queueList'); if (!box || !state.user) return;
+  const items = qLoad(state.user.id);
+  box.innerHTML = items.length ? items.map(it => '<div class="q-item"><div class="q-t">' + pesc(qLabel(it)) + '<small>Disimpan ' + pesc(new Date(it.ts).toLocaleString('id-ID')) + '</small></div><button class="btn btn-sm btn-outline-danger" onclick="removeQueued(\'' + pesc(it.qid) + '\')" aria-label="Hapus dari antrean"><i class="fas fa-trash"></i></button></div>').join('') : '<div class="text-center text-muted py-3">Tidak ada data yang menunggu.</div>';
+}
+function showQueueModal() { renderQueueList(); getModal('modalQueue').show(); }
+function removeQueued(qid) {
+  if (!state.user) return;
+  qSave(state.user.id, qLoad(state.user.id).filter(x => x.qid !== qid));
+  renderQueueList(); updateNetBar();
+}
+async function qIsDuplicate(it) {   // hanya dicek bila permintaan sebelumnya "mungkin sudah sampai" (timeout), agar tidak ada data ganda
+  if (!it.uncertain) return false;
+  const d = it.data || {};
+  try {
+    if (it.action === 'apiAddFillup') {
+      const list = await callApi('apiGetFillups', d.vehicleId) || [];
+      return list.some(f => String(f.date) === String(d.date) && Number(f.odometer) === Number(d.odometer) && Math.abs(Number(f.fuelAmount) - Number(d.fuelAmount)) < 0.005);
+    }
+    if (it.action === 'apiAddExpense') {
+      const list = await callApi('apiGetExpenses', d.vehicleId) || [];
+      return list.some(e => String(e.date) === String(d.date) && Number(e.amount) === Number(d.amount) && String(e.category || '') === String(d.category || '') && String(e.notes || '') === String(d.notes || ''));
+    }
+  } catch (e) { if (e.retryable || /^Sesi/.test(e.message)) throw e; }
+  return false;
+}
+let _flushing = false;
+async function flushQueue(manual) {
+  if (_flushing || !state.user) return;
+  if (navigator.onLine === false) { if (manual) toast('Masih offline. Data akan dikirim saat sinyal kembali.', 'info'); return; }
+  const uid = state.user.id; if (!qLoad(uid).length) return;
+  _flushing = true; let ok = 0; const fails = [];
+  try {
+    while (state.user && state.user.id === uid) {
+      const it = qLoad(uid)[0]; if (!it) break;
+      try {
+        if (!(await qIsDuplicate(it))) await callApi(it.action, it.data);
+        ok++; qSave(uid, qLoad(uid).filter(x => x.qid !== it.qid));
+      } catch (err) {
+        if (err.retryable) {   // jaringan masih bermasalah: simpan tandanya, berhenti, coba lagi nanti
+          if (err.uncertain) qSave(uid, qLoad(uid).map(x => x.qid === it.qid ? Object.assign({}, x, { uncertain: true }) : x));
+          break;
+        }
+        if (/^Sesi/.test(err.message)) break;   // sesi habis: antrean dipertahankan sampai login ulang
+        fails.push('Gagal mengirim "' + qLabel(it) + '": ' + err.message);   // ditolak server (mis. kendaraan sudah dihapus): buang agar tidak macet
+        qSave(uid, qLoad(uid).filter(x => x.qid !== it.qid));
+      }
+    }
+  } finally { _flushing = false; }
+  updateNetBar();
+  try { if (el('modalQueue').classList.contains('show')) renderQueueList(); } catch (e) {}
+  fails.forEach(m => toast(m, 'error'));
+  if (ok && state.user) {
+    toast(ok + ' data offline berhasil disinkronkan.');
+    try { await loadVehicles(); state.loadedTabs = resetLoadedTabs(); state.warm = {}; await loadTabData(activeTabName()); await loadRemindersForNotif(); } catch (e) {}
+  }
+}
+window.addEventListener('online', () => { updateNetBar(); toast('Kembali online.', 'info'); setTimeout(flushQueue, 800); });
+window.addEventListener('offline', () => { updateNetBar(); toast('Anda offline. Pengisian baru tetap bisa dicatat dan dikirim nanti.', 'info'); });
+setInterval(() => { try { if (state.user) { updateNetBar(); if (navigator.onLine !== false && qLoad(state.user.id).length) flushQueue(); } } catch (e) {} }, 45000);
+
+/* ---------- 4) Paksa ganti PIN default ---------- */
+function isWeakPinClient(pin) {
+  if (pin === '123456' || /^(\d)\1+$/.test(pin)) return true;
+  let up = true, down = true;
+  for (let i = 1; i < pin.length; i++) { const d = Number(pin[i]) - Number(pin[i - 1]); if (d !== 1) up = false; if (d !== -1) down = false; }
+  return up || down;
+}
+function maybeForcePin() {
+  if (!state.user || !state.user.weakPin) return;
+  const m = el('modalPin'); if (!m || m.classList.contains('show')) return;
+  ['pinCur', 'pinNew', 'pinNew2'].forEach(i => { el(i).value = ''; }); el('pinErr').textContent = '';
+  getModal('modalPin').show();
+}
+async function savePin() {
+  const cur = el('pinCur').value.trim(), nw = el('pinNew').value.trim(), nw2 = el('pinNew2').value.trim(), err = el('pinErr');
+  err.textContent = '';
+  if (!/^\d{4,12}$/.test(cur)) { err.textContent = 'PIN saat ini: angka 4–12 digit.'; return; }
+  if (!/^\d{4,12}$/.test(nw)) { err.textContent = 'PIN baru harus berupa angka 4–12 digit.'; return; }
+  if (nw !== nw2) { err.textContent = 'Ulangi PIN baru dengan sama persis.'; return; }
+  if (nw === cur) { err.textContent = 'PIN baru harus berbeda dari PIN saat ini.'; return; }
+  if (isWeakPinClient(nw)) { err.textContent = 'PIN terlalu mudah ditebak (default, angka kembar, atau berurutan). Pilih PIN lain.'; return; }
+  setBtnLoading('btnSavePin', true);
+  try {
+    await callApi('apiChangePin', { currentPin: cur, newPin: nw });
+    if (state.user) { state.user.weakPin = false; try { localStorage.setItem('enzy_user', JSON.stringify(state.user)); } catch (e) {} }
+    closeModal('modalPin'); toast('PIN berhasil diganti. Gunakan PIN baru saat masuk berikutnya.');
+  } catch (e) { err.textContent = e.message; }
+  finally { setBtnLoading('btnSavePin', false); }
+}
+
+/* ---------- 5) Ekspor PDF dengan kop ---------- */
+function cellText(td) {
+  const c = td.cloneNode(true);
+  c.querySelectorAll('.rem-prog').forEach(n => n.remove());
+  c.querySelectorAll('br').forEach(b => b.replaceWith(document.createTextNode(' · ')));
+  c.querySelectorAll('div,li,p').forEach(d => d.appendChild(document.createTextNode(' ')));
+  const t = c.textContent.replace(/\s+/g, ' ').trim();
+  if (!t && td.querySelector('a[href]')) return 'Ada';
+  return t || '-';
+}
+function tableToRows(w) {
+  const ths = [...w.querySelectorAll('thead th')], skip = new Set();
+  ths.forEach((th, i) => { if (/^aksi$/i.test(th.textContent.trim())) skip.add(i); });
+  const headers = ths.map(t => t.textContent.replace(/\s+/g, ' ').trim()).filter((_, i) => !skip.has(i));
+  const rows = [];
+  w.querySelectorAll('tbody tr').forEach(tr => {
+    if (tr.classList.contains('row-hide') || tr.querySelector('td[colspan]')) return;
+    const cells = [...tr.children].filter(c => c.tagName === 'TD');
+    if (!cells.length) return;
+    rows.push(cells.map(cellText).filter((_, i) => !skip.has(i)));
+  });
+  return { headers: headers, rows: rows };
+}
+function buildPdfHtml(o) {
+  const land = o.headers.length > 6;
+  let printed; try { printed = new Date().toLocaleString('id-ID', { dateStyle: 'long', timeStyle: 'short' }); } catch (e) { printed = new Date().toLocaleString('id-ID'); }
+  const meta = o.meta.concat([['Dicetak oleh', (state.user && (state.user.name || state.user.username)) || '-'], ['Tanggal cetak', printed], ['Jumlah data', String(o.rows.length)]]);
+  const logo = '<svg width="46" height="46" viewBox="0 0 64 64" aria-hidden="true"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#4d90ff"/><stop offset="1" stop-color="#1a4fc4"/></linearGradient></defs><rect width="64" height="64" rx="16" fill="url(#g)"/><path d="M36 8 16 36h14l-4 20 22-30H34z" fill="#fff"/></svg>';
+  const css = '@page{size:A4 ' + (land ? 'landscape' : 'portrait') + ';margin:14mm 12mm 16mm;@bottom-center{content:"Halaman " counter(page) " dari " counter(pages);font-size:9px;color:#6b7280}}' +
+    '*{box-sizing:border-box}body{margin:0;font-family:-apple-system,"Segoe UI",Roboto,Arial,sans-serif;color:#0f1b3a;font-size:11px}' +
+    '.kop{display:flex;align-items:center;gap:12px;padding-bottom:10px;border-bottom:3px solid #1f63e6}.kop .nm{font-size:18px;font-weight:800;letter-spacing:.3px}.kop .sb{color:#5b6b8c;font-size:11px}.kop .rt{margin-left:auto;text-align:right;color:#5b6b8c;font-size:10px}' +
+    'h1{font-size:16px;margin:14px 0 8px}.meta{display:grid;grid-template-columns:repeat(2,1fr);gap:3px 24px;margin-bottom:10px}.meta div{display:flex;gap:6px}.meta b{min-width:84px;color:#5b6b8c;font-weight:600}' +
+    '.sum{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 10px}.sum div{border:1px solid #dfe6f3;border-radius:8px;padding:6px 10px;background:#f4f7fc}.sum small{display:block;color:#5b6b8c;font-size:9px;text-transform:uppercase;letter-spacing:.4px}.sum strong{font-size:12px}' +
+    'table{width:100%;border-collapse:collapse}thead{display:table-header-group}th{background:#1f63e6;color:#fff;text-align:left;padding:6px 7px;font-size:10px}td{padding:5px 7px;border-bottom:1px solid #e5eaf4;vertical-align:top;overflow-wrap:anywhere}tr{page-break-inside:avoid}tbody tr:nth-child(even) td{background:#f7f9fd}' +
+    '.ft{margin-top:12px;color:#8a97b3;font-size:9px;text-align:center}';
+  const sum = o.summary && o.summary.length ? '<div class="sum">' + o.summary.map(x => '<div><small>' + pesc(x[0]) + '</small><strong>' + pesc(x[1]) + '</strong></div>').join('') + '</div>' : '';
+  return '<!doctype html><html lang="id"><head><meta charset="utf-8"><title>' + pesc(o.title) + ' - Enzy_Gempa</title><style>' + css + '</style></head><body>' +
+    '<div class="kop">' + logo + '<div><div class="nm">Enzy_Gempa Pro</div><div class="sb">Manajemen Kendaraan &amp; BBM</div></div><div class="rt">LAPORAN<br>' + pesc(printed) + '</div></div>' +
+    '<h1>' + pesc(o.title) + '</h1><div class="meta">' + meta.map(m => '<div><b>' + pesc(m[0]) + '</b><span>' + pesc(m[1]) + '</span></div>').join('') + '</div>' + sum +
+    '<table><thead><tr>' + o.headers.map(h => '<th>' + pesc(h) + '</th>').join('') + '</tr></thead><tbody>' +
+    o.rows.map(r => '<tr>' + r.map(c => '<td>' + pesc(c) + '</td>').join('') + '</tr>').join('') + '</tbody></table>' +
+    '<div class="ft">Dokumen ini dibuat otomatis oleh Enzy_Gempa Pro.</div></body></html>';
+}
+function printHtml(html) {
+  const f = document.createElement('iframe');
+  f.setAttribute('aria-hidden', 'true'); f.title = 'Cetak laporan';
+  f.style.cssText = 'position:fixed;left:-10000px;top:0;width:794px;height:1123px;border:0';
+  document.body.appendChild(f);
+  const clean = () => { try { f.remove(); } catch (e) {} };
+  try {
+    const d = f.contentWindow.document; d.open(); d.write(html); d.close();
+    f.contentWindow.addEventListener('afterprint', () => setTimeout(clean, 500));
+    setTimeout(() => { try { f.contentWindow.focus(); f.contentWindow.print(); } catch (e) { toast('Gagal membuka dialog cetak.', 'error'); clean(); } }, 300);
+    setTimeout(clean, 600000);
+  } catch (e) { clean(); toast('Gagal menyiapkan PDF.', 'error'); }
+}
+function exportTablePDF(w) {
+  try {
+    const pane = w.closest('.tab-pane'), pid = pane ? pane.id : '', h = pane && pane.querySelector('h5');
+    const title = h ? h.textContent.replace(/\s+/g, ' ').trim() : 'Laporan';
+    const d = tableToRows(w);
+    if (!d.rows.length) { toast('Tidak ada data untuk dicetak.', 'info'); return; }
+    const meta = [], v = state.vehicles.find(x => String(x.id) === String(state.currentVehicleId));
+    let summary = [];
+    if (pid === 'tabFillups' || pid === 'tabExpenses') {
+      const f = pid === 'tabFillups';
+      if (v) meta.push(['Kendaraan', (v.name || '-') + (v.licensePlate ? ' (' + v.licensePlate + ')' : '')]);
+      const s = el(f ? 'filterFillupStart' : 'filterExpenseStart').value, e = el(f ? 'filterFillupEnd' : 'filterExpenseEnd').value;
+      meta.push(['Periode', (s || e) ? (s ? fmtDate(s) : 'awal') + ' s/d ' + (e ? fmtDate(e) : 'sekarang') : 'Semua data']);
+      summary = [...el(f ? 'fillupSummary' : 'expenseSummary').querySelectorAll('.sum-item')].map(i => [(i.querySelector('.sum-l') || {}).textContent || '', (i.querySelector('.sum-v') || {}).textContent || '']);
+    } else if (pid === 'tabReminders') {
+      const sel = el('reminderVehicleFilter');
+      meta.push(['Kendaraan', sel && sel.selectedIndex >= 0 ? sel.options[sel.selectedIndex].text : 'Semua Kendaraan']);
+      meta.push(['Tampilan', el('reminderShowDone') && el('reminderShowDone').checked ? 'Termasuk riwayat selesai' : 'Hanya yang aktif']);
+    }
+    printHtml(buildPdfHtml({ title: title, meta: meta, summary: summary, headers: d.headers, rows: d.rows }));
+  } catch (e) { toast('Gagal membuat PDF: ' + e.message, 'error'); }
+}
+function exportPagePDF(tab) {
+  const body = el(tab === 'fillups' ? 'fillupTbody' : 'expenseTbody'), w = body && body.closest('.table-responsive');
+  if (!w) { toast('Tabel tidak ditemukan.', 'error'); return; }
+  exportTablePDF(w);
+}
+
+/* ---------- 6) Tarik-untuk-muat-ulang (HP) ---------- */
+(function () {
+  const mq = window.matchMedia('(max-width: 768px)');
+  const TH = 72, MAXP = 120;
+  let ind = null, startY = 0, startX = 0, pull = 0, tracking = false, active = false, running = false;
+  const top = () => (document.scrollingElement || document.documentElement).scrollTop;
+  function mk() {
+    if (ind) return ind;
+    ind = document.createElement('div'); ind.id = 'ptr'; ind.setAttribute('aria-hidden', 'true'); ind.innerHTML = '<i class="fas fa-arrow-down"></i>';
+    document.body.appendChild(ind); return ind;
+  }
+  function blocked(t) {
+    if (!state.user || running || !mq.matches) return true;
+    if (document.body.classList.contains('modal-open') || el('bmore').classList.contains('open')) return true;
+    if (t && t.closest && t.closest('.leaflet-container, input, textarea, select, .modal, .dropdown-menu')) return true;
+    return activeTabName() === 'map';
+  }
+  function reset() { if (!ind) return; ind.style.transform = ''; ind.style.opacity = ''; ind.classList.remove('show', 'ready'); }
+  document.addEventListener('touchstart', e => {
+    tracking = false; active = false; pull = 0;
+    if (e.touches.length !== 1 || top() > 0 || blocked(e.target)) return;
+    startY = e.touches[0].clientY; startX = e.touches[0].clientX; tracking = true;
+  }, { passive: true });
+  document.addEventListener('touchmove', e => {
+    if (!tracking) return;
+    const dy = e.touches[0].clientY - startY, dx = e.touches[0].clientX - startX;
+    if (!active) {
+      if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 8) { tracking = false; return; }
+      if (dy < -4) { tracking = false; return; }
+      if (dy > 10) active = true; else return;
+    }
+    if (top() > 0) { tracking = false; active = false; reset(); return; }
+    pull = Math.min(MAXP, Math.max(0, dy * 0.5));
+    if (e.cancelable) e.preventDefault();
+    const i = mk(); i.classList.add('show'); i.classList.toggle('ready', pull >= TH);
+    i.style.opacity = String(Math.min(1, pull / 40)); i.style.transform = 'translateY(' + (pull - 10) + 'px) rotate(' + (pull * 3) + 'deg)';
+  }, { passive: false });
+  async function end(e) {
+    const fire = tracking && active && pull >= TH && e.type === 'touchend';
+    tracking = false; active = false;
+    if (!fire) { pull = 0; reset(); return; }
+    pull = 0; running = true;
+    const i = mk(); i.classList.remove('ready'); i.classList.add('show', 'spin'); i.style.opacity = '1'; i.style.transform = 'translateY(' + (TH / 2) + 'px)';
+    try { await flushQueue(); await refreshTab(activeTabName(), null); }
+    catch (err) { /* refreshTab sudah menampilkan pesan galat */ }
+    finally { running = false; i.classList.remove('spin'); reset(); }
+  }
+  document.addEventListener('touchend', end, { passive: true });
+  document.addEventListener('touchcancel', end, { passive: true });
+})();
+
+/* ---------- 7) Geser kartu (HP): kanan = Selesai/Ubah, kiri = Hapus ---------- */
+(function () {
+  const mq = window.matchMedia('(max-width: 768px)');
+  const SEL = '#reminderTbody tr, #fillupTbody tr, #expenseTbody tr, #docTbody tr';
+  const THR = 90, MAXD = 130;
+  let row = null, sx = 0, sy = 0, lock = null, dx = 0, canR = null, canL = null, labR = '';
+  function usable(b) { return !!b && !b.disabled && b.offsetParent !== null; }
+  function btnFor(r, dir) {
+    if (dir === 'left') return r.querySelector('button[onclick*="confirmDelete"]');
+    if (r.closest('#reminderTbody')) return r.querySelector('button[onclick*="showCompleteReminder"]');
+    return r.querySelector('button[onclick*="edit"]');
+  }
+  function clearHint(r) { r.removeAttribute('data-sw'); r.removeAttribute('data-swl'); r.removeAttribute('data-swlabel'); r.removeAttribute('data-ready'); }
+  document.addEventListener('touchstart', e => {
+    row = null; lock = null; dx = 0;
+    if (!mq.matches || e.touches.length !== 1 || !state.user || document.body.classList.contains('viewer')) return;
+    if (document.body.classList.contains('modal-open')) return;
+    if (e.target.closest('a,button,input,select,textarea,label')) return;
+    const r = e.target.closest(SEL); if (!r || r.querySelector('td[colspan]')) return;
+    row = r; sx = e.touches[0].clientX; sy = e.touches[0].clientY;
+    canL = usable(btnFor(r, 'left')); canR = usable(btnFor(r, 'right'));
+    labR = r.closest('#reminderTbody') ? 'Selesai ✓' : 'Ubah';
+    if (!canL && !canR) row = null;
+  }, { passive: true });
+  document.addEventListener('touchmove', e => {
+    if (!row) return;
+    const mx = e.touches[0].clientX - sx, my = e.touches[0].clientY - sy;
+    if (lock === null) {
+      if (Math.max(Math.abs(mx), Math.abs(my)) < 8) return;
+      lock = Math.abs(mx) > Math.abs(my) * 1.2 ? 'h' : 'v';
+      if (lock === 'v') { row = null; return; }
+      row.classList.remove('sw-back'); row.classList.add('swiping');
+    }
+    if (e.cancelable) e.preventDefault();
+    let d = mx;
+    if ((d > 0 && !canR) || (d < 0 && !canL)) d = d * 0.15;   // arah tanpa aksi: hanya sedikit mengikuti jari
+    dx = Math.max(-MAXD, Math.min(MAXD, d));
+    row.style.transform = 'translateX(' + dx + 'px)';
+    const dir = dx > 24 && canR ? 'right' : (dx < -24 && canL ? 'left' : '');
+    if (dir) {
+      row.setAttribute('data-sw', dir); row.setAttribute('data-swl', dir === 'left' ? 'Hapus' : labR); row.setAttribute('data-swlabel', dir === 'left' ? 'Hapus' : labR === 'Ubah' ? 'Ubah' : 'Selesai');
+      if (Math.abs(dx) >= THR) row.setAttribute('data-ready', '1'); else row.removeAttribute('data-ready');
+    } else clearHint(row);
+  }, { passive: false });
+  function end(e) {
+    const r = row; row = null;
+    if (!r || lock !== 'h') return;
+    const go = e.type === 'touchend' && Math.abs(dx) >= THR && ((dx > 0 && canR) || (dx < 0 && canL));
+    const btn = go ? btnFor(r, dx > 0 ? 'right' : 'left') : null;
+    r.classList.add('sw-back'); r.style.transform = '';
+    setTimeout(() => { r.classList.remove('swiping', 'sw-back'); clearHint(r); }, 260);
+    if (btn && usable(btn)) setTimeout(() => btn.click(), 140);   // membuka dialog yang sama dengan tombol (konfirmasi hapus tetap muncul)
+    dx = 0; lock = null;
+  }
+  document.addEventListener('touchend', end, { passive: true });
+  document.addEventListener('touchcancel', end, { passive: true });
+})();
+
+/* ---------- 8) Service worker (aset aplikasi tersimpan untuk offline) ---------- */
+try {
+  if ('serviceWorker' in navigator && location.protocol === 'https:' && window.top === window.self) {
+    window.addEventListener('load', () => { navigator.serviceWorker.register('sw.js').catch(() => {}); });
+  }
+} catch (e) {}
+
 </script>
 </body>
 </html>
